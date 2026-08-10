@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import iconoBlanco from '../assets/icono blanco.png';
+
+interface Props {
+	numero?: string;
+	tono: string;
+	relacion?: string;
+	loading?: 'lazy' | 'eager';
+}
+
+/* Cartel generativo: marcador de posición mientras no hay fotografía
+   de montaje. Se sustituye por la imagen real sin tocar el layout. */
+const {
+	numero,
+	tono,
+	relacion = '3 / 4',
+	loading = 'lazy',
+} = Astro.props;
+---
+
+<div class="cartel" style={`--tono:${tono};--relacion:${relacion}`}>
+	<div class="cartel__telon" aria-hidden="true"></div>
+	<div class="cartel__luz" aria-hidden="true"></div>
+	<div class="cartel__filete" aria-hidden="true"></div>
+	<Image
+		class="cartel__sello"
+		src={iconoBlanco}
+		alt=""
+		width={520}
+		loading={loading}
+	/>
+	{numero ? <span class="cartel__numero" aria-hidden="true">{numero}</span> : null}
+</div>
+
+<style>
+	.cartel {
+		position: relative;
+		aspect-ratio: var(--relacion);
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+		background: var(--negro-carta);
+		border: 1px solid var(--linea-suave);
+		isolation: isolate;
+	}
+
+	/* Pliegues de telón en lugar del damero del traje. El tono lo pone
+	   la obra, así que la rejilla sigue teniendo variedad de color. */
+	.cartel__telon {
+		position: absolute;
+		inset: 0;
+		background-image: repeating-linear-gradient(
+			90deg,
+			rgba(0, 0, 0, 0.5) 0 0.8rem,
+			color-mix(in srgb, var(--tono) 60%, transparent) 0.8rem 2.4rem,
+			rgba(0, 0, 0, 0.4) 2.4rem 3.1rem
+		);
+		opacity: 0.5;
+		transition: opacity 0.6s var(--ease);
+	}
+
+	/* Luz de vitrina: entra por arriba y deja el centro en penumbra */
+	.cartel__luz {
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(
+				ellipse 90% 45% at 50% 0%,
+				color-mix(in srgb, var(--hueso) 12%, transparent),
+				transparent 70%
+			),
+			radial-gradient(
+				ellipse 75% 60% at 50% 55%,
+				color-mix(in srgb, var(--negro) 68%, transparent),
+				color-mix(in srgb, var(--negro) 92%, transparent) 78%
+			);
+	}
+
+	.cartel__filete {
+		position: absolute;
+		inset: 0.7rem;
+		border: 1px solid var(--linea-suave);
+	}
+
+	.cartel__sello {
+		position: relative;
+		width: 34%;
+		height: auto;
+		opacity: 0.55;
+		filter: drop-shadow(0 1rem 2rem rgba(0, 0, 0, 0.7));
+		transition:
+			transform 0.7s var(--ease),
+			opacity 0.6s var(--ease);
+	}
+
+	.cartel__numero {
+		position: absolute;
+		left: 1.35rem;
+		bottom: 1rem;
+		font-family: var(--fuente-cuerpo);
+		font-size: clamp(2.75rem, 6.5vw, 4.5rem);
+		line-height: 1;
+		color: transparent;
+		-webkit-text-stroke: 1px color-mix(in srgb, var(--hueso) 26%, transparent);
+	}
+
+	/* El grupo hoverable lo define la tarjeta contenedora */
+	:global(.obra:hover) .cartel__telon,
+	:global(.destacada:hover) .cartel__telon {
+		opacity: 0.72;
+	}
+
+	:global(.obra:hover) .cartel__sello,
+	:global(.destacada:hover) .cartel__sello {
+		opacity: 0.75;
+		transform: translateY(-0.45rem);
+	}
+</style>

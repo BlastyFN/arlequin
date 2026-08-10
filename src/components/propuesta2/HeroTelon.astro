@@ -1,0 +1,270 @@
+---
+import FondoEscena from '../FondoEscena.astro';
+import ArcoProscenio from '../ArcoProscenio.astro';
+import { heroeClasico } from '../../data/propuesta2';
+---
+
+<section class="escena" id="inicio">
+	<FondoEscena />
+	<ArcoProscenio />
+
+	<div class="escena__cuerpo">
+		<p class="rotulo escena__rotulo">{heroeClasico.rotulo}</p>
+
+		<h1 class="titular">
+			<span class="titular__linea">{heroeClasico.titular.linea}</span>
+			<span class="titular__remate">{heroeClasico.titular.remate}</span>
+		</h1>
+
+		<div class="filete" aria-hidden="true">
+			<span class="filete__linea filete__linea--izq"></span>
+			<span class="rombo"></span>
+			<span class="filete__linea filete__linea--der"></span>
+		</div>
+
+		<p class="entrada">{heroeClasico.entrada}</p>
+
+		<div class="acciones">
+			{
+				heroeClasico.acciones.map(({ etiqueta, href, principal }) => (
+					<a
+						class:list={['boton', principal ? 'boton--lleno' : 'boton--linea']}
+						href={href}
+					>
+						{etiqueta}
+					</a>
+				))
+			}
+		</div>
+	</div>
+
+	<div class="escena__pie">
+		<dl class="programa">
+			{
+				heroeClasico.programa.map(({ rotulo, valor, nota }) => (
+					<div class="programa__bloque">
+						<dt class="rotulo programa__rotulo">{rotulo}</dt>
+						<dd class="programa__valor">
+							{valor}
+							<span class="programa__nota">{nota}</span>
+						</dd>
+					</div>
+				))
+			}
+		</dl>
+	</div>
+</section>
+
+<style>
+	.escena {
+		--ancho-marco: min(76rem, calc(100% - var(--margen) * 2));
+		--arco-ancho: var(--ancho-marco);
+
+		position: relative;
+		min-height: 100svh;
+		display: grid;
+		grid-template-rows: 1fr auto;
+		align-items: center;
+		padding-top: var(--altura-barra);
+		overflow: hidden;
+		isolation: isolate;
+	}
+
+	/* ---------- Contenido ---------- */
+
+	.escena__cuerpo {
+		position: relative;
+		z-index: 1;
+		width: min(48rem, calc(100% - var(--margen) * 2));
+		margin-inline: auto;
+		text-align: center;
+		padding-block: clamp(2rem, 6vh, 4rem);
+	}
+
+	.escena__rotulo {
+		font-size: 0.74rem;
+		letter-spacing: 0.34em;
+		text-indent: 0.34em;
+		color: var(--hueso-tenue);
+		animation: subir 0.9s var(--ease) 0.1s both;
+	}
+
+	/* La propuesta se apoya en la serif de la marca: el titular deja de
+	   gritar en condensada y pasa a leerse como un programa de mano. */
+	.titular {
+		display: grid;
+		gap: 0.1em;
+		margin-block: clamp(1.5rem, 4vh, 2.25rem) 0;
+		font-family: var(--fuente-cuerpo);
+		font-weight: 400;
+		font-size: clamp(2.15rem, 4.6vw + 0.7rem, 5.25rem);
+		line-height: 1.1;
+		letter-spacing: -0.015em;
+	}
+
+	.titular__linea {
+		animation: subir 1s var(--ease) 0.2s both;
+	}
+
+	.titular__remate {
+		color: var(--hueso-medio);
+		animation: subir 1s var(--ease) 0.32s both;
+	}
+
+	.filete {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.85rem;
+		margin-block: clamp(1.5rem, 3.5vh, 2rem);
+		animation: subir 1s var(--ease) 0.44s both;
+	}
+
+	.filete__linea {
+		height: 1px;
+		width: clamp(2.5rem, 8vw, 5.5rem);
+	}
+
+	.filete__linea--izq {
+		background: linear-gradient(to right, transparent, var(--linea));
+	}
+
+	.filete__linea--der {
+		background: linear-gradient(to left, transparent, var(--linea));
+	}
+
+	.entrada {
+		max-width: 46ch;
+		margin: 0 auto clamp(2rem, 4.5vh, 2.75rem);
+		color: var(--hueso-medio);
+		font-size: clamp(1rem, 1.25vw, 1.14rem);
+		line-height: 1.75;
+		animation: subir 1s var(--ease) 0.56s both;
+	}
+
+	.acciones {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.9rem;
+		animation: subir 1s var(--ease) 0.68s both;
+	}
+
+	.boton {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.82rem;
+		letter-spacing: 0.22em;
+		text-indent: 0.22em;
+		text-decoration: none;
+		padding: 1.05rem 2.3rem;
+		border: 1px solid transparent;
+		transition:
+			background 0.35s var(--ease),
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.boton--lleno {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	.boton--lleno:hover {
+		background: var(--rojo-luz);
+	}
+
+	.boton--linea {
+		border-color: var(--linea);
+		color: var(--hueso-medio);
+	}
+
+	.boton--linea:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+	}
+
+	/* ---------- Programa de mano ---------- */
+
+	.escena__pie {
+		position: relative;
+		z-index: 1;
+		width: var(--ancho-marco);
+		margin-inline: auto;
+		padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
+		animation: subir 1s var(--ease) 0.8s both;
+	}
+
+	.programa {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		margin: 0;
+		border-top: 1px solid var(--linea-suave);
+	}
+
+	.programa__bloque {
+		padding: clamp(1rem, 2.5vh, 1.5rem) clamp(1rem, 2.5vw, 2rem);
+	}
+
+	.programa__bloque + .programa__bloque {
+		border-left: 1px solid var(--linea-suave);
+	}
+
+	.programa__rotulo {
+		font-size: 0.68rem;
+		letter-spacing: 0.26em;
+		text-indent: 0.26em;
+		color: var(--hueso-tenue);
+	}
+
+	.programa__valor {
+		display: grid;
+		gap: 0.2rem;
+		margin: 0.6rem 0 0;
+		font-size: 0.98rem;
+		line-height: 1.4;
+	}
+
+	.programa__nota {
+		font-size: 0.83rem;
+		color: var(--hueso-tenue);
+	}
+
+	@keyframes subir {
+		from {
+			opacity: 0;
+			transform: translateY(1.25rem);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	/* ---------- Adaptaciones ---------- */
+
+	@media (max-width: 62rem) {
+		.escena {
+			min-height: auto;
+		}
+
+		.programa {
+			grid-template-columns: 1fr;
+		}
+
+		.programa__bloque + .programa__bloque {
+			border-left: 0;
+			border-top: 1px solid var(--linea-suave);
+		}
+	}
+
+	@media (max-width: 40rem) {
+		.escena__rotulo {
+			font-size: 0.66rem;
+			letter-spacing: 0.24em;
+			text-indent: 0.24em;
+		}
+	}
+</style>

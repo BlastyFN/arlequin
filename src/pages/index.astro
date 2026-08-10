@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Cintillo from '../components/Cintillo.astro';
+import SobreNosotros from '../components/SobreNosotros.astro';
+import Obras from '../components/Obras.astro';
+import Prensa from '../components/Prensa.astro';
+import Respaldos from '../components/Respaldos.astro';
+import Contacto from '../components/Contacto.astro';
+import Footer from '../components/Footer.astro';
+import { heroe, marca } from '../data/home';
+---
+
+<Layout
+	title={`${marca.nombre} — Compañía y productora de teatro`}
+	description={heroe.entrada}
+>
+	<Header />
+	<main id="contenido">
+		<Hero />
+		<Cintillo />
+		<SobreNosotros />
+		<Respaldos />
+		<Obras />
+		<Prensa />
+		<Contacto />
+	</main>
+	<Footer />
+</Layout>

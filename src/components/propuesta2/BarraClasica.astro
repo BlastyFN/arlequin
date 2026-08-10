@@ -1,0 +1,148 @@
+---
+import { Image } from 'astro:assets';
+import logoBlanco from '../../assets/logo con nombre en blanco.png';
+import { navegacion } from '../../data/propuesta2';
+---
+
+<header class="barra">
+	<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+	<div class="barra__interior">
+		<a class="marca" href="#inicio" aria-label="Producciones Arlequín, ir al inicio">
+			<Image
+				src={logoBlanco}
+				alt="Producciones Arlequín"
+				width={480}
+				densities={[1, 2]}
+				loading="eager"
+			/>
+		</a>
+
+		<nav class="menu" aria-label="Navegación principal">
+			<ul class="menu__lista">
+				{
+					navegacion.map(({ etiqueta, href }) => (
+						<li>
+							<a class="menu__enlace" href={href}>
+								{etiqueta}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+
+	<div class="barra__filete" aria-hidden="true"></div>
+</header>
+
+<style>
+	.barra {
+		position: absolute;
+		inset: 0 0 auto;
+		z-index: 10;
+	}
+
+	.saltar {
+		position: absolute;
+		left: 50%;
+		top: 0.5rem;
+		translate: -50% -200%;
+		z-index: 5;
+		background: var(--rojo);
+		color: var(--hueso);
+		font-family: var(--fuente-rotulo);
+		letter-spacing: 0.12em;
+		padding: 0.6rem 1rem;
+		text-decoration: none;
+		transition: translate 0.25s var(--ease);
+	}
+
+	.saltar:focus-visible {
+		translate: -50% 0;
+	}
+
+	.barra__interior {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 2rem;
+		padding: clamp(0.85rem, 1.6vw, 1.35rem) var(--margen);
+	}
+
+	.marca {
+		display: block;
+		flex: none;
+		line-height: 0;
+	}
+
+	.marca :global(img) {
+		width: auto;
+		height: clamp(1.75rem, 3vw, 2.3rem);
+		transition: opacity 0.3s var(--ease);
+	}
+
+	.marca:hover :global(img) {
+		opacity: 0.75;
+	}
+
+	.menu__lista {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.2rem, 2.6vw, 2.5rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* Subrayado fino que crece desde el centro: gesto de tipografía
+	   editorial, en lugar del punto en rombo de la propuesta 1. */
+	.menu__enlace {
+		position: relative;
+		display: inline-block;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.8rem;
+		letter-spacing: 0.2em;
+		text-decoration: none;
+		color: var(--hueso-medio);
+		padding-block: 0.45rem;
+		white-space: nowrap;
+		transition: color 0.3s var(--ease);
+	}
+
+	.menu__enlace::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0;
+		height: 1px;
+		background: var(--rojo-luz);
+		transform: scaleX(0);
+		transition: transform 0.4s var(--ease);
+	}
+
+	.menu__enlace:hover {
+		color: var(--hueso);
+	}
+
+	.menu__enlace:hover::after {
+		transform: scaleX(1);
+	}
+
+	.barra__filete {
+		height: 1px;
+		margin-inline: var(--margen);
+		background: linear-gradient(
+			to right,
+			transparent,
+			var(--linea-suave) 15%,
+			var(--linea-suave) 85%,
+			transparent
+		);
+	}
+
+	@media (max-width: 60rem) {
+		.menu {
+			display: none;
+		}
+	}
+</style>

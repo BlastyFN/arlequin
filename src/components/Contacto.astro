@@ -1,0 +1,330 @@
+---
+import { contacto } from '../data/home';
+
+const correo =
+	contacto.vias.find((via) => via.href?.startsWith('mailto:'))?.valor ??
+	'hola@produccionesarlequin.mx';
+---
+
+<section class="contacto seccion" id="contacto">
+	<div class="contacto__telon" aria-hidden="true"></div>
+
+	<div class="contenedor contacto__rejilla">
+		<div class="contacto__intro revelar">
+			<div class="contacto__bloque">
+				<h2 class="contacto__titular">{contacto.titular}</h2>
+
+				<div class="contacto__entrada">
+					{
+						contacto.parrafos.map((partes, i) => (
+							<p class:list={[{ 'contacto__llamado': i === 2, 'contacto__cierre': i === 3 }]}>
+								{partes.map(({ texto, acento }) =>
+									acento ? <span class="contacto__acento">{texto}</span> : texto
+								)}
+							</p>
+						))
+					}
+				</div>
+			</div>
+
+			<ul class="vias">
+				{
+					contacto.vias.map(({ rotulo, valor, href }) => (
+						<li class="via">
+							<span class="via__rotulo">{rotulo}</span>
+							{href ? (
+								<a class="via__valor" href={href}>
+									{valor}
+								</a>
+							) : (
+								<span class="via__valor">{valor}</span>
+							)}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+
+		<form
+			class="formulario revelar"
+			action={`https://formsubmit.co/${correo}`}
+			method="POST"
+		>
+			<input type="hidden" name="_subject" value="Contacto — Producciones Arlequín" />
+			<input type="hidden" name="_captcha" value="false" />
+			<input type="text" name="_honey" class="formulario__trampa" tabindex="-1" autocomplete="off" />
+
+			<label class="campo">
+				<span class="campo__rotulo">NOMBRE</span>
+				<input class="campo__control" type="text" name="nombre" required autocomplete="name" />
+			</label>
+
+			<label class="campo">
+				<span class="campo__rotulo">CORREO</span>
+				<input
+					class="campo__control"
+					type="email"
+					name="correo"
+					required
+					autocomplete="email"
+				/>
+			</label>
+
+			<label class="campo">
+				<span class="campo__rotulo">TELEFONO</span>
+				<input
+					class="campo__control"
+					type="tel"
+					name="telefono"
+					autocomplete="tel"
+				/>
+			</label>
+
+			<label class="campo">
+				<span class="campo__rotulo">MENSAJE</span>
+				<textarea
+					class="campo__control campo__control--area"
+					name="mensaje"
+					rows="5"
+					required
+				></textarea>
+			</label>
+
+			<button class="formulario__enviar" type="submit">ENVIAR</button>
+		</form>
+	</div>
+</section>
+
+<style>
+	.contacto {
+		position: relative;
+		overflow: hidden;
+		border-top: 1px solid var(--linea-suave);
+		background:
+			radial-gradient(
+				ellipse 70% 90% at 15% 50%,
+				color-mix(in srgb, var(--tinto) 85%, transparent),
+				transparent 68%
+			),
+			radial-gradient(
+				ellipse 60% 80% at 88% 30%,
+				color-mix(in srgb, var(--morado) 70%, transparent),
+				transparent 66%
+			),
+			var(--negro);
+	}
+
+	/* El telón cerrado detrás del cierre de la página */
+	.contacto__telon {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image: repeating-linear-gradient(
+			90deg,
+			transparent 0 3.4rem,
+			rgba(243, 237, 228, 0.032) 3.4rem 3.46rem,
+			transparent 3.46rem 6.8rem,
+			rgba(0, 0, 0, 0.3) 6.8rem 7.5rem
+		);
+		mask-image: linear-gradient(to bottom, #000, transparent 88%);
+	}
+
+	.contacto__rejilla {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+		gap: clamp(2.75rem, 6vw, 5.5rem);
+		align-items: start;
+	}
+
+	.contacto__intro {
+		display: grid;
+		gap: clamp(2.5rem, 5vw, 3.75rem);
+	}
+
+	.contacto__bloque {
+		display: grid;
+		justify-items: center;
+		gap: clamp(1.5rem, 3vw, 2rem);
+		text-align: center;
+	}
+
+	.contacto__titular {
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.1rem, 3.2vw + 1rem, 4.5rem);
+		font-weight: 400;
+		letter-spacing: 0.04em;
+		margin: 0;
+	}
+
+	.contacto__entrada {
+		display: grid;
+		gap: 1.2rem;
+		width: 100%;
+		max-width: 34rem;
+		margin: 0;
+		color: var(--hueso);
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(0.95rem, 1.15vw + 0.35rem, 1.2rem);
+		font-weight: 400;
+		letter-spacing: 0.06em;
+		line-height: 1.55;
+	}
+
+	.contacto__entrada p {
+		margin: 0;
+	}
+
+	.contacto__acento {
+		color: var(--rojo-luz);
+	}
+
+	.contacto__llamado {
+		margin-top: 0.35rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--linea);
+		font-size: clamp(0.9rem, 1.05vw + 0.35rem, 1.1rem);
+		line-height: 1.5;
+	}
+
+	.contacto__cierre {
+		font-size: clamp(1.05rem, 1.25vw + 0.35rem, 1.3rem);
+		line-height: 1.4;
+	}
+
+	/* ---------- Formulario ---------- */
+
+	.formulario {
+		display: grid;
+		gap: 1.25rem;
+		padding: clamp(1.75rem, 3.5vw, 2.5rem);
+		background: color-mix(in srgb, var(--negro) 78%, transparent);
+		backdrop-filter: blur(6px);
+		border: 1px solid var(--linea);
+	}
+
+	.formulario__trampa {
+		position: absolute;
+		left: -9999px;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.campo {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.campo__rotulo {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.22em;
+		color: var(--rojo-luz);
+	}
+
+	.campo__control {
+		width: 100%;
+		padding: 0.9rem 1rem;
+		border: 1px solid var(--linea);
+		background: color-mix(in srgb, var(--hueso) 4%, transparent);
+		color: var(--hueso);
+		font-family: var(--fuente-cuerpo);
+		font-size: 1rem;
+		line-height: 1.4;
+		border-radius: 0;
+		outline: none;
+		transition:
+			border-color 0.3s var(--ease),
+			background 0.3s var(--ease);
+	}
+
+	.campo__control::placeholder {
+		color: var(--hueso-tenue);
+	}
+
+	.campo__control:hover {
+		border-color: var(--linea);
+		background: color-mix(in srgb, var(--hueso) 6%, transparent);
+	}
+
+	.campo__control:focus {
+		border-color: var(--rojo-luz);
+		background: color-mix(in srgb, var(--hueso) 7%, transparent);
+	}
+
+	.campo__control--area {
+		resize: vertical;
+		min-height: 8rem;
+	}
+
+	.formulario__enviar {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		justify-self: start;
+		margin-top: 0.35rem;
+		padding: 1.05rem 2.3rem;
+		border: 1px solid transparent;
+		background: var(--hueso);
+		color: var(--negro);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.88rem;
+		letter-spacing: 0.2em;
+		text-indent: 0.2em;
+		cursor: pointer;
+		transition:
+			background 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.formulario__enviar:hover {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	/* ---------- Datos de contacto ---------- */
+
+	.vias {
+		list-style: none;
+		margin: 0;
+		padding: clamp(1.75rem, 3vw, 2.25rem) 0 0;
+		border-top: 1px solid var(--linea);
+		display: grid;
+		gap: 1.35rem;
+		max-width: 28rem;
+		justify-self: center;
+		width: 100%;
+		text-align: center;
+	}
+
+	.via {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.via__rotulo {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.22em;
+		color: var(--hueso-tenue);
+	}
+
+	.via__valor {
+		color: var(--hueso-medio);
+		font-family: var(--fuente-cuerpo);
+		font-size: 1.05rem;
+		text-decoration: none;
+		line-height: 1.4;
+		transition: color 0.3s var(--ease);
+	}
+
+	a.via__valor:hover {
+		color: var(--hueso);
+	}
+
+	@media (max-width: 62rem) {
+		.contacto__rejilla {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

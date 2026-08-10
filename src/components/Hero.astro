@@ -1,0 +1,151 @@
+---
+import FondoEscena from './FondoEscena.astro';
+import ArcoProscenio from './ArcoProscenio.astro';
+import Cartelera from './Cartelera.astro';
+import { heroe } from '../data/home';
+---
+
+<section class="heroe" id="inicio">
+	<FondoEscena />
+	<ArcoProscenio />
+
+	<div class="heroe__cuerpo contenedor">
+		<div class="heroe__texto">
+			<h1 class="heroe__titular">
+				<span class="heroe__linea">{heroe.titular.linea}</span>
+				{' '}
+				<span class="heroe__remate">{heroe.titular.remate}</span>
+			</h1>
+
+			<div class="heroe__acciones">
+				{
+					heroe.acciones.map(({ etiqueta, href, principal }) => (
+						<a
+							class:list={['boton', principal ? 'boton--lleno' : 'boton--linea']}
+							href={href}
+						>
+							{etiqueta}
+						</a>
+					))
+				}
+			</div>
+		</div>
+
+		<Cartelera />
+	</div>
+</section>
+
+<style>
+	.heroe {
+		position: relative;
+		min-height: 88svh;
+		display: grid;
+		align-items: center;
+		padding-top: var(--altura-barra);
+		overflow: hidden;
+		isolation: isolate;
+	}
+
+	/* El contenido se mete un poco por dentro de la boca del escenario */
+	.heroe__cuerpo {
+		position: relative;
+		z-index: 1;
+		padding-inline: calc(var(--margen) + clamp(0.85rem, 2.5vw, 3rem));
+		display: grid;
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+		align-items: center;
+		gap: clamp(2rem, 5vw, 4.5rem);
+		padding-block: clamp(1.5rem, 4vh, 3rem) clamp(1.25rem, 3vh, 2.25rem);
+	}
+
+	.heroe__titular {
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.35rem, 4.8vw + 0.9rem, 6.35rem);
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		word-spacing: -0.18em;
+		margin-bottom: clamp(1.5rem, 3vw, 2rem);
+		animation: subir 1s var(--ease) 0.2s both;
+	}
+
+	.heroe__remate {
+		white-space: nowrap;
+		word-spacing: -0.22em;
+	}
+
+	.heroe__acciones {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.9rem;
+		animation: subir 1s var(--ease) 0.56s both;
+	}
+
+	.boton {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.85rem;
+		letter-spacing: 0.2em;
+		text-indent: 0.2em;
+		text-decoration: none;
+		padding: 1.05rem 2.1rem;
+		border: 1px solid transparent;
+		transition:
+			background 0.35s var(--ease),
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.boton--lleno {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	.boton--lleno:hover {
+		background: var(--rojo-luz);
+	}
+
+	.boton--linea {
+		border-color: var(--linea);
+		color: var(--hueso-medio);
+	}
+
+	.boton--linea:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+	}
+
+	/* ---------- Animaciones ---------- */
+
+	@keyframes subir {
+		from {
+			opacity: 0;
+			transform: translateY(1.5rem);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	/* ---------- Adaptaciones ---------- */
+
+	@media (max-width: 62rem) {
+		.heroe {
+			min-height: auto;
+			align-items: start;
+		}
+
+		.heroe__cuerpo {
+			grid-template-columns: 1fr;
+			justify-items: center;
+			gap: clamp(2rem, 6vw, 2.75rem);
+			padding-block: clamp(1.25rem, 3vh, 2.5rem) 1.5rem;
+		}
+
+		.heroe__texto {
+			width: 100%;
+		}
+	}
+</style>

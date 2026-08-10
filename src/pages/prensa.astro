@@ -1,0 +1,701 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { marca } from '../data/home';
+import { notas, paginaPrensa } from '../data/prensa';
+
+const { cabecera, listado, medios, cierre } = paginaPrensa;
+
+/* La primera nota abre la plana; el resto va a la rejilla de columnas. */
+const [apertura, ...resto] = notas;
+---
+
+<Layout
+	title="Prensa — Producciones Arlequín"
+	description="Notas, reseñas y boletines publicados sobre Producciones Arlequín en medios de Guanajuato y del país."
+>
+	<Header />
+
+	<main id="contenido">
+		<section class="cabeza">
+			<div class="contenedor cabeza__cuerpo">
+				{/* Masthead: solo el nombre, filetes de imprenta y tipografía de diario */}
+				<div class="masthead">
+					<div class="masthead__filete" aria-hidden="true">
+						<span class="masthead__regla"></span>
+						<span class="rombo"></span>
+						<span class="masthead__regla"></span>
+					</div>
+
+					<h1 class="masthead__titular">{cabecera.titular}</h1>
+
+					<div class="masthead__filete" aria-hidden="true">
+						<span class="masthead__regla"></span>
+						<span class="rombo"></span>
+						<span class="masthead__regla"></span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="plana" aria-label="Notas publicadas en medios">
+			<div class="contenedor">
+				<article class="destacada revelar">
+					<p class="destacada__rotulo">{listado.apertura}</p>
+
+					<a
+						class="destacada__enlace"
+						href={apertura.href}
+						target="_blank"
+						rel="noopener"
+						aria-label={`Leer «${apertura.tituloCompleto}» en ${apertura.medio}. Abre el sitio del medio en una ventana nueva.`}
+					>
+						<div class="marco marco--abre">
+							<img
+								src={apertura.imagen.src}
+								alt={apertura.imagen.alt}
+								width={apertura.imagen.ancho}
+								height={apertura.imagen.alto}
+								loading="eager"
+								decoding="async"
+							/>
+							<span class="marco__trama" aria-hidden="true"></span>
+							<span class="marco__filete" aria-hidden="true"></span>
+						</div>
+
+						<div class="destacada__texto">
+							<p class="ficha">
+								<span class="ficha__folio">01</span>
+								<span class="ficha__medio">{apertura.medio}</span>
+								<time class="ficha__fecha" datetime={apertura.fechaISO}>
+									{apertura.fecha}
+								</time>
+							</p>
+
+							<h2 class="destacada__titular">{apertura.titulo}</h2>
+							<p class="destacada__entrada">{apertura.entrada}</p>
+
+							<p class="etiqueta">{apertura.etiqueta}</p>
+
+							<span class="leer">
+								{listado.leer}
+								<span class="leer__flecha" aria-hidden="true">&rarr;</span>
+							</span>
+						</div>
+					</a>
+				</article>
+
+				<div class="plana__rejilla">
+					{
+						resto.map(
+							({ medio, fecha, fechaISO, titulo, tituloCompleto, entrada, etiqueta, href, imagen }, i) => (
+							<article class="celda revelar" style={`transition-delay:${i * 80}ms`}>
+								<a
+									class="nota"
+									href={href}
+									target="_blank"
+									rel="noopener"
+									aria-label={`Leer «${tituloCompleto}» en ${medio}. Abre el sitio del medio en una ventana nueva.`}
+								>
+									<p class="ficha">
+										<span class="ficha__folio">{String(i + 2).padStart(2, '0')}</span>
+										<span class="ficha__medio">{medio}</span>
+										<time class="ficha__fecha" datetime={fechaISO}>
+											{fecha}
+										</time>
+									</p>
+
+									<div class="marco">
+										<img
+											src={imagen.src}
+											alt={imagen.alt}
+											width={imagen.ancho}
+											height={imagen.alto}
+											loading="lazy"
+											decoding="async"
+										/>
+										<span class="marco__trama" aria-hidden="true" />
+										<span class="marco__filete" aria-hidden="true" />
+									</div>
+
+									<h3 class="nota__titular">{titulo}</h3>
+									<p class="nota__entrada">{entrada}</p>
+									<p class="etiqueta">{etiqueta}</p>
+
+									<span class="leer">
+										{listado.leer}
+										<span class="leer__flecha" aria-hidden="true">
+											&rarr;
+										</span>
+									</span>
+								</a>
+							</article>
+							),
+						)
+					}
+
+					{/* Recuadro de servicio: completa la ultima fila de la rejilla */}
+					<aside class="celda recuadro revelar">
+						<p class="recuadro__rotulo">{medios.rotulo}</p>
+						<p class="recuadro__texto">{medios.texto}</p>
+						<a class="recuadro__enlace" href={`mailto:${marca.correo}`}>
+							<span>{medios.etiqueta}</span>
+							{marca.correo}
+						</a>
+					</aside>
+				</div>
+			</div>
+		</section>
+
+		<section class="llamada" aria-labelledby="titulo-llamada">
+			<div class="llamada__telon" aria-hidden="true"></div>
+
+			<div class="contenedor llamada__cuerpo revelar">
+				<p class="rotulo" id="titulo-llamada">{cierre.rotulo}</p>
+
+				<div class="llamada__texto">
+					{
+						cierre.lineas.map((partes) => (
+							<p>
+								{partes.map(({ texto, acento }) =>
+									acento ? <span class="llamada__acento">{texto}</span> : texto,
+								)}
+							</p>
+						))
+					}
+				</div>
+
+				<div class="llamada__acciones">
+					<a class="boton boton--lleno" href={cierre.acciones.principal.href}>
+						{cierre.acciones.principal.etiqueta}
+					</a>
+					<a class="boton boton--linea" href={cierre.acciones.secundaria.href}>
+						{cierre.acciones.secundaria.etiqueta}
+					</a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+</Layout>
+
+<style>
+	/* ---------- Masthead: el nombre del diario, sin texto de apoyo ---------- */
+
+	.cabeza {
+		position: relative;
+		background:
+			radial-gradient(
+				ellipse 50% 80% at 50% 0%,
+				color-mix(in srgb, var(--tinto) 34%, transparent),
+				transparent 72%
+			),
+			var(--negro);
+	}
+
+	.cabeza__cuerpo {
+		padding-block: calc(var(--altura-barra) + clamp(3rem, 8vw, 5.5rem))
+			clamp(2.75rem, 5.5vw, 4rem);
+	}
+
+	.masthead {
+		display: grid;
+		gap: clamp(1.1rem, 2.4vw, 1.75rem);
+		justify-items: center;
+		text-align: center;
+		animation: subir 0.9s var(--ease) 0.18s both;
+	}
+
+	.masthead__filete {
+		display: flex;
+		align-items: center;
+		gap: 0.95rem;
+		width: min(100%, 42rem);
+	}
+
+	/* Doble regla de masthead: el gesto tipico del nameplate de diario */
+	.masthead__regla {
+		flex: 1;
+		height: 5px;
+		border-top: 1px solid color-mix(in srgb, var(--hueso) 55%, transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--hueso) 28%, transparent);
+	}
+
+	.masthead__titular {
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(3.6rem, 13vw, 9.5rem);
+		font-weight: 400;
+		letter-spacing: 0.22em;
+		text-indent: 0.22em;
+		line-height: 0.9;
+		text-transform: uppercase;
+		color: var(--hueso);
+		/* Sombra de tinta: cuerpo de plancha, sin tipografia extra */
+		text-shadow:
+			0.035em 0.045em 0 color-mix(in srgb, var(--rojo) 48%, transparent),
+			0.07em 0.09em 0 rgba(5, 5, 5, 0.55);
+	}
+
+	/* ---------- Plana ---------- */
+
+	.plana {
+		position: relative;
+		padding-block: 0 clamp(4rem, 9vw, 7rem);
+		background: var(--negro);
+	}
+
+	/* ---------- Marco de foto: tratamiento de fotograbado ---------- */
+
+	.marco {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 3 / 2;
+		background: var(--negro-carta);
+		border: 1px solid var(--linea-suave);
+		transition: border-color 0.4s var(--ease);
+	}
+
+	.marco--abre {
+		aspect-ratio: 16 / 10;
+		border-color: var(--linea);
+	}
+
+	.marco img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		/* Gris de papel: la foto entra como recorte de diario y recupera el
+		   color al apuntarla. */
+		filter: grayscale(1) sepia(0.16) contrast(1.06) brightness(0.94);
+		transition:
+			transform 0.8s var(--ease),
+			filter 0.6s var(--ease);
+	}
+
+	/* Trama de puntos: el retramado de la impresion en papel */
+	.marco__trama {
+		position: absolute;
+		inset: 0;
+		background-image: radial-gradient(
+			circle at center,
+			rgba(5, 5, 5, 0.9) 22%,
+			transparent 26%
+		);
+		background-size: 3px 3px;
+		opacity: 0.55;
+		transition: opacity 0.6s var(--ease);
+		pointer-events: none;
+	}
+
+	.marco__filete {
+		position: absolute;
+		inset: auto 0 0;
+		height: 2px;
+		background: var(--rojo-luz);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.55s var(--ease);
+	}
+
+	a:hover .marco,
+	a:focus-visible .marco {
+		border-color: color-mix(in srgb, var(--hueso) 32%, transparent);
+	}
+
+	a:hover .marco img,
+	a:focus-visible .marco img {
+		transform: scale(1.03);
+		filter: grayscale(0) sepia(0) contrast(1) brightness(1);
+	}
+
+	a:hover .marco__trama,
+	a:focus-visible .marco__trama {
+		opacity: 0;
+	}
+
+	a:hover .marco__filete,
+	a:focus-visible .marco__filete {
+		transform: scaleX(1);
+	}
+
+	/* ---------- Ficha de la nota: medio y fecha ---------- */
+
+	.ficha {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem 0.85rem;
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.2em;
+	}
+
+	.ficha__folio {
+		color: var(--rojo-luz);
+	}
+
+	.ficha__medio {
+		color: var(--hueso);
+	}
+
+	.ficha__fecha {
+		color: var(--hueso-tenue);
+	}
+
+	.etiqueta {
+		justify-self: start;
+		align-self: start;
+		margin: 0;
+		padding: 0.38rem 0.75rem;
+		border: 1px solid var(--linea);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.62rem;
+		letter-spacing: 0.18em;
+		color: var(--hueso-tenue);
+	}
+
+	.leer {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.7rem;
+		padding-bottom: 0.35rem;
+		border-bottom: 1px solid transparent;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.2em;
+		color: var(--hueso);
+		transition: border-color 0.35s var(--ease);
+	}
+
+	.leer__flecha {
+		color: var(--rojo-luz);
+		transition: transform 0.35s var(--ease);
+	}
+
+	a:hover .leer,
+	a:focus-visible .leer {
+		border-bottom-color: var(--rojo-luz);
+	}
+
+	a:hover .leer__flecha,
+	a:focus-visible .leer__flecha {
+		transform: translateX(0.4rem);
+	}
+
+	/* ---------- Nota de apertura ---------- */
+
+	.destacada {
+		padding-bottom: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	.destacada__rotulo {
+		margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.7rem;
+		letter-spacing: 0.24em;
+		color: var(--hueso-tenue);
+	}
+
+	.destacada__enlace {
+		display: grid;
+		grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+		gap: clamp(1.75rem, 4vw, 3.5rem);
+		align-items: center;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.destacada__texto {
+		display: grid;
+		justify-items: start;
+		gap: 1.15rem;
+	}
+
+	.destacada__titular {
+		margin: 0;
+		max-width: 28ch;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.55rem, 2.2vw + 0.5rem, 2.85rem);
+		font-weight: 400;
+		letter-spacing: 0.03em;
+		line-height: 1.05;
+		text-transform: uppercase;
+	}
+
+	.destacada__entrada {
+		max-width: 46ch;
+		margin: 0;
+		color: var(--hueso-medio);
+		font-size: clamp(1rem, 1.2vw, 1.1rem);
+		line-height: 1.75;
+	}
+
+	/* ---------- Rejilla de columnas ---------- */
+
+	.plana__rejilla {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		border-bottom: 1px solid var(--linea);
+	}
+
+	/* Corondel: el filete vertical que separa columnas en el papel */
+	.celda {
+		padding: clamp(1.75rem, 3vw, 2.5rem) clamp(1.25rem, 2.2vw, 2rem);
+		border-top: 1px solid var(--linea);
+		border-left: 1px solid var(--linea-suave);
+	}
+
+	.celda:nth-child(3n + 1) {
+		padding-left: 0;
+		border-left: 0;
+	}
+
+	.nota {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		height: 100%;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.nota__titular {
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.05rem, 1.2vw + 0.35rem, 1.4rem);
+		font-weight: 400;
+		letter-spacing: 0.03em;
+		line-height: 1.15;
+		text-transform: uppercase;
+	}
+
+	.nota__entrada {
+		margin: 0;
+		color: var(--hueso-medio);
+		font-size: 0.97rem;
+		line-height: 1.7;
+	}
+
+	/* La llamada de lectura queda al pie de la columna, alineada entre notas */
+	.nota .leer {
+		align-self: flex-start;
+		margin-top: auto;
+		padding-top: 0.5rem;
+	}
+
+	.nota:focus-visible {
+		outline: 2px solid var(--rojo-luz);
+		outline-offset: 0.5rem;
+	}
+
+	/* ---------- Recuadro de servicio ---------- */
+
+	.recuadro {
+		display: grid;
+		align-content: start;
+		gap: 1rem;
+	}
+
+	.recuadro__rotulo {
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.7rem;
+		letter-spacing: 0.24em;
+		color: var(--rojo-luz);
+	}
+
+	.recuadro__texto {
+		margin: 0;
+		max-width: 34ch;
+		color: var(--hueso-medio);
+		font-size: 0.97rem;
+		line-height: 1.7;
+	}
+
+	.recuadro__enlace {
+		display: grid;
+		gap: 0.4rem;
+		justify-items: start;
+		padding: 1rem 1.15rem;
+		background: var(--negro-carta);
+		border: 1px solid var(--linea);
+		color: var(--hueso-medio);
+		text-decoration: none;
+		transition:
+			border-color 0.35s var(--ease),
+			background 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.recuadro__enlace span {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.2em;
+		color: var(--rojo-luz);
+	}
+
+	.recuadro__enlace:hover {
+		border-color: color-mix(in srgb, var(--rojo-luz) 45%, transparent);
+		background: color-mix(in srgb, var(--tinto) 22%, var(--negro-carta));
+		color: var(--hueso);
+	}
+
+	/* ---------- Cierre ---------- */
+
+	.llamada {
+		position: relative;
+		overflow: hidden;
+		padding-block: clamp(4.5rem, 10vw, 8rem);
+		background:
+			radial-gradient(
+				ellipse 70% 90% at 20% 50%,
+				color-mix(in srgb, var(--tinto) 85%, transparent),
+				transparent 68%
+			),
+			radial-gradient(
+				ellipse 60% 80% at 85% 35%,
+				color-mix(in srgb, var(--morado) 65%, transparent),
+				transparent 66%
+			),
+			var(--negro);
+	}
+
+	.llamada__telon {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image: repeating-linear-gradient(
+			90deg,
+			transparent 0 3.4rem,
+			rgba(243, 237, 228, 0.032) 3.4rem 3.46rem,
+			transparent 3.46rem 6.8rem,
+			rgba(0, 0, 0, 0.3) 6.8rem 7.5rem
+		);
+		mask-image: linear-gradient(to bottom, #000, transparent 88%);
+	}
+
+	.llamada__cuerpo {
+		position: relative;
+		display: grid;
+		justify-items: center;
+		gap: clamp(1.5rem, 3vw, 2.25rem);
+		text-align: center;
+	}
+
+	.llamada__texto {
+		display: grid;
+		gap: 1rem;
+		max-width: 40rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.1rem, 1.6vw + 0.45rem, 1.85rem);
+		letter-spacing: 0.05em;
+		line-height: 1.45;
+	}
+
+	.llamada__texto p {
+		margin: 0;
+	}
+
+	.llamada__acento {
+		color: var(--rojo-luz);
+	}
+
+	.llamada__acciones {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.9rem;
+		margin-top: 0.75rem;
+	}
+
+	.boton {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.85rem;
+		letter-spacing: 0.2em;
+		text-indent: 0.2em;
+		text-decoration: none;
+		padding: 1.05rem 2.1rem;
+		border: 1px solid transparent;
+		transition:
+			background 0.35s var(--ease),
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.boton--lleno {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	.boton--lleno:hover {
+		background: var(--rojo-luz);
+	}
+
+	.boton--linea {
+		border-color: var(--linea);
+		color: var(--hueso-medio);
+	}
+
+	.boton--linea:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+	}
+
+	/* ---------- Animaciones ---------- */
+
+	@keyframes subir {
+		from {
+			opacity: 0;
+			transform: translateY(1.5rem);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	/* ---------- Adaptaciones ---------- */
+
+	@media (max-width: 62rem) {
+		.destacada__enlace {
+			grid-template-columns: 1fr;
+			gap: clamp(1.5rem, 4vw, 2.25rem);
+		}
+
+		.destacada__titular {
+			max-width: 30ch;
+		}
+
+		.plana__rejilla {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.celda {
+			padding-left: clamp(1.25rem, 2.2vw, 2rem);
+			border-left: 1px solid var(--linea-suave);
+		}
+
+		.celda:nth-child(2n + 1) {
+			padding-left: 0;
+			border-left: 0;
+		}
+	}
+
+	@media (max-width: 45rem) {
+		.plana__rejilla {
+			grid-template-columns: 1fr;
+		}
+
+		.celda {
+			padding-inline: 0;
+			border-left: 0;
+		}
+	}
+</style>

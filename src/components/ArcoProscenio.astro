@@ -1,0 +1,39 @@
+---
+/* Boca del escenario: dos filetes finos con la curva del proscenio que
+   encuadran la escena y se desvanecen hacia abajo. Es el motivo que
+   sustituye al rombo. El contenedor ajusta el ancho con --arco-ancho. */
+---
+
+<div class="arco" aria-hidden="true"></div>
+
+<style>
+	.arco {
+		position: absolute;
+		left: 50%;
+		top: var(--arco-arriba, calc(var(--altura-barra) + clamp(0.5rem, 2vh, 1.5rem)));
+		bottom: 0;
+		translate: -50% 0;
+		width: var(--arco-ancho, calc(100% - var(--margen) * 2));
+		border: 1px solid var(--linea-suave);
+		border-bottom: 0;
+		border-radius: 50% 50% 0 0 / 13% 13% 0 0;
+		mask-image: linear-gradient(to bottom, #000 45%, transparent 92%);
+		pointer-events: none;
+	}
+
+	.arco::after {
+		content: '';
+		position: absolute;
+		inset: 0.7rem 0.7rem 0;
+		border: inherit;
+		border-bottom: 0;
+		border-radius: inherit;
+		opacity: 0.6;
+	}
+
+	@media (max-width: 62rem) {
+		.arco {
+			border-radius: 45% 45% 0 0 / 8% 8% 0 0;
+		}
+	}
+</style>

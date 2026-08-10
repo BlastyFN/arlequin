@@ -1,0 +1,235 @@
+---
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'Producciones Arlequín',
+	description =
+		'Compañía y productora de teatro. Montajes, giras y formación escénica.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#050505" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<title>{title}</title>
+		{/* Sin JS, .revelar debe quedar visible: el estado oculto solo se activa aquí */}
+		<script is:inline>
+			document.documentElement.classList.add('con-js');
+		</script>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style is:global>
+	/* Headline News cubre solo ASCII básico: sin acentos, Ñ, ¡ ni ¿.
+	   Reservada para rótulos en mayúsculas sin diacríticos. */
+	@font-face {
+		font-family: 'Headline News';
+		src: url('../assets/fonts/headline-news.woff') format('woff');
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: 'Questa Slab';
+		src: url('../assets/fonts/questa-slab-regular.woff') format('woff');
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	:root {
+		--negro: #050505;
+		--negro-elev: #0c0809;
+		--negro-carta: #110c0e;
+		--morado: #3f0332;
+		--tinto: #420210;
+		--rojo: #830018;
+		--rojo-luz: #b31230;
+		--hueso: #f3ede4;
+		--hueso-medio: #b3a89f;
+		--hueso-tenue: #7d736d;
+		--linea: rgba(243, 237, 228, 0.14);
+		--linea-suave: rgba(243, 237, 228, 0.07);
+
+		--fuente-rotulo: 'Headline News', 'Questa Slab', Georgia, serif;
+		--fuente-titular: 'Questa Slab', Georgia, 'Times New Roman', serif;
+		--fuente-cuerpo: 'Questa Slab', Georgia, 'Times New Roman', serif;
+
+		/* Sin tope de ancho: en pantallas grandes el layout ocupa el viewport.
+		   Solo los márgenes laterales contienen el borde. */
+		--margen: clamp(1.25rem, 4vw, 5rem);
+		--altura-barra: 5.25rem;
+		--ease: cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	html {
+		scroll-behavior: smooth;
+		scroll-padding-top: calc(var(--altura-barra) + 1rem);
+		-webkit-text-size-adjust: 100%;
+	}
+
+	html,
+	body {
+		margin: 0;
+		min-height: 100%;
+	}
+
+	body {
+		background: var(--negro);
+		color: var(--hueso);
+		font-family: var(--fuente-cuerpo);
+		font-size: clamp(1rem, 0.96rem + 0.2vw, 1.075rem);
+		line-height: 1.65;
+		-webkit-font-smoothing: antialiased;
+		overflow-x: hidden;
+	}
+
+	img,
+	svg {
+		display: block;
+		max-width: 100%;
+	}
+
+	a {
+		color: inherit;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		font-family: var(--fuente-titular);
+		font-weight: 800;
+		line-height: 1.02;
+		letter-spacing: -0.03em;
+		text-wrap: balance;
+		margin: 0;
+	}
+
+	p {
+		text-wrap: pretty;
+	}
+
+	::selection {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--rojo-luz);
+		outline-offset: 3px;
+	}
+
+	/* ---------- Utilidades compartidas ---------- */
+
+	.contenedor {
+		width: 100%;
+		padding-inline: var(--margen);
+	}
+
+	.rotulo {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.8rem;
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
+		color: var(--hueso-medio);
+		margin: 0;
+	}
+
+	.rotulo--rojo {
+		color: var(--rojo-luz);
+	}
+
+	.seccion {
+		position: relative;
+		padding-block: clamp(5rem, 11vw, 9rem);
+	}
+
+	/* Rombo de arlequín, motivo recurrente del sistema */
+	.rombo {
+		width: 0.5rem;
+		height: 0.5rem;
+		flex: none;
+		background: var(--rojo);
+		transform: rotate(45deg);
+	}
+
+	/* Aparición al hacer scroll; sin JS o sin motion queda visible */
+	.con-js .revelar {
+		opacity: 0;
+		transform: translateY(1.75rem);
+		transition:
+			opacity 0.9s var(--ease),
+			transform 0.9s var(--ease);
+	}
+
+	.con-js .revelar.es-visible {
+		opacity: 1;
+		transform: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+		}
+
+		.con-js .revelar {
+			opacity: 1;
+			transform: none;
+		}
+	}
+</style>
+
+<script>
+	const objetivos = document.querySelectorAll<HTMLElement>('.revelar');
+	const sinMovimiento = window.matchMedia(
+		'(prefers-reduced-motion: reduce)',
+	).matches;
+
+	if (sinMovimiento || !('IntersectionObserver' in window)) {
+		objetivos.forEach((el) => el.classList.add('es-visible'));
+	} else {
+		const observador = new IntersectionObserver(
+			(entradas) => {
+				entradas.forEach((entrada) => {
+					if (!entrada.isIntersecting) return;
+					entrada.target.classList.add('es-visible');
+					observador.unobserve(entrada.target);
+				});
+			},
+			{ rootMargin: '0px 0px -12% 0px', threshold: 0.1 },
+		);
+
+		objetivos.forEach((el) => observador.observe(el));
+	}
+</script>

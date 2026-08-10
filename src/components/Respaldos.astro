@@ -1,0 +1,142 @@
+---
+import { respaldos } from '../data/home';
+
+const { titular, logos } = respaldos;
+---
+
+<section class="respaldos" aria-labelledby="respaldos-titulo">
+	<div class="contenedor respaldos__cabecera revelar">
+		<h2 class="respaldos__titulo" id="respaldos-titulo">{titular}</h2>
+	</div>
+
+	<div class="carrusel revelar">
+		<div class="carrusel__pista">
+			<ul class="carrusel__grupo">
+				{
+					logos.map(({ marca, nombre }) => (
+						<li class="logo">
+							<span class="logo__marca" aria-hidden="true">{marca}</span>
+							<span class="sr-only">{nombre}</span>
+						</li>
+					))
+				}
+			</ul>
+			<ul class="carrusel__grupo" aria-hidden="true">
+				{
+					logos.map(({ marca }) => (
+						<li class="logo">
+							<span class="logo__marca">{marca}</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+</section>
+
+<style>
+	.respaldos {
+		padding-block: clamp(3.5rem, 7vw, 5.5rem);
+		overflow: hidden;
+		border-top: 1px solid var(--linea-suave);
+		background: var(--negro);
+	}
+
+	.respaldos__cabecera {
+		margin-bottom: clamp(2rem, 4vw, 3rem);
+	}
+
+	.respaldos__titulo {
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.1rem, 3.2vw + 1rem, 4.5rem);
+		font-weight: 400;
+		letter-spacing: 0.04em;
+		margin: 0;
+	}
+
+	.carrusel {
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+	}
+
+	.carrusel__pista {
+		display: flex;
+		width: max-content;
+		animation: desfilar-logos 30s linear infinite;
+	}
+
+	.carrusel:hover .carrusel__pista {
+		animation-play-state: paused;
+	}
+
+	.carrusel__grupo {
+		display: flex;
+		align-items: center;
+		gap: clamp(1rem, 2.5vw, 2rem);
+		margin: 0;
+		padding: 0 clamp(1rem, 2.5vw, 2rem) 0 0;
+		list-style: none;
+	}
+
+	.logo {
+		display: grid;
+		place-items: center;
+		width: clamp(10rem, 17vw, 14rem);
+		height: clamp(5.5rem, 9vw, 7rem);
+		padding: 1.25rem;
+		border: 1px solid var(--linea-suave);
+		color: var(--hueso-tenue);
+		background: color-mix(in srgb, var(--hueso) 2%, transparent);
+		transition:
+			color 0.3s var(--ease),
+			border-color 0.3s var(--ease),
+			background 0.3s var(--ease);
+	}
+
+	.logo:hover {
+		color: var(--hueso);
+		border-color: var(--linea);
+		background: color-mix(in srgb, var(--hueso) 5%, transparent);
+	}
+
+	.logo__marca {
+		font-family: var(--fuente-titular);
+		font-size: clamp(1rem, 1.5vw, 1.25rem);
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		white-space: nowrap;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	@keyframes desfilar-logos {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.carrusel {
+			overflow-x: auto;
+			mask-image: none;
+		}
+
+		.carrusel__pista {
+			animation: none;
+		}
+
+		.carrusel__grupo[aria-hidden='true'] {
+			display: none;
+		}
+	}
+</style>

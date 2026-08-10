@@ -1,0 +1,401 @@
+---
+import { Image } from 'astro:assets';
+import logoBlanco from '../assets/logo con nombre en blanco.png';
+import { marca } from '../data/home';
+
+const enlaces = [
+	{ etiqueta: 'INICIO', href: '/#inicio' },
+	{ etiqueta: 'SOBRE NOSOTROS', href: '/sobre-nosotros' },
+	{ etiqueta: 'OBRAS', href: '/obras' },
+	{ etiqueta: 'CONTACTO', href: '/#contacto' },
+	{ etiqueta: 'PRENSA', href: '/prensa' },
+];
+
+const rutaActual = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="barra" data-barra>
+	<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+	<div class="barra__interior">
+		<a class="marca" href="/#inicio" aria-label="Producciones Arlequín, ir al inicio">
+			<Image
+				src={logoBlanco}
+				alt="Producciones Arlequín"
+				width={480}
+				densities={[1, 2]}
+				loading="eager"
+			/>
+		</a>
+
+		<nav class="menu" aria-label="Navegación principal">
+			<ul class="menu__lista">
+				{
+					enlaces.map(({ etiqueta, href }) => (
+						<li>
+							<a
+								class="menu__enlace"
+								href={href}
+								data-enlace={href}
+								aria-current={rutaActual === href ? 'page' : undefined}
+							>
+								<span class="menu__punto" aria-hidden="true" />
+								{etiqueta}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<button
+			class="hamburguesa"
+			type="button"
+			aria-expanded="false"
+			aria-controls="menu-movil"
+			data-abrir
+		>
+			<span class="hamburguesa__texto">MENU</span>
+			<span class="hamburguesa__trazos" aria-hidden="true">
+				<span></span>
+				<span></span>
+			</span>
+		</button>
+	</div>
+
+	<div class="panel" id="menu-movil" data-panel hidden>
+		<nav aria-label="Navegación principal móvil">
+			<ul class="panel__lista">
+				{
+					enlaces.map(({ etiqueta, href }, i) => (
+						<li style={`--i:${i}`}>
+							<a class="panel__enlace" href={href} data-cerrar>
+								<span class="panel__num">{String(i + 1).padStart(2, '0')}</span>
+								{etiqueta}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<p class="panel__pie">
+			{marca.ciudad} · <a href={`mailto:${marca.correo}`}>
+				{marca.correo}</a
+			>
+		</p>
+	</div>
+</header>
+
+<style>
+	.barra {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 100;
+		transition:
+			background 0.4s var(--ease),
+			border-color 0.4s var(--ease),
+			backdrop-filter 0.4s var(--ease);
+		border-bottom: 1px solid transparent;
+	}
+
+	.barra[data-fijo='true'] {
+		background: rgba(5, 5, 5, 0.82);
+		backdrop-filter: blur(14px) saturate(1.2);
+		border-bottom-color: var(--linea-suave);
+	}
+
+	.saltar {
+		position: absolute;
+		left: 50%;
+		top: 0.5rem;
+		translate: -50% -200%;
+		z-index: 5;
+		background: var(--rojo);
+		color: var(--hueso);
+		font-family: var(--fuente-rotulo);
+		letter-spacing: 0.12em;
+		padding: 0.6rem 1rem;
+		text-decoration: none;
+		transition: translate 0.25s var(--ease);
+	}
+
+	.saltar:focus-visible {
+		translate: -50% 0;
+	}
+
+	.barra__interior {
+		width: 100%;
+		margin-inline: auto;
+		padding: clamp(0.55rem, 1.2vw, 0.85rem) var(--margen);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+
+	.marca {
+		display: block;
+		flex: none;
+		line-height: 0;
+	}
+
+	.marca :global(img) {
+		width: auto;
+		height: clamp(2.75rem, 4.8vw, 3.6rem);
+		transition: opacity 0.3s var(--ease);
+	}
+
+	.marca:hover :global(img) {
+		opacity: 0.75;
+	}
+
+	/* ---------- Menú de escritorio ---------- */
+
+	.menu__lista {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.1rem, 2.4vw, 2.35rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.menu__enlace {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.83rem;
+		letter-spacing: 0.16em;
+		text-decoration: none;
+		color: var(--hueso-medio);
+		padding-block: 0.4rem;
+		transition: color 0.3s var(--ease);
+		white-space: nowrap;
+	}
+
+	.menu__enlace:hover,
+	.menu__enlace[aria-current] {
+		color: var(--hueso);
+	}
+
+	.menu__punto {
+		width: 0.32rem;
+		height: 0.32rem;
+		background: var(--rojo-luz);
+		transform: rotate(45deg) scale(0);
+		transition: transform 0.35s var(--ease);
+	}
+
+	.menu__enlace:hover .menu__punto,
+	.menu__enlace[aria-current] .menu__punto {
+		transform: rotate(45deg) scale(1);
+	}
+
+	/* ---------- Botón hamburguesa ---------- */
+
+	.hamburguesa {
+		display: none;
+		align-items: center;
+		gap: 0.6rem;
+		background: none;
+		border: 0;
+		padding: 0.4rem 0;
+		cursor: pointer;
+		color: var(--hueso);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.8rem;
+		letter-spacing: 0.2em;
+	}
+
+	.hamburguesa__trazos {
+		display: grid;
+		gap: 0.32rem;
+		width: 1.4rem;
+	}
+
+	.hamburguesa__trazos span {
+		height: 1.5px;
+		background: currentColor;
+		transition: transform 0.35s var(--ease);
+	}
+
+	.hamburguesa[aria-expanded='true'] .hamburguesa__trazos span:first-child {
+		transform: translateY(0.41rem) rotate(45deg);
+	}
+
+	.hamburguesa[aria-expanded='true'] .hamburguesa__trazos span:last-child {
+		transform: translateY(-0.41rem) rotate(-45deg);
+	}
+
+	/* ---------- Panel móvil ---------- */
+
+	.panel {
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		display: grid;
+		align-content: center;
+		gap: 2.5rem;
+		padding: 6rem var(--margen) 3rem;
+		background:
+			radial-gradient(
+				ellipse 90% 60% at 50% 0%,
+				color-mix(in srgb, var(--morado) 55%, transparent),
+				transparent 70%
+			),
+			var(--negro);
+	}
+
+	.panel[hidden] {
+		display: none;
+	}
+
+	.panel__lista {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.panel__lista li {
+		opacity: 0;
+		transform: translateY(1rem);
+		animation: entrar 0.5s var(--ease) forwards;
+		animation-delay: calc(0.06s * var(--i) + 0.08s);
+	}
+
+	.panel__enlace {
+		display: flex;
+		align-items: baseline;
+		gap: 1rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.9rem, 9vw, 3rem);
+		letter-spacing: 0.02em;
+		text-decoration: none;
+		padding-block: 0.35rem;
+		border-bottom: 1px solid var(--linea-suave);
+	}
+
+	.panel__num {
+		font-size: 0.75rem;
+		letter-spacing: 0.18em;
+		color: var(--rojo-luz);
+	}
+
+	.panel__pie {
+		font-size: 0.85rem;
+		color: var(--hueso-tenue);
+		margin: 0;
+	}
+
+	.panel__pie a {
+		color: var(--hueso-medio);
+	}
+
+	@keyframes entrar {
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@media (max-width: 60rem) {
+		.menu {
+			display: none;
+		}
+
+		.hamburguesa {
+			display: inline-flex;
+		}
+
+		.panel {
+			z-index: 1;
+		}
+	}
+</style>
+
+<script>
+	const barra = document.querySelector<HTMLElement>('[data-barra]');
+	const boton = document.querySelector<HTMLButtonElement>('[data-abrir]');
+	const panel = document.querySelector<HTMLElement>('[data-panel]');
+
+	/* Fondo sólido en cuanto se despega del hero */
+	const centinela = () => {
+		barra?.setAttribute('data-fijo', window.scrollY > 24 ? 'true' : 'false');
+	};
+	centinela();
+	window.addEventListener('scroll', centinela, { passive: true });
+
+	/* Panel móvil */
+	const alternar = (abierto: boolean) => {
+		if (!boton || !panel) return;
+		boton.setAttribute('aria-expanded', String(abierto));
+		panel.hidden = !abierto;
+		document.body.style.overflow = abierto ? 'hidden' : '';
+	};
+
+	boton?.addEventListener('click', () => {
+		alternar(boton.getAttribute('aria-expanded') !== 'true');
+	});
+
+	panel?.querySelectorAll('[data-cerrar]').forEach((enlace) => {
+		enlace.addEventListener('click', () => alternar(false));
+	});
+
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && boton?.getAttribute('aria-expanded') === 'true') {
+			alternar(false);
+			boton.focus();
+		}
+	});
+
+	const anchoEscritorio = window.matchMedia('(min-width: 60.0625rem)');
+	anchoEscritorio.addEventListener('change', (e) => {
+		if (e.matches) alternar(false);
+	});
+
+	/* Marca en la navbar la sección visible. El orden del menú no coincide
+	   con el de la página, así que se resuelve por posición en el documento. */
+	const enlaces = Array.from(
+		document.querySelectorAll<HTMLAnchorElement>('[data-enlace]'),
+	);
+
+	const pares = enlaces
+		.map((enlace) => {
+			const hash = new URL(enlace.href).hash;
+			return {
+				enlace,
+				seccion: hash ? document.querySelector<HTMLElement>(hash) : null,
+			};
+		})
+		.filter(
+			(par): par is { enlace: HTMLAnchorElement; seccion: HTMLElement } =>
+				par.seccion !== null,
+		)
+		.sort((a, b) => a.seccion.offsetTop - b.seccion.offsetTop);
+
+	if ('IntersectionObserver' in window && pares.length) {
+		const visibles = new Set<HTMLElement>();
+		const observador = new IntersectionObserver(
+			(entradas) => {
+				entradas.forEach((entrada) => {
+					const seccion = entrada.target as HTMLElement;
+					if (entrada.isIntersecting) visibles.add(seccion);
+					else visibles.delete(seccion);
+				});
+
+				const activa = pares.find((par) => visibles.has(par.seccion));
+				pares.forEach(({ enlace }) => {
+					if (enlace === activa?.enlace) enlace.setAttribute('aria-current', 'true');
+					else enlace.removeAttribute('aria-current');
+				});
+			},
+			{ rootMargin: '-45% 0px -50% 0px' },
+		);
+
+		pares.forEach(({ seccion }) => observador.observe(seccion));
+	}
+</script>

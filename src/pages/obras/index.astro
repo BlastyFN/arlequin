@@ -1,0 +1,559 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { marca } from '../../data/home';
+import { obras, paginaObras } from '../../data/obras';
+
+const { portada, listado, cierre } = paginaObras;
+---
+
+<Layout
+	title="Obras — Producciones Arlequín"
+	description="Repertorio de Producciones Arlequín: teatro familiar, comedia y memoria histórica, disponible para giras, festivales y funciones a la medida."
+>
+	<Header />
+
+	<main id="contenido">
+		<section class="portada">
+			<div class="contenedor portada__cuerpo">
+				<div class="portada__rejilla">
+					<h1 class="portada__titular">{portada.titular}</h1>
+
+					<div class="portada__nota">
+						{portada.entradas.map((entrada) => <p>{entrada}</p>)}
+					</div>
+				</div>
+
+				<div class="portada__cierre" aria-hidden="true">
+					<span class="portada__filete"></span>
+					<span class="rombo"></span>
+					<span class="portada__filete"></span>
+				</div>
+			</div>
+		</section>
+
+		<section class="repertorio" aria-label="Listado de obras">
+			<ol class="repertorio__lista">
+				{
+					obras.map(({ slug, titulo, tituloCompleto, subtitulo, etiquetas, sinopsis, cartel }, i) => (
+						<li class="obra revelar">
+							<a
+								class="obra__enlace"
+								href={`/obras/${slug}`}
+								aria-label={`${listado.verFicha} de ${tituloCompleto}`}
+							>
+								<span class="obra__seguidor" aria-hidden="true" />
+
+								<div class="obra__cartel">
+									<img
+										src={cartel.src}
+										alt={`Cartel de ${tituloCompleto}`}
+										width={cartel.ancho}
+										height={cartel.alto}
+										loading={i < 2 ? 'eager' : 'lazy'}
+										decoding="async"
+									/>
+									<span class="obra__filete" aria-hidden="true" />
+								</div>
+
+								<div class="obra__texto">
+									<p class="obra__indice">
+										<span class="obra__numero">{String(i + 1).padStart(2, '0')}</span>
+										<span class="obra__regla" aria-hidden="true" />
+									</p>
+
+									<h2 class="obra__titulo">{titulo}</h2>
+									{subtitulo && <p class="obra__subtitulo">{subtitulo}</p>}
+
+									<ul class="obra__etiquetas">
+										{etiquetas.map((etiqueta) => (
+											<li>{etiqueta}</li>
+										))}
+									</ul>
+
+									<p class="obra__entrada">{sinopsis[0]}</p>
+
+									<span class="obra__ver">
+										{listado.verFicha}
+										<span class="obra__flecha" aria-hidden="true">
+											&rarr;
+										</span>
+									</span>
+								</div>
+							</a>
+						</li>
+					))
+				}
+			</ol>
+		</section>
+
+		<section class="llamada" aria-labelledby="titulo-llamada">
+			<div class="llamada__telon" aria-hidden="true"></div>
+
+			<div class="contenedor llamada__cuerpo revelar">
+				<p class="rotulo" id="titulo-llamada">{cierre.rotulo}</p>
+
+				<div class="llamada__texto">
+					{
+						cierre.lineas.map((partes) => (
+							<p>
+								{partes.map(({ texto, acento }) =>
+									acento ? <span class="llamada__acento">{texto}</span> : texto,
+								)}
+							</p>
+						))
+					}
+				</div>
+
+				<div class="llamada__acciones">
+					<a class="boton boton--lleno" href={cierre.acciones.principal.href}>
+						{cierre.acciones.principal.etiqueta}
+					</a>
+					<a class="boton boton--linea" href={`mailto:${marca.correo}`}>
+						{marca.correo}
+					</a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+</Layout>
+
+<style>
+	/* ---------- Portada: plancha tipográfica, sin escena ni telón ---------- */
+
+	.portada {
+		position: relative;
+		background:
+			radial-gradient(
+				ellipse 55% 70% at 12% 0%,
+				color-mix(in srgb, var(--morado) 32%, transparent),
+				transparent 72%
+			),
+			var(--negro);
+	}
+
+	.portada__cuerpo {
+		padding-block: calc(var(--altura-barra) + clamp(3rem, 7vw, 5.5rem))
+			clamp(2.5rem, 5vw, 3.75rem);
+	}
+
+	.portada__rejilla {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(1.5rem, 3.5vw, 2.75rem) clamp(2rem, 5vw, 5rem);
+		margin-top: clamp(1.75rem, 4vw, 3rem);
+	}
+
+	.portada__titular {
+		grid-column: 1 / -1;
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(4rem, 16vw, 14rem);
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		line-height: 0.86;
+		animation: subir 0.9s var(--ease) 0.22s both;
+	}
+
+	.portada__nota {
+		grid-column: 2;
+		display: grid;
+		gap: 1.1rem;
+		max-width: 52ch;
+		animation: subir 0.9s var(--ease) 0.34s both;
+	}
+
+	.portada__nota p {
+		margin: 0;
+		color: var(--hueso-medio);
+		font-size: clamp(1rem, 1.25vw, 1.12rem);
+		line-height: 1.75;
+	}
+
+	/* Filete doble con rombo: el remate de imprenta que cierra la portada */
+	.portada__cierre {
+		display: flex;
+		align-items: center;
+		gap: 1.1rem;
+		margin-top: clamp(2.5rem, 6vw, 4rem);
+		animation: subir 0.9s var(--ease) 0.46s both;
+	}
+
+	.portada__filete {
+		flex: 1;
+		height: 3px;
+		border-top: 1px solid color-mix(in srgb, var(--rojo) 85%, transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--rojo) 45%, transparent);
+	}
+
+	/* ---------- Repertorio ---------- */
+
+	.repertorio {
+		position: relative;
+		padding-block: clamp(2.5rem, 6vw, 4.5rem) 0;
+		background: var(--negro);
+	}
+
+	/* Las obras van a sangre: el filete que las separa cruza toda la pantalla,
+	   como el pautado de un programa de mano. */
+	.repertorio__lista {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.obra {
+		border-top: 1px solid var(--linea);
+	}
+
+	.obra:last-child {
+		border-bottom: 1px solid var(--linea);
+	}
+
+	.obra__enlace {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+		align-items: center;
+		gap: clamp(1.75rem, 5vw, 4.5rem);
+		padding: clamp(2.5rem, 5.5vw, 4.25rem) var(--margen);
+		color: inherit;
+		text-decoration: none;
+		isolation: isolate;
+	}
+
+	.obra:nth-child(even) .obra__cartel {
+		order: 2;
+	}
+
+	.obra:nth-child(even) .obra__texto {
+		order: 1;
+	}
+
+	/* El seguidor se enciende sobre la obra apuntada */
+	.obra__seguidor {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: radial-gradient(
+			ellipse 55% 130% at 50% 45%,
+			color-mix(in srgb, var(--morado) 42%, transparent),
+			transparent 72%
+		);
+		opacity: 0;
+		transition: opacity 0.55s var(--ease);
+	}
+
+	.obra__enlace:hover .obra__seguidor,
+	.obra__enlace:focus-visible .obra__seguidor {
+		opacity: 1;
+	}
+
+	.obra__cartel {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 16 / 9;
+		background: var(--negro-carta);
+		border: 1px solid var(--linea);
+		box-shadow: 0 1.25rem 2.75rem rgba(0, 0, 0, 0.5);
+		transition: border-color 0.4s var(--ease);
+	}
+
+	.obra__cartel img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: saturate(0.65) brightness(0.82);
+		transition:
+			transform 0.8s var(--ease),
+			filter 0.6s var(--ease);
+	}
+
+	/* Filete rojo que se traza bajo el cartel al apuntar la obra */
+	.obra__filete {
+		position: absolute;
+		inset: auto 0 0;
+		height: 2px;
+		background: var(--rojo-luz);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.55s var(--ease);
+	}
+
+	.obra__enlace:hover .obra__cartel,
+	.obra__enlace:focus-visible .obra__cartel {
+		border-color: color-mix(in srgb, var(--hueso) 32%, transparent);
+	}
+
+	.obra__enlace:hover .obra__cartel img,
+	.obra__enlace:focus-visible .obra__cartel img {
+		transform: scale(1.04);
+		filter: saturate(1) brightness(1);
+	}
+
+	.obra__enlace:hover .obra__filete,
+	.obra__enlace:focus-visible .obra__filete {
+		transform: scaleX(1);
+	}
+
+	.obra__texto {
+		display: grid;
+		justify-items: start;
+		gap: 0.9rem;
+	}
+
+	.obra__indice {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		width: 100%;
+		margin: 0;
+	}
+
+	.obra__numero {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.2em;
+		color: var(--rojo-luz);
+	}
+
+	.obra__regla {
+		flex: 1;
+		height: 1px;
+		background: var(--linea);
+	}
+
+	.obra__titulo {
+		max-width: 18ch;
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.65rem, 2.6vw + 0.4rem, 3.1rem);
+		font-weight: 400;
+		letter-spacing: 0.025em;
+		line-height: 0.98;
+		text-wrap: balance;
+	}
+
+	.obra__subtitulo {
+		margin: -0.25rem 0 0;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(0.72rem, 0.9vw, 0.85rem);
+		letter-spacing: 0.2em;
+		color: var(--hueso-medio);
+	}
+
+	.obra__etiquetas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		margin: 0.2rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.obra__etiquetas li {
+		padding: 0.38rem 0.75rem;
+		border: 1px solid var(--linea);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.62rem;
+		letter-spacing: 0.18em;
+		color: var(--hueso-tenue);
+	}
+
+	.obra__entrada {
+		max-width: 46ch;
+		margin: 0.35rem 0 0;
+		color: var(--hueso-medio);
+		font-size: clamp(1rem, 1.2vw, 1.1rem);
+		line-height: 1.75;
+	}
+
+	.obra__ver {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.7rem;
+		margin-top: 0.6rem;
+		padding-bottom: 0.35rem;
+		border-bottom: 1px solid transparent;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.75rem;
+		letter-spacing: 0.2em;
+		color: var(--hueso);
+		transition: border-color 0.35s var(--ease);
+	}
+
+	.obra__flecha {
+		color: var(--rojo-luz);
+		transition: transform 0.35s var(--ease);
+	}
+
+	.obra__enlace:hover .obra__ver,
+	.obra__enlace:focus-visible .obra__ver {
+		border-bottom-color: var(--rojo-luz);
+	}
+
+	.obra__enlace:hover .obra__flecha,
+	.obra__enlace:focus-visible .obra__flecha {
+		transform: translateX(0.4rem);
+	}
+
+	.obra__enlace:focus-visible {
+		outline: 2px solid var(--rojo-luz);
+		outline-offset: -0.5rem;
+	}
+
+	/* ---------- Cierre ---------- */
+
+	.llamada {
+		position: relative;
+		overflow: hidden;
+		padding-block: clamp(4.5rem, 10vw, 8rem);
+		background:
+			radial-gradient(
+				ellipse 70% 90% at 20% 50%,
+				color-mix(in srgb, var(--tinto) 85%, transparent),
+				transparent 68%
+			),
+			radial-gradient(
+				ellipse 60% 80% at 85% 35%,
+				color-mix(in srgb, var(--morado) 65%, transparent),
+				transparent 66%
+			),
+			var(--negro);
+	}
+
+	.llamada__telon {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image: repeating-linear-gradient(
+			90deg,
+			transparent 0 3.4rem,
+			rgba(243, 237, 228, 0.032) 3.4rem 3.46rem,
+			transparent 3.46rem 6.8rem,
+			rgba(0, 0, 0, 0.3) 6.8rem 7.5rem
+		);
+		mask-image: linear-gradient(to bottom, #000, transparent 88%);
+	}
+
+	.llamada__cuerpo {
+		position: relative;
+		display: grid;
+		justify-items: center;
+		gap: clamp(1.5rem, 3vw, 2.25rem);
+		text-align: center;
+	}
+
+	.llamada__texto {
+		display: grid;
+		gap: 1rem;
+		max-width: 40rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.1rem, 1.6vw + 0.45rem, 1.85rem);
+		letter-spacing: 0.05em;
+		line-height: 1.45;
+	}
+
+	.llamada__texto p {
+		margin: 0;
+	}
+
+	.llamada__acento {
+		color: var(--rojo-luz);
+	}
+
+	.llamada__acciones {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.9rem;
+		margin-top: 0.75rem;
+	}
+
+	.boton {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.85rem;
+		letter-spacing: 0.2em;
+		text-indent: 0.2em;
+		text-decoration: none;
+		padding: 1.05rem 2.1rem;
+		border: 1px solid transparent;
+		transition:
+			background 0.35s var(--ease),
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.boton--lleno {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	.boton--lleno:hover {
+		background: var(--rojo-luz);
+	}
+
+	.boton--linea {
+		border-color: var(--linea);
+		color: var(--hueso-medio);
+		letter-spacing: 0.1em;
+		font-family: var(--fuente-cuerpo);
+		text-indent: 0;
+		font-size: 0.95rem;
+	}
+
+	.boton--linea:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+	}
+
+	/* ---------- Animaciones ---------- */
+
+	@keyframes subir {
+		from {
+			opacity: 0;
+			transform: translateY(1.5rem);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	/* ---------- Adaptaciones ---------- */
+
+	@media (max-width: 62rem) {
+		.portada__rejilla {
+			grid-template-columns: 1fr;
+			gap: clamp(1.5rem, 4vw, 2.25rem);
+		}
+
+		.portada__nota {
+			grid-column: 1;
+		}
+
+		.obra__enlace {
+			grid-template-columns: 1fr;
+			gap: clamp(1.5rem, 4vw, 2.25rem);
+		}
+
+		/* En una columna el cartel siempre abre la ficha */
+		.obra:nth-child(even) .obra__cartel {
+			order: 0;
+		}
+
+		.obra:nth-child(even) .obra__texto {
+			order: 0;
+		}
+
+		.obra__titulo {
+			max-width: 22ch;
+		}
+	}
+</style>

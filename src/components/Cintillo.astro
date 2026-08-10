@@ -1,0 +1,80 @@
+---
+import { cintillo } from '../data/home';
+
+/* Se duplica la tira para que el bucle no muestre corte */
+const tira = [...cintillo, ...cintillo];
+---
+
+<div class="cintillo" aria-hidden="true">
+	<div class="cintillo__pista">
+		{
+			[0, 1].map(() => (
+				<ul class="cintillo__grupo">
+					{tira.map((palabra) => (
+						<li class="cintillo__item">
+							<span class="rombo" />
+							{palabra}
+						</li>
+					))}
+				</ul>
+			))
+		}
+	</div>
+</div>
+
+<style>
+	.cintillo {
+		border-block: 1px solid var(--linea-suave);
+		background: linear-gradient(
+			90deg,
+			var(--negro),
+			color-mix(in srgb, var(--tinto) 45%, var(--negro)),
+			var(--negro)
+		);
+		overflow: hidden;
+		padding-block: 1.05rem;
+		mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+	}
+
+	.cintillo__pista {
+		display: flex;
+		width: max-content;
+		animation: desfilar 46s linear infinite;
+	}
+
+	.cintillo:hover .cintillo__pista {
+		animation-play-state: paused;
+	}
+
+	.cintillo__grupo {
+		display: flex;
+		align-items: center;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.cintillo__item {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.5rem, 3vw, 2.5rem);
+		padding-right: clamp(1.5rem, 3vw, 2.5rem);
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(0.85rem, 1.5vw, 1rem);
+		letter-spacing: 0.26em;
+		color: var(--hueso-medio);
+		white-space: nowrap;
+	}
+
+	@keyframes desfilar {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cintillo__pista {
+			animation: none;
+		}
+	}
+</style>

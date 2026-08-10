@@ -1,0 +1,292 @@
+---
+import { sobreNosotros } from '../data/home';
+
+const { titular, parrafo, cta, fotos } = sobreNosotros;
+---
+
+<section class="sobre seccion" id="sobre-nosotros">
+	<div class="contenedor sobre__rejilla">
+		<div class="sobre__texto revelar">
+			<h2 class="sobre__titular">{titular}</h2>
+			<p class="sobre__parrafo">{parrafo}</p>
+			<a class="sobre__cta" href={cta.href}>{cta.etiqueta}</a>
+		</div>
+
+		<div
+			class="polaroids revelar"
+			data-polaroids
+			style={`--n: ${fotos.length}`}
+			aria-roledescription="carrusel"
+			aria-label="Fotos de la compañía"
+		>
+			<div class="polaroids__escenario">
+				{
+					fotos.map(({ src, alt, pie }, i) => (
+						<figure
+							class="polaroid"
+							data-polaroid
+							data-i={i}
+							style={`--i: ${i}`}
+							aria-hidden={i === 0 ? 'false' : 'true'}
+						>
+							<div class="polaroid__foto">
+								<img src={src} alt={alt} width="640" height="800" loading="lazy" />
+							</div>
+							<figcaption class="polaroid__pie">{pie}</figcaption>
+						</figure>
+					))
+				}
+			</div>
+
+			<div class="polaroids__controles">
+				<button class="polaroids__boton" type="button" data-prev aria-label="Foto anterior">
+					<span aria-hidden="true">&larr;</span>
+				</button>
+				<p class="polaroids__indice" data-indice aria-live="polite">
+					<span data-actual>1</span>
+					<span aria-hidden="true"> / </span>
+					<span>{fotos.length}</span>
+				</p>
+				<button class="polaroids__boton" type="button" data-next aria-label="Foto siguiente">
+					<span aria-hidden="true">&rarr;</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.sobre {
+		overflow: hidden;
+		background:
+			radial-gradient(
+				ellipse 55% 50% at 100% 40%,
+				color-mix(in srgb, var(--morado) 22%, transparent),
+				transparent 70%
+			),
+			var(--negro);
+	}
+
+	.sobre__rejilla {
+		display: grid;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		gap: clamp(2.5rem, 6vw, 5rem);
+		align-items: center;
+	}
+
+	.sobre__titular {
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.1rem, 3.2vw + 1rem, 4.25rem);
+		font-weight: 400;
+		letter-spacing: 0.04em;
+		max-width: 14ch;
+		margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+	}
+
+	.sobre__parrafo {
+		max-width: 38ch;
+		margin: 0 0 clamp(1.75rem, 3.5vw, 2.25rem);
+		color: var(--hueso-medio);
+		font-size: clamp(1.02rem, 1.3vw, 1.15rem);
+		line-height: 1.7;
+	}
+
+	.sobre__cta {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.85rem;
+		letter-spacing: 0.2em;
+		text-indent: 0.2em;
+		text-decoration: none;
+		padding: 1.05rem 2.1rem;
+		border: 1px solid var(--linea);
+		color: var(--hueso-medio);
+		transition:
+			background 0.35s var(--ease),
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.sobre__cta:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+		background: color-mix(in srgb, var(--hueso) 6%, transparent);
+	}
+
+	/* ---------- Carrusel polaroid ---------- */
+
+	.polaroids {
+		display: grid;
+		gap: 1.5rem;
+		justify-items: center;
+	}
+
+	.polaroids__escenario {
+		position: relative;
+		width: min(100%, 22rem);
+		aspect-ratio: 4 / 5.1;
+		isolation: isolate;
+	}
+
+	.polaroid {
+		--giro: calc((var(--i) - var(--activo, 0)) * 4deg);
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		display: grid;
+		grid-template-rows: 1fr auto;
+		gap: 0.7rem;
+		padding: 0.7rem 0.7rem 1.1rem;
+		background: #efe6d8;
+		color: #1a1412;
+		box-shadow:
+			0 1.4rem 2.8rem rgba(0, 0, 0, 0.45),
+			0 0.2rem 0.5rem rgba(0, 0, 0, 0.2);
+		transform: translateY(0.4rem) rotate(var(--giro)) scale(0.92);
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			transform 0.55s var(--ease),
+			opacity 0.45s var(--ease),
+			z-index 0s 0.2s;
+		z-index: 0;
+	}
+
+	.polaroid[data-activo='true'] {
+		opacity: 1;
+		pointer-events: auto;
+		transform: translateY(0) rotate(calc(var(--giro) * 0.2)) scale(1);
+		z-index: 3;
+		transition:
+			transform 0.55s var(--ease),
+			opacity 0.45s var(--ease),
+			z-index 0s;
+	}
+
+	.polaroid[data-vecino='prev'],
+	.polaroid[data-vecino='next'] {
+		opacity: 0.55;
+		z-index: 2;
+	}
+
+	.polaroid[data-vecino='prev'] {
+		transform: translate(-18%, 4%) rotate(-9deg) scale(0.88);
+	}
+
+	.polaroid[data-vecino='next'] {
+		transform: translate(18%, 4%) rotate(9deg) scale(0.88);
+	}
+
+	.polaroid__foto {
+		overflow: hidden;
+		background: #c9b9a6;
+		aspect-ratio: 4 / 5;
+	}
+
+	.polaroid__foto img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.polaroid__pie {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.14em;
+		text-align: center;
+		color: #3a312c;
+	}
+
+	.polaroids__controles {
+		display: flex;
+		align-items: center;
+		gap: 1.1rem;
+	}
+
+	.polaroids__boton {
+		display: grid;
+		place-items: center;
+		width: 2.6rem;
+		height: 2.6rem;
+		padding: 0;
+		border: 1px solid var(--linea);
+		background: transparent;
+		color: var(--hueso-medio);
+		cursor: pointer;
+		font-size: 1rem;
+		transition:
+			border-color 0.3s var(--ease),
+			color 0.3s var(--ease),
+			background 0.3s var(--ease);
+	}
+
+	.polaroids__boton:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+		background: color-mix(in srgb, var(--hueso) 6%, transparent);
+	}
+
+	.polaroids__indice {
+		margin: 0;
+		min-width: 4.5rem;
+		text-align: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.18em;
+		color: var(--hueso-tenue);
+	}
+
+	@media (max-width: 62rem) {
+		.sobre__rejilla {
+			grid-template-columns: 1fr;
+			gap: clamp(2rem, 5vw, 3rem);
+		}
+
+		.sobre__titular {
+			max-width: 16ch;
+		}
+
+		.polaroids__escenario {
+			width: min(100%, 18.5rem);
+		}
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-polaroids]');
+	if (root) {
+		const tarjetas = [...root.querySelectorAll<HTMLElement>('[data-polaroid]')];
+		const actual = root.querySelector<HTMLElement>('[data-actual]');
+		const total = tarjetas.length;
+		let indice = 0;
+
+		const pintar = () => {
+			tarjetas.forEach((tarjeta, i) => {
+				const esActiva = i === indice;
+				const esPrev = i === (indice - 1 + total) % total;
+				const esNext = i === (indice + 1) % total;
+
+				tarjeta.dataset.activo = String(esActiva);
+				tarjeta.setAttribute('aria-hidden', String(!esActiva));
+				delete tarjeta.dataset.vecino;
+				if (!esActiva && esPrev) tarjeta.dataset.vecino = 'prev';
+				if (!esActiva && esNext) tarjeta.dataset.vecino = 'next';
+			});
+
+			root.style.setProperty('--activo', String(indice));
+			if (actual) actual.textContent = String(indice + 1);
+		};
+
+		const ir = (delta: number) => {
+			indice = (indice + delta + total) % total;
+			pintar();
+		};
+
+		root.querySelector('[data-prev]')?.addEventListener('click', () => ir(-1));
+		root.querySelector('[data-next]')?.addEventListener('click', () => ir(1));
+
+		pintar();
+	}
+</script>

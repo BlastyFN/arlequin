@@ -1,0 +1,126 @@
+---
+import { Image } from 'astro:assets';
+import logoBlanco from '../assets/logo con nombre en blanco.png';
+import { marca } from '../data/home';
+
+const enlaces = [
+	{ etiqueta: 'INICIO', href: '/#inicio' },
+	{ etiqueta: 'SOBRE NOSOTROS', href: '/sobre-nosotros' },
+	{ etiqueta: 'OBRAS', href: '/obras' },
+	{ etiqueta: 'CONTACTO', href: '/#contacto' },
+	{ etiqueta: 'PRENSA', href: '/prensa' },
+];
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie">
+	<div class="contenedor pie__superior">
+		<a class="pie__marca" href="/#inicio">
+			<Image src={logoBlanco} alt={marca.nombre} width={520} densities={[1, 2]} loading="lazy" />
+		</a>
+
+		<nav class="pie__nav" aria-label="Navegación del pie">
+			<ul>
+				{
+					enlaces.map(({ etiqueta, href }) => (
+						<li>
+							<a href={href}>{etiqueta}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+
+	<div class="contenedor">
+		<div class="pie__cierre" aria-hidden="true">
+			<span class="pie__filete"></span>
+			<span class="rombo"></span>
+			<span class="pie__filete"></span>
+		</div>
+	</div>
+
+	<div class="contenedor pie__inferior">
+		<p>&copy; {anio} {marca.nombre}. Todos los derechos reservados.</p>
+		<p>{marca.ciudad} &middot; Fundada en {marca.fundacion}</p>
+	</div>
+</footer>
+
+<style>
+	.pie {
+		border-top: 1px solid var(--linea-suave);
+		background: var(--negro);
+		padding-top: clamp(3rem, 6vw, 4.5rem);
+	}
+
+	.pie__superior {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 2rem;
+		padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
+	}
+
+	.pie__marca :global(img) {
+		width: auto;
+		height: clamp(2.3rem, 4vw, 3.1rem);
+		transition: opacity 0.3s var(--ease);
+	}
+
+	.pie__marca:hover :global(img) {
+		opacity: 0.7;
+	}
+
+	.pie__nav ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: clamp(1rem, 2.4vw, 2.25rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.pie__nav a {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.76rem;
+		letter-spacing: 0.18em;
+		text-decoration: none;
+		color: var(--hueso-tenue);
+		transition: color 0.3s var(--ease);
+	}
+
+	.pie__nav a:hover {
+		color: var(--hueso);
+	}
+
+	/* Filete doble con el rombo al centro: el remate de imprenta que
+	   cierra la página, en lugar de la cinta del traje */
+	.pie__cierre {
+		display: flex;
+		align-items: center;
+		gap: 1.1rem;
+	}
+
+	.pie__filete {
+		flex: 1;
+		height: 3px;
+		border-top: 1px solid color-mix(in srgb, var(--rojo) 85%, transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--rojo) 45%, transparent);
+	}
+
+	.pie__inferior {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding-block: clamp(1.5rem, 3vw, 2rem);
+	}
+
+	.pie__inferior p {
+		margin: 0;
+		font-size: 0.82rem;
+		color: var(--hueso-tenue);
+	}
+</style>

@@ -1,0 +1,174 @@
+/**
+ * Repertorio de la compañía. Sinopsis tomadas del sitio vigente.
+ * Sustituible por Sanity sin tocar los componentes.
+ *
+ * Nota tipográfica: `titulo`, `subtitulo` y `etiquetas` se pintan con Headline
+ * News, que no incluye acentos ni Ñ. Escribirlos en mayúsculas sin diacríticos.
+ * `tituloCompleto` es la versión acentuada para textos alternativos y metadatos.
+ */
+
+export interface Obra {
+	slug: string;
+	titulo: string;
+	tituloCompleto: string;
+	subtitulo?: string;
+	/* Editoriales: conviene validarlas con la compañía antes de publicar */
+	etiquetas: string[];
+	/* El primer párrafo sirve de entrada en el listado; el resto alimenta la ficha */
+	sinopsis: string[];
+	cartel: {
+		src: string;
+		ancho: number;
+		alto: number;
+	};
+}
+
+const CARTELES = 'https://produccionesarlequin.com/wp-content/uploads';
+
+export const obras: Obra[] = [
+	{
+		slug: 'no-todas-las-ballenas-quieren-volver',
+		titulo: 'NO TODAS LAS BALLENAS QUIEREN VOLVER',
+		tituloCompleto: 'No todas las ballenas quieren volver',
+		etiquetas: ['TEATRO FAMILIAR', 'UNIPERSONAL'],
+		sinopsis: [
+			'Ulises es un niño que vive en la costa, atrapado entre el silencio de una madre que ha olvidado cómo abrazar y la leyenda de un padre pirata que nunca regresó.',
+			'Cada noche, el mismo sueño lo persigue: el lamento de una ballena gigante que ha perdido su rumbo en la inmensidad del océano.',
+			'Tras una tormenta feroz que lo arrastra mar adentro, Ulises se encuentra cara a cara con la criatura de sus sueños. Pero esta ballena no busca ser rescatada; está cansada y carga un peso que el agua ya no puede sostener.',
+			'En este encuentro imposible entre un niño que busca respuestas y un gigante que ha decidido callar, Ulises descubrirá que la aventura más valiente no es cruzar el océano, sino aprender a escuchar el silencio de su propio corazón.',
+		],
+		cartel: {
+			src: `${CARTELES}/2026/07/Documento-1024x576.png`,
+			ancho: 1024,
+			alto: 576,
+		},
+	},
+	{
+		slug: 'el-planeta-bumara',
+		titulo: 'EL PLANETA BUMARA',
+		tituloCompleto: 'El planeta Bumara: una aventura interespacial',
+		subtitulo: 'UNA AVENTURA INTERESPACIAL',
+		etiquetas: ['TEATRO FAMILIAR', 'CULTURA DE PAZ'],
+		sinopsis: [
+			'En una galaxia muy muy lejana… Existe un planeta llamado Bumara. La guerra y el conflicto han puesto al planeta en un peligro que amenaza a todas sus especies inteligentes.',
+			'La ciencia y la amistad son la última apuesta que hacen los científicos para salvar al planeta.',
+			'Cuando parece que se acaba la esperanza de vivir en una sociedad en paz, el comando espacial emprende la misión de encontrar maneras de restaurar la fe entre los Bumarianos y así conseguir vivir en una cultura de paz.',
+			'Miyoko y Bucoro son los únicos Bumarianos que llegan a la Tierra para buscar una solución a los problemas de terrible violencia en Bumara.',
+		],
+		cartel: {
+			src: `${CARTELES}/2024/06/BUMWEB-01-1024x597.jpg`,
+			ancho: 1024,
+			alto: 597,
+		},
+	},
+	{
+		slug: 'absolucion-final',
+		titulo: 'ABSOLUCION FINAL',
+		tituloCompleto: 'Absolución final',
+		etiquetas: ['TEATRO HISTORICO'],
+		sinopsis: [
+			'La figura que todos conocemos de Don Miguel Hidalgo y Costilla; su historia, sus logros, sus derrotas, su consagración en las inmortales páginas de la historia. Todas estas sometidas a un proceso de encarnación, reflexión y constitución de Miguel como ser humano.',
+			'Atormentado por sus demonios y consolado por sus convicciones, nos encontramos ante el proceso de deconstrucción personal de Miguel Gregorio Antonio Ignacio Hidalgo y Costilla Gallaga Mandarte y Villaseñor, que nos permite despojarnos de la imagen broncínea del héroe intachable para quedarnos con la necesaria visión de un hombre; con sus dudas, sus miedos y sus yerros.',
+		],
+		cartel: {
+			src: `${CARTELES}/2026/07/ChatGPT-Image-8-jul-2026-12_39_20-1024x576.png`,
+			ancho: 1024,
+			alto: 576,
+		},
+	},
+	{
+		slug: 'el-abrazo-de-mi-luna',
+		titulo: 'EL ABRAZO DE MI LUNA',
+		tituloCompleto: 'El abrazo de mi luna',
+		etiquetas: ['UNIPERSONAL', '28 MINUTOS', 'CON CHARLA'],
+		sinopsis: [
+			'En 28 minutos voy a contarte la montaña rusa de emociones y niveles energéticos que experimenté en los últimos 28 días, durante mi ciclo menstrual.',
+			'Junto a VULVI, la inteligencia artificial que me apoya a registrar y recordarme los cambios físicos, mentales, emocionales y energéticos, vamos a evidenciar los arquetipos que transito en mi ciclar femenino.',
+			'La obra se acompaña por una charla informativa, en donde explicaré los Arquetipos del Ciclo Menstrual según la visión de Miranda Gray, con el objetivo de abrir el diálogo naturalizado y la reflexión amorosa entre las personas menstruantes, para trabajar en transformar el tabú que aún existe sobre este proceso tan poderoso que experimentamos más de la mitad de la población.',
+			'Se entregarán herramientas prácticas para comenzar a integrar las virtudes de nuestro ciclar y convertir a la menstruación en nuestro súper poder.',
+		],
+		cartel: {
+			src: `${CARTELES}/2025/07/POSTERPWEB-1.jpg`,
+			ancho: 960,
+			alto: 560,
+		},
+	},
+	{
+		slug: 'cuando-bajan-las-estrellas',
+		titulo: 'CUANDO BAJAN LAS ESTRELLAS',
+		tituloCompleto: 'Cuando bajan las estrellas',
+		etiquetas: ['COMEDIA'],
+		sinopsis: [
+			'Óscar Arredondo Zárate es un famoso director de teatro, el cual está fervientemente emocionado por esta noche: el estreno de su última pieza. La prensa está ávida, los espectadores ansiosos, la crítica expectante, sus productores jocosos y su elenco… bueno, del elenco mejor ni hablamos.',
+			'Nadie sabe realmente el fiasco, el fracaso, el fiambre que están a punto de presenciar.',
+		],
+		cartel: {
+			src: `${CARTELES}/2025/09/POSTERPWEB.jpg`,
+			ancho: 960,
+			alto: 560,
+		},
+	},
+	{
+		slug: 'arlequines-revoltosos',
+		titulo: 'ARLEQUINES REVOLTOSOS',
+		tituloCompleto: 'Arlequines revoltosos',
+		etiquetas: ['COMEDIA', 'SKETCHES'],
+		sinopsis: [
+			'¡Viva la rebelión! ¡Viva el teatro! Los Arlequines, juntos pero no revueltos, presentan este programa de sketches cómicos con las sobras de siempre, ¡digo!, las obras de siempre. Porque recuerda: de Arlequín, Juglar, Payaso y Loco, todos tenemos un poco.',
+		],
+		cartel: {
+			src: `${CARTELES}/2024/06/REVWEB.jpg`,
+			ancho: 960,
+			alto: 560,
+		},
+	},
+	{
+		slug: 'otro-dia-con-mas-calma',
+		titulo: 'OTRO DIA CON MAS CALMA',
+		tituloCompleto: 'Otro día con más calma',
+		etiquetas: ['COMEDIA'],
+		sinopsis: [
+			'Ven a reírte a carcajadas con la historia de Eugenio, un vendedor de enciclopedias (de muy buena calidad, por cierto) a quien está a punto de cambiarle la vida el tocar a la puerta de Silvia.',
+		],
+		cartel: {
+			src: `${CARTELES}/2024/06/WhatsApp-Image-2024-06-04-at-5.11.56-PM-1024x597.jpeg`,
+			ancho: 1024,
+			alto: 597,
+		},
+	},
+];
+
+export const paginaObras = {
+	/* Portada tipográfica: sin fotografía, para no repetir el hero de /sobre-nosotros */
+	portada: {
+		titular: 'OBRAS',
+		entradas: [
+			'Del teatro para toda la familia a la memoria histórica y la comedia. Este es el repertorio con el que Producciones Arlequín sale a escena.',
+			'Cada montaje se adapta a foros, festivales, escuelas y espacios no convencionales. Entra a la ficha de la obra que te interese y escríbenos para llevarla a tu ciudad.',
+		],
+	},
+	listado: {
+		verFicha: 'VER FICHA',
+	},
+	cierre: {
+		rotulo: 'CONTACTANOS',
+		lineas: [
+			[
+				{ texto: 'QUIERES UNA DE ESTAS ' },
+				{ texto: 'OBRAS', acento: true },
+				{ texto: ' EN TU ' },
+				{ texto: 'ESPACIO', acento: true },
+				{ texto: '?' },
+			],
+			[
+				{ texto: 'ESCRIBENOS', acento: true },
+				{ texto: ' PARA SOLICITAR UNA ' },
+				{ texto: 'PROPUESTA PERSONALIZADA', acento: true },
+				{ texto: '!' },
+			],
+		],
+		acciones: {
+			principal: { etiqueta: 'SOLICITAR PROPUESTA', href: '/#contacto' },
+		},
+	},
+};

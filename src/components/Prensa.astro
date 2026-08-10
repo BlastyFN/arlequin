@@ -1,0 +1,158 @@
+---
+import { prensa } from '../data/home';
+---
+
+<section class="prensa seccion" id="prensa">
+	<div class="contenedor">
+		<header class="cabecera revelar">
+			<h2 class="cabecera__titular">TESTIMONIOS</h2>
+			<a class="cabecera__cta" href="/prensa">NOTAS EN MEDIOS</a>
+		</header>
+
+		<ul class="notas">
+			{
+				prensa.map(({ cita, medio, autor, fecha }, i) => (
+					<li class="nota revelar" style={`transition-delay:${i * 110}ms`}>
+						<figure class="nota__figura">
+							<span class="nota__comilla" aria-hidden="true">
+								&ldquo;
+							</span>
+							<blockquote class="nota__cita">
+								<p>{cita}</p>
+							</blockquote>
+							<figcaption class="nota__pie">
+								<span class="nota__medio">{medio}</span>
+								<span class="nota__autor">{autor}</span>
+								<span class="nota__fecha">{fecha}</span>
+							</figcaption>
+						</figure>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.prensa {
+		border-top: 1px solid var(--linea-suave);
+		background:
+			radial-gradient(
+				ellipse 55% 45% at 10% 100%,
+				color-mix(in srgb, var(--tinto) 40%, transparent),
+				transparent 70%
+			),
+			var(--negro);
+	}
+
+	.cabecera {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1.25rem 2rem;
+		margin-bottom: clamp(2.5rem, 6vw, 4rem);
+	}
+
+	.cabecera__titular {
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.1rem, 3.2vw + 1rem, 4.5rem);
+		font-weight: 400;
+		letter-spacing: 0.04em;
+	}
+
+	.cabecera__cta {
+		padding-bottom: 0.35rem;
+		border-bottom: 1px solid var(--linea);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.78rem;
+		letter-spacing: 0.2em;
+		text-decoration: none;
+		color: var(--hueso-medio);
+		transition:
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.cabecera__cta:hover {
+		border-bottom-color: var(--rojo-luz);
+		color: var(--hueso);
+	}
+
+	/* ---------- Notas ---------- */
+
+	.notas {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+		gap: clamp(1.25rem, 2.5vw, 2rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.nota {
+		display: flex;
+	}
+
+	.nota__figura {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		margin: 0;
+		padding: clamp(1.75rem, 3vw, 2.5rem);
+		width: 100%;
+		background: var(--negro-carta);
+		border: 1px solid var(--linea-suave);
+		transition:
+			border-color 0.4s var(--ease),
+			background 0.4s var(--ease),
+			transform 0.4s var(--ease);
+	}
+
+	.nota__figura:hover {
+		border-color: color-mix(in srgb, var(--rojo-luz) 45%, transparent);
+		background: color-mix(in srgb, var(--tinto) 22%, var(--negro-carta));
+		transform: translateY(-4px);
+	}
+
+	.nota__comilla {
+		font-family: var(--fuente-titular);
+		font-size: 4.5rem;
+		font-weight: 900;
+		line-height: 0.6;
+		color: var(--rojo);
+		margin-bottom: 0.75rem;
+	}
+
+	.nota__cita {
+		margin: 0 0 auto;
+	}
+
+	.nota__cita p {
+		margin: 0;
+		font-size: 1.05rem;
+		line-height: 1.65;
+	}
+
+	.nota__pie {
+		display: grid;
+		gap: 0.3rem;
+		margin-top: 2rem;
+		padding-top: 1.35rem;
+		border-top: 1px solid var(--linea-suave);
+	}
+
+	.nota__medio {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.82rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--hueso);
+	}
+
+	.nota__autor,
+	.nota__fecha {
+		font-size: 0.85rem;
+		color: var(--hueso-tenue);
+	}
+</style>
