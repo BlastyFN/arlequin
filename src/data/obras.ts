@@ -14,6 +14,13 @@ export interface Obra {
 	subtitulo?: string;
 	/* Editoriales: conviene validarlas con la compañía antes de publicar */
 	etiquetas: string[];
+	/**
+	 * PROVISIONAL. El sitio vigente no publica el palmarés por obra, así que
+	 * estos festivales se repartieron desde la trayectoria general de la
+	 * compañía. Hay que confirmarlos con Producciones Arlequín antes de
+	 * publicar. Una obra sin festivales deja el bloque fuera.
+	 */
+	festivales: string[];
 	/* El primer párrafo sirve de entrada en el listado; el resto alimenta la ficha */
 	sinopsis: string[];
 	cartel: {
@@ -31,6 +38,7 @@ export const obras: Obra[] = [
 		titulo: 'NO TODAS LAS BALLENAS QUIEREN VOLVER',
 		tituloCompleto: 'No todas las ballenas quieren volver',
 		etiquetas: ['TEATRO FAMILIAR', 'UNIPERSONAL'],
+		festivales: [],
 		sinopsis: [
 			'Ulises es un niño que vive en la costa, atrapado entre el silencio de una madre que ha olvidado cómo abrazar y la leyenda de un padre pirata que nunca regresó.',
 			'Cada noche, el mismo sueño lo persigue: el lamento de una ballena gigante que ha perdido su rumbo en la inmensidad del océano.',
@@ -49,6 +57,10 @@ export const obras: Obra[] = [
 		tituloCompleto: 'El planeta Bumara: una aventura interespacial',
 		subtitulo: 'UNA AVENTURA INTERESPACIAL',
 		etiquetas: ['TEATRO FAMILIAR', 'CULTURA DE PAZ'],
+		festivales: [
+			'Rutas Escénicas Estatales de Guanajuato · 2024',
+			'Festival ENTEATRARTE · 2022',
+		],
 		sinopsis: [
 			'En una galaxia muy muy lejana… Existe un planeta llamado Bumara. La guerra y el conflicto han puesto al planeta en un peligro que amenaza a todas sus especies inteligentes.',
 			'La ciencia y la amistad son la última apuesta que hacen los científicos para salvar al planeta.',
@@ -66,6 +78,11 @@ export const obras: Obra[] = [
 		titulo: 'ABSOLUCION FINAL',
 		tituloCompleto: 'Absolución final',
 		etiquetas: ['TEATRO HISTORICO'],
+		festivales: [
+			'Encuentro Estatal de Teatro de Guanajuato · 2025',
+			'Rutas Escénicas Estatales de Guanajuato · 2024',
+			'Festival Cultural de Fundación de Celaya · 451 Aniversario',
+		],
 		sinopsis: [
 			'La figura que todos conocemos de Don Miguel Hidalgo y Costilla; su historia, sus logros, sus derrotas, su consagración en las inmortales páginas de la historia. Todas estas sometidas a un proceso de encarnación, reflexión y constitución de Miguel como ser humano.',
 			'Atormentado por sus demonios y consolado por sus convicciones, nos encontramos ante el proceso de deconstrucción personal de Miguel Gregorio Antonio Ignacio Hidalgo y Costilla Gallaga Mandarte y Villaseñor, que nos permite despojarnos de la imagen broncínea del héroe intachable para quedarnos con la necesaria visión de un hombre; con sus dudas, sus miedos y sus yerros.',
@@ -81,6 +98,7 @@ export const obras: Obra[] = [
 		titulo: 'EL ABRAZO DE MI LUNA',
 		tituloCompleto: 'El abrazo de mi luna',
 		etiquetas: ['UNIPERSONAL', '28 MINUTOS', 'CON CHARLA'],
+		festivales: ['Encuentro Estatal de Teatro de Guanajuato · 2025'],
 		sinopsis: [
 			'En 28 minutos voy a contarte la montaña rusa de emociones y niveles energéticos que experimenté en los últimos 28 días, durante mi ciclo menstrual.',
 			'Junto a VULVI, la inteligencia artificial que me apoya a registrar y recordarme los cambios físicos, mentales, emocionales y energéticos, vamos a evidenciar los arquetipos que transito en mi ciclar femenino.',
@@ -98,6 +116,7 @@ export const obras: Obra[] = [
 		titulo: 'CUANDO BAJAN LAS ESTRELLAS',
 		tituloCompleto: 'Cuando bajan las estrellas',
 		etiquetas: ['COMEDIA'],
+		festivales: ['Festival Cultural de Fundación de Celaya · 451 Aniversario'],
 		sinopsis: [
 			'Óscar Arredondo Zárate es un famoso director de teatro, el cual está fervientemente emocionado por esta noche: el estreno de su última pieza. La prensa está ávida, los espectadores ansiosos, la crítica expectante, sus productores jocosos y su elenco… bueno, del elenco mejor ni hablamos.',
 			'Nadie sabe realmente el fiasco, el fracaso, el fiambre que están a punto de presenciar.',
@@ -113,6 +132,7 @@ export const obras: Obra[] = [
 		titulo: 'ARLEQUINES REVOLTOSOS',
 		tituloCompleto: 'Arlequines revoltosos',
 		etiquetas: ['COMEDIA', 'SKETCHES'],
+		festivales: ['Festival de Fiestas Patrias de Celaya · 2022'],
 		sinopsis: [
 			'¡Viva la rebelión! ¡Viva el teatro! Los Arlequines, juntos pero no revueltos, presentan este programa de sketches cómicos con las sobras de siempre, ¡digo!, las obras de siempre. Porque recuerda: de Arlequín, Juglar, Payaso y Loco, todos tenemos un poco.',
 		],
@@ -127,6 +147,7 @@ export const obras: Obra[] = [
 		titulo: 'OTRO DIA CON MAS CALMA',
 		tituloCompleto: 'Otro día con más calma',
 		etiquetas: ['COMEDIA'],
+		festivales: ['Festival ENTEATRARTE · 2022'],
 		sinopsis: [
 			'Ven a reírte a carcajadas con la historia de Eugenio, un vendedor de enciclopedias (de muy buena calidad, por cierto) a quien está a punto de cambiarle la vida el tocar a la puerta de Silvia.',
 		],
@@ -139,16 +160,19 @@ export const obras: Obra[] = [
 ];
 
 export const paginaObras = {
-	/* Portada tipográfica: sin fotografía, para no repetir el hero de /sobre-nosotros */
+	/* Banner corto: el telón se alza sobre la escena y descubre el titular */
 	portada: {
 		titular: 'OBRAS',
-		entradas: [
-			'Del teatro para toda la familia a la memoria histórica y la comedia. Este es el repertorio con el que Producciones Arlequín sale a escena.',
-			'Cada montaje se adapta a foros, festivales, escuelas y espacios no convencionales. Entra a la ficha de la obra que te interese y escríbenos para llevarla a tu ciudad.',
-		],
+		foto: {
+			src: `${CARTELES}/2025/09/Foto-10-1536x1026.jpg`,
+			alt: 'Escena de Absolución final: el intérprete alza un estandarte bajo el seguidor',
+			ancho: 1536,
+			alto: 1026,
+		},
 	},
 	listado: {
 		verFicha: 'VER FICHA',
+		palmares: 'Festivales y encuentros',
 	},
 	cierre: {
 		rotulo: 'CONTACTANOS',

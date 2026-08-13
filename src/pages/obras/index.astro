@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import Laureles from '../../components/Laureles.astro';
 import { marca } from '../../data/home';
 import { obras, paginaObras } from '../../data/obras';
 
@@ -15,55 +16,67 @@ const { portada, listado, cierre } = paginaObras;
 	<Header />
 
 	<main id="contenido">
-		<section class="portada">
-			<div class="contenedor portada__cuerpo">
-				<div class="portada__rejilla">
-					<h1 class="portada__titular">{portada.titular}</h1>
-
-					<div class="portada__nota">
-						{portada.entradas.map((entrada) => <p>{entrada}</p>)}
-					</div>
-				</div>
-
-				<div class="portada__cierre" aria-hidden="true">
-					<span class="portada__filete"></span>
-					<span class="rombo"></span>
-					<span class="portada__filete"></span>
-				</div>
+		<section class="cartel">
+			<div class="cartel__escena">
+				<img
+					class="cartel__foto"
+					src={portada.foto.src}
+					alt={portada.foto.alt}
+					width={portada.foto.ancho}
+					height={portada.foto.alto}
+					loading="eager"
+					fetchpriority="high"
+				/>
+				<span class="cartel__velo" aria-hidden="true"></span>
 			</div>
+
+			<span class="candilejas" aria-hidden="true"></span>
+
+			<div class="contenedor cartel__cuerpo">
+				<h1 class="cartel__titular">{portada.titular}</h1>
+			</div>
+
+			{/* El telón sube y descubre la escena; la bambalina se queda colgada */}
+			<div class="telon" aria-hidden="true">
+				<span class="telon__pano"></span>
+			</div>
+
+			<span class="bambalina" aria-hidden="true"></span>
 		</section>
 
 		<section class="repertorio" aria-label="Listado de obras">
 			<ol class="repertorio__lista">
 				{
-					obras.map(({ slug, titulo, tituloCompleto, subtitulo, etiquetas, sinopsis, cartel }, i) => (
-						<li class="obra revelar">
+					obras.map(({ slug, titulo, tituloCompleto, subtitulo, etiquetas, festivales, sinopsis, cartel }, i) => (
+						<li class="obra revelar" id={slug}>
 							<a
 								class="obra__enlace"
 								href={`/obras/${slug}`}
-								aria-label={`${listado.verFicha} de ${tituloCompleto}`}
+								aria-labelledby={`titulo-${slug}`}
 							>
 								<span class="obra__seguidor" aria-hidden="true" />
 
-								<div class="obra__cartel">
-									<img
-										src={cartel.src}
-										alt={`Cartel de ${tituloCompleto}`}
-										width={cartel.ancho}
-										height={cartel.alto}
-										loading={i < 2 ? 'eager' : 'lazy'}
-										decoding="async"
-									/>
-									<span class="obra__filete" aria-hidden="true" />
+								<div class="obra__marco">
+									<span class="obra__riel" />
+									<span class="obra__gancho obra__gancho--izq" />
+									<span class="obra__gancho obra__gancho--der" />
+									<div class="obra__cartel">
+										<img
+											src={cartel.src}
+											alt={`Cartel de ${tituloCompleto}`}
+											width={cartel.ancho}
+											height={cartel.alto}
+											loading={i < 2 ? 'eager' : 'lazy'}
+											decoding="async"
+										/>
+										<span class="obra__vidrio" />
+									</div>
 								</div>
 
 								<div class="obra__texto">
-									<p class="obra__indice">
-										<span class="obra__numero">{String(i + 1).padStart(2, '0')}</span>
-										<span class="obra__regla" aria-hidden="true" />
-									</p>
-
-									<h2 class="obra__titulo">{titulo}</h2>
+									<h2 class="obra__titulo" id={`titulo-${slug}`}>
+										{titulo}
+									</h2>
 									{subtitulo && <p class="obra__subtitulo">{subtitulo}</p>}
 
 									<ul class="obra__etiquetas">
@@ -73,6 +86,18 @@ const { portada, listado, cierre } = paginaObras;
 									</ul>
 
 									<p class="obra__entrada">{sinopsis[0]}</p>
+
+									{festivales.length > 0 && (
+										<div class="palmares">
+											<Laureles tamano={30} />
+											<p class="palmares__rotulo">{listado.palmares}</p>
+											<ul class="palmares__lista">
+												{festivales.map((festival) => (
+													<li>{festival}</li>
+												))}
+											</ul>
+										</div>
+									)}
 
 									<span class="obra__ver">
 										{listado.verFicha}
@@ -122,79 +147,179 @@ const { portada, listado, cierre } = paginaObras;
 </Layout>
 
 <style>
-	/* ---------- Portada: plancha tipográfica, sin escena ni telón ---------- */
+	/* ---------- Banner: el telón se alza sobre la escena ---------- */
 
-	.portada {
+	.cartel {
 		position: relative;
+		min-height: min(30rem, 62svh);
+		display: grid;
+		align-items: center;
+		padding-top: var(--altura-barra);
+		overflow: hidden;
+		isolation: isolate;
+		background: var(--negro);
+	}
+
+	.cartel__escena {
+		position: absolute;
+		inset: 0;
+		z-index: -2;
+	}
+
+	.cartel__foto {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 36% 45%;
+		filter: saturate(0.88) contrast(1.06) brightness(0.86);
+		animation: acercar 16s var(--ease) both;
+	}
+
+	/* La figura queda a la izquierda; el velo oscurece el costado del titular */
+	.cartel__velo {
+		/* Tapa: la franja de la barra queda en negro y la foto entra fundida */
+		--tapa: linear-gradient(
+			to bottom,
+			var(--negro) 0,
+			var(--negro) var(--altura-barra),
+			rgba(5, 5, 5, 0.6) calc(var(--altura-barra) + 2.5rem),
+			transparent calc(var(--altura-barra) + 7rem)
+		);
+
+		position: absolute;
+		inset: 0;
+		background:
+			var(--tapa),
+			linear-gradient(
+				to left,
+				rgba(5, 5, 5, 0.93) 0%,
+				rgba(5, 5, 5, 0.62) 34%,
+				rgba(5, 5, 5, 0.08) 68%
+			),
+			linear-gradient(to top, var(--negro) 2%, transparent 38%);
+	}
+
+	/* Candilejas: la luz sube del proscenio cuando el telón termina de abrir */
+	.candilejas {
+		position: absolute;
+		inset: auto 0 0;
+		z-index: 2;
+		height: 34%;
+		pointer-events: none;
 		background:
 			radial-gradient(
-				ellipse 55% 70% at 12% 0%,
-				color-mix(in srgb, var(--morado) 32%, transparent),
+				ellipse 60% 100% at 50% 100%,
+				color-mix(in srgb, var(--hueso) 14%, transparent),
 				transparent 72%
 			),
-			var(--negro);
+			linear-gradient(to top, color-mix(in srgb, var(--rojo) 26%, transparent), transparent 34%);
+		opacity: 0;
+		animation: encender 1.6s var(--ease) 1.55s forwards;
 	}
 
-	.portada__cuerpo {
-		padding-block: calc(var(--altura-barra) + clamp(3rem, 7vw, 5.5rem))
-			clamp(2.5rem, 5vw, 3.75rem);
-	}
-
-	.portada__rejilla {
+	.cartel__cuerpo {
+		position: relative;
+		z-index: 3;
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: clamp(1.5rem, 3.5vw, 2.75rem) clamp(2rem, 5vw, 5rem);
-		margin-top: clamp(1.75rem, 4vw, 3rem);
+		justify-items: end;
+		text-align: right;
+		padding-inline: calc(var(--margen) + clamp(0.85rem, 2.5vw, 3rem));
+		padding-block: clamp(2.5rem, 7vh, 4rem);
 	}
 
-	.portada__titular {
-		grid-column: 1 / -1;
+	/* line-height holgado: Headline News desborda la caja con valores menores */
+	.cartel__titular {
 		margin: 0;
 		font-family: var(--fuente-rotulo);
-		font-size: clamp(4rem, 16vw, 14rem);
+		font-size: clamp(3.25rem, 12vw, 9rem);
 		font-weight: 400;
 		letter-spacing: 0.02em;
-		line-height: 0.86;
-		animation: subir 0.9s var(--ease) 0.22s both;
+		line-height: 1;
+		text-shadow: 0 0.15rem 2.5rem rgba(5, 5, 5, 0.9);
+		animation: subir 0.9s var(--ease) 1.55s both;
 	}
 
-	.portada__nota {
-		grid-column: 2;
-		display: grid;
-		gap: 1.1rem;
-		max-width: 52ch;
-		animation: subir 0.9s var(--ease) 0.34s both;
+	/* Bambalina festoneada: el paño corto que nunca sube, encuadra la escena */
+	.bambalina {
+		position: absolute;
+		top: var(--altura-barra);
+		right: 0;
+		left: 0;
+		z-index: 5;
+		height: clamp(1.5rem, 3.2vw, 2.4rem);
+		pointer-events: none;
+		background-image:
+			repeating-linear-gradient(
+				90deg,
+				rgba(0, 0, 0, 0.75) 0 0.9rem,
+				color-mix(in srgb, var(--tinto) 94%, transparent) 0.9rem 2.6rem,
+				rgba(0, 0, 0, 0.6) 2.6rem 3.4rem
+			),
+			linear-gradient(to bottom, color-mix(in srgb, var(--tinto) 88%, var(--negro)), var(--tinto));
 	}
 
-	.portada__nota p {
-		margin: 0;
-		color: var(--hueso-medio);
-		font-size: clamp(1rem, 1.25vw, 1.12rem);
-		line-height: 1.75;
+	.bambalina::after {
+		--festo: clamp(0.7rem, 1.6vw, 1.1rem);
+		content: '';
+		position: absolute;
+		top: 100%;
+		right: 0;
+		left: 0;
+		height: var(--festo);
+		background-image: radial-gradient(
+			circle var(--festo) at 50% 0,
+			var(--tinto) 0 97%,
+			transparent 100%
+		);
+		background-size: calc(var(--festo) * 2) 100%;
+		background-repeat: repeat-x;
+		filter: drop-shadow(0 0.35rem 0.5rem rgba(0, 0, 0, 0.55));
 	}
 
-	/* Filete doble con rombo: el remate de imprenta que cierra la portada */
-	.portada__cierre {
-		display: flex;
-		align-items: center;
-		gap: 1.1rem;
-		margin-top: clamp(2.5rem, 6vw, 4rem);
-		animation: subir 0.9s var(--ease) 0.46s both;
+	.telon {
+		position: absolute;
+		inset: 0;
+		z-index: 4;
+		overflow: hidden;
+		pointer-events: none;
 	}
 
-	.portada__filete {
-		flex: 1;
-		height: 3px;
-		border-top: 1px solid color-mix(in srgb, var(--rojo) 85%, transparent);
-		border-bottom: 1px solid color-mix(in srgb, var(--rojo) 45%, transparent);
+	.telon__pano {
+		position: absolute;
+		inset: 0;
+		background-image:
+			repeating-linear-gradient(
+				90deg,
+				rgba(0, 0, 0, 0.82) 0 1.1rem,
+				color-mix(in srgb, var(--tinto) 92%, transparent) 1.1rem 3.2rem,
+				rgba(0, 0, 0, 0.66) 3.2rem 4rem
+			),
+			linear-gradient(to bottom, var(--tinto), color-mix(in srgb, var(--tinto) 55%, var(--negro)));
+		animation: alzar 1.9s var(--ease) 0.35s forwards;
+	}
+
+	/* Galón dorado en el borde del telón: el detalle que se ve al subir */
+	.telon__pano::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0;
+		height: 0.5rem;
+		background: linear-gradient(to bottom, var(--dorado), var(--dorado-tenue));
+		box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.6);
 	}
 
 	/* ---------- Repertorio ---------- */
 
 	.repertorio {
 		position: relative;
-		padding-block: clamp(2.5rem, 6vw, 4.5rem) 0;
-		background: var(--negro);
+		padding-block: clamp(1.5rem, 4vw, 2.5rem) 0;
+		background:
+			radial-gradient(
+				ellipse 40% 30% at 90% 0%,
+				color-mix(in srgb, var(--morado) 18%, transparent),
+				transparent 70%
+			),
+			var(--negro);
 	}
 
 	/* Las obras van a sangre: el filete que las separa cruza toda la pantalla,
@@ -219,13 +344,13 @@ const { portada, listado, cierre } = paginaObras;
 		grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
 		align-items: center;
 		gap: clamp(1.75rem, 5vw, 4.5rem);
-		padding: clamp(2.5rem, 5.5vw, 4.25rem) var(--margen);
+		padding: clamp(2.75rem, 6vw, 4.75rem) var(--margen);
 		color: inherit;
 		text-decoration: none;
 		isolation: isolate;
 	}
 
-	.obra:nth-child(even) .obra__cartel {
+	.obra:nth-child(even) .obra__marco {
 		order: 2;
 	}
 
@@ -252,13 +377,62 @@ const { portada, listado, cierre } = paginaObras;
 		opacity: 1;
 	}
 
+	/* Cartel colgado de un riel, como en el vestíbulo */
+	.obra__marco {
+		position: relative;
+		padding-top: 1.35rem;
+		transform: rotate(-1.4deg);
+		transform-origin: top center;
+		transition: transform 0.55s var(--ease);
+	}
+
+	.obra:nth-child(even) .obra__marco {
+		transform: rotate(1.4deg);
+	}
+
+	.obra__enlace:hover .obra__marco,
+	.obra__enlace:focus-visible .obra__marco,
+	.obra:nth-child(even) .obra__enlace:hover .obra__marco,
+	.obra:nth-child(even) .obra__enlace:focus-visible .obra__marco {
+		transform: rotate(0deg);
+	}
+
+	.obra__riel {
+		position: absolute;
+		top: 0.35rem;
+		right: 8%;
+		left: 8%;
+		height: 1px;
+		background: var(--linea);
+	}
+
+	.obra__gancho {
+		position: absolute;
+		top: 0.12rem;
+		width: 0.55rem;
+		height: 0.9rem;
+		border: 1px solid color-mix(in srgb, var(--hueso) 35%, transparent);
+		border-bottom: 0;
+		border-radius: 0.35rem 0.35rem 0 0;
+	}
+
+	.obra__gancho--izq {
+		left: 18%;
+	}
+
+	.obra__gancho--der {
+		right: 18%;
+	}
+
 	.obra__cartel {
 		position: relative;
 		overflow: hidden;
 		aspect-ratio: 16 / 9;
 		background: var(--negro-carta);
 		border: 1px solid var(--linea);
-		box-shadow: 0 1.25rem 2.75rem rgba(0, 0, 0, 0.5);
+		box-shadow:
+			0 1.4rem 2.8rem rgba(0, 0, 0, 0.55),
+			0 0.2rem 0.5rem rgba(0, 0, 0, 0.25);
 		transition: border-color 0.4s var(--ease);
 	}
 
@@ -272,15 +446,20 @@ const { portada, listado, cierre } = paginaObras;
 			filter 0.6s var(--ease);
 	}
 
-	/* Filete rojo que se traza bajo el cartel al apuntar la obra */
-	.obra__filete {
+	/* Reflejo de vitrina: el cristal del vestíbulo */
+	.obra__vidrio {
 		position: absolute;
-		inset: auto 0 0;
-		height: 2px;
-		background: var(--rojo-luz);
-		transform: scaleX(0);
-		transform-origin: left;
-		transition: transform 0.55s var(--ease);
+		inset: 0;
+		background: linear-gradient(
+			115deg,
+			color-mix(in srgb, var(--hueso) 16%, transparent) 0%,
+			transparent 28%,
+			transparent 62%,
+			color-mix(in srgb, var(--hueso) 6%, transparent) 100%
+		);
+		pointer-events: none;
+		opacity: 0.55;
+		transition: opacity 0.45s var(--ease);
 	}
 
 	.obra__enlace:hover .obra__cartel,
@@ -294,36 +473,15 @@ const { portada, listado, cierre } = paginaObras;
 		filter: saturate(1) brightness(1);
 	}
 
-	.obra__enlace:hover .obra__filete,
-	.obra__enlace:focus-visible .obra__filete {
-		transform: scaleX(1);
+	.obra__enlace:hover .obra__vidrio,
+	.obra__enlace:focus-visible .obra__vidrio {
+		opacity: 0.2;
 	}
 
 	.obra__texto {
 		display: grid;
 		justify-items: start;
 		gap: 0.9rem;
-	}
-
-	.obra__indice {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		width: 100%;
-		margin: 0;
-	}
-
-	.obra__numero {
-		font-family: var(--fuente-rotulo);
-		font-size: 0.72rem;
-		letter-spacing: 0.2em;
-		color: var(--rojo-luz);
-	}
-
-	.obra__regla {
-		flex: 1;
-		height: 1px;
-		background: var(--linea);
 	}
 
 	.obra__titulo {
@@ -369,6 +527,38 @@ const { portada, listado, cierre } = paginaObras;
 		color: var(--hueso-medio);
 		font-size: clamp(1rem, 1.2vw, 1.1rem);
 		line-height: 1.75;
+	}
+
+	/* Palmarés: la corona rotula la lista, que se queda en voz baja */
+	.palmares {
+		display: grid;
+		justify-items: start;
+		gap: 0.4rem;
+		width: 100%;
+		max-width: 34rem;
+		margin-top: 0.6rem;
+		padding-top: 1.1rem;
+		border-top: 1px solid var(--linea-suave);
+	}
+
+	.palmares__rotulo {
+		margin: 0.1rem 0 0;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.62rem;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: var(--dorado);
+	}
+
+	.palmares__lista {
+		list-style: none;
+		display: grid;
+		gap: 0.25rem;
+		margin: 0;
+		padding: 0;
+		font-size: 0.85rem;
+		line-height: 1.55;
+		color: var(--hueso-tenue);
 	}
 
 	.obra__ver {
@@ -526,16 +716,40 @@ const { portada, listado, cierre } = paginaObras;
 		}
 	}
 
+	@keyframes acercar {
+		from {
+			transform: scale(1.1);
+		}
+		to {
+			transform: scale(1);
+		}
+	}
+
+	@keyframes alzar {
+		to {
+			transform: translateY(-101%);
+		}
+	}
+
+	@keyframes encender {
+		to {
+			opacity: 1;
+		}
+	}
+
 	/* ---------- Adaptaciones ---------- */
 
 	@media (max-width: 62rem) {
-		.portada__rejilla {
-			grid-template-columns: 1fr;
-			gap: clamp(1.5rem, 4vw, 2.25rem);
+		.cartel {
+			min-height: min(26rem, 58svh);
 		}
 
-		.portada__nota {
-			grid-column: 1;
+		/* En vertical la figura ocupa el cuadro: el velo pasa a ser de abajo */
+		.cartel__velo {
+			background:
+				var(--tapa),
+				linear-gradient(to top, var(--negro) 8%, rgba(5, 5, 5, 0.45) 52%, rgba(5, 5, 5, 0.6)),
+				linear-gradient(to left, rgba(5, 5, 5, 0.7), rgba(5, 5, 5, 0.15) 70%);
 		}
 
 		.obra__enlace {
@@ -544,7 +758,7 @@ const { portada, listado, cierre } = paginaObras;
 		}
 
 		/* En una columna el cartel siempre abre la ficha */
-		.obra:nth-child(even) .obra__cartel {
+		.obra:nth-child(even) .obra__marco {
 			order: 0;
 		}
 
@@ -554,6 +768,12 @@ const { portada, listado, cierre } = paginaObras;
 
 		.obra__titulo {
 			max-width: 22ch;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.candilejas {
+			opacity: 1;
 		}
 	}
 </style>

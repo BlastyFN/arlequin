@@ -1,0 +1,571 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FondoEscena from '../components/FondoEscena.astro';
+import ArcoProscenio from '../components/ArcoProscenio.astro';
+import { marca } from '../data/home';
+import { paginaServicios } from '../data/servicios';
+
+const { portada, oficios, pastorela, cierre } = paginaServicios;
+---
+
+<Layout
+	title="Servicios — Producciones Arlequín"
+	description="Capacitaciones, formaciones, profesionalización artística y pastorelas corporativas personalizadas. El oficio de la escena, a la medida de equipos, artistas y empresas."
+>
+	<Header />
+
+	<main id="contenido">
+		<section class="hero-interior">
+			<div class="escena">
+				<img
+					class="escena__foto"
+					src={portada.foto.src}
+					alt={portada.foto.alt}
+					width={portada.foto.ancho}
+					height={portada.foto.alto}
+					loading="eager"
+					fetchpriority="high"
+				/>
+				<div class="escena__velo" aria-hidden="true"></div>
+			</div>
+
+			<FondoEscena />
+			<ArcoProscenio />
+
+			<div class="apertura" aria-hidden="true">
+				<span class="apertura__pano"></span>
+				<span class="apertura__pano"></span>
+			</div>
+
+			<div class="contenedor hero-interior__cuerpo">
+				<p class="rotulo rotulo--rojo">{portada.rotulo}</p>
+				<h1>{portada.titular}</h1>
+				<p class="hero-interior__entrada">{portada.entrada}</p>
+				<p class="hero-interior__credito">
+					<span class="rombo" aria-hidden="true"></span>
+					{portada.credito}
+				</p>
+			</div>
+		</section>
+
+		<section class="oficios seccion" aria-labelledby="titulo-oficios">
+			<div class="oficios__telon" aria-hidden="true"></div>
+			<div class="contenedor oficios__interior">
+				<div class="oficios__titulo revelar">
+					<p class="rotulo">{oficios.rotulo}</p>
+					<h2 id="titulo-oficios">
+						{oficios.titular.lineas[0]}<br />
+						{oficios.titular.lineas[1]}<br />
+						<span>{oficios.titular.remate}</span>
+					</h2>
+				</div>
+
+				<ol class="oficios__lista">
+					{
+						oficios.lista.map(({ titulo, texto }, i) => (
+							<li class="oficio revelar" style={`transition-delay:${i * 80}ms`}>
+								<span class="oficio__numero">{String(i + 1).padStart(2, '0')}</span>
+								<div class="oficio__cuerpo">
+									<h3 class="oficio__titulo">{titulo}</h3>
+									<p>{texto}</p>
+								</div>
+							</li>
+						))
+					}
+				</ol>
+			</div>
+		</section>
+
+		<section class="pastorela seccion" aria-labelledby="titulo-pastorela">
+			<div class="contenedor pastorela__cartel revelar">
+				<div class="pastorela__encabezado">
+					<p class="rotulo rotulo--rojo">{pastorela.rotulo}</p>
+					<h2 id="titulo-pastorela">
+						{pastorela.titulo}
+						<span>{pastorela.subtitulo}</span>
+					</h2>
+					<p class="pastorela__entrada">{pastorela.entrada}</p>
+				</div>
+
+				<div class="pastorela__relato">
+					{pastorela.parrafos.map((parrafo) => <p>{parrafo}</p>)}
+					<a class="boton boton--lleno" href={pastorela.cta.href}>
+						{pastorela.cta.etiqueta}
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="llamada" aria-labelledby="titulo-llamada">
+			<div class="llamada__telon" aria-hidden="true"></div>
+
+			<div class="contenedor llamada__cuerpo revelar">
+				<p class="rotulo" id="titulo-llamada">{cierre.rotulo}</p>
+
+				<div class="llamada__texto">
+					{
+						cierre.lineas.map((partes) => (
+							<p>
+								{partes.map(({ texto, acento }) =>
+									acento ? <span class="llamada__acento">{texto}</span> : texto,
+								)}
+							</p>
+						))
+					}
+				</div>
+
+				<div class="llamada__acciones">
+					<a class="boton boton--lleno" href={cierre.acciones.principal.href}>
+						{cierre.acciones.principal.etiqueta}
+					</a>
+					<a class="boton boton--linea" href={`mailto:${marca.correo}`}>
+						{marca.correo}
+					</a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+</Layout>
+
+<style>
+	.hero-interior {
+		position: relative;
+		min-height: min(46rem, 90svh);
+		display: grid;
+		align-items: end;
+		padding-top: var(--altura-barra);
+		overflow: hidden;
+		isolation: isolate;
+	}
+
+	.escena {
+		position: absolute;
+		inset: 0;
+		z-index: -2;
+	}
+
+	.escena__foto {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 40%;
+		filter: saturate(0.72) contrast(1.05) brightness(0.92);
+		animation: acercar 14s var(--ease) both;
+	}
+
+	.escena__velo {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(to top, var(--negro) 4%, rgba(5, 5, 5, 0.2) 55%, rgba(5, 5, 5, 0.55)),
+			linear-gradient(to right, rgba(5, 5, 5, 0.88), rgba(5, 5, 5, 0.1) 62%);
+	}
+
+	.apertura {
+		position: absolute;
+		inset: 0;
+		z-index: 3;
+		display: flex;
+		pointer-events: none;
+	}
+
+	.apertura__pano {
+		flex: 1;
+		background-image:
+			repeating-linear-gradient(
+				90deg,
+				rgba(0, 0, 0, 0.8) 0 1.1rem,
+				color-mix(in srgb, var(--tinto) 92%, transparent) 1.1rem 3.2rem,
+				rgba(0, 0, 0, 0.65) 3.2rem 4rem
+			),
+			linear-gradient(to bottom, var(--tinto), var(--negro));
+	}
+
+	.apertura__pano:first-child {
+		animation: abrir-izquierda 1.6s var(--ease) 0.15s forwards;
+	}
+
+	.apertura__pano:last-child {
+		animation: abrir-derecha 1.6s var(--ease) 0.15s forwards;
+	}
+
+	.hero-interior__cuerpo {
+		position: relative;
+		z-index: 1;
+		padding-inline: calc(var(--margen) + clamp(0.85rem, 2.5vw, 3rem));
+		padding-block: clamp(4rem, 12vh, 8rem) clamp(2.5rem, 7vh, 4.5rem);
+	}
+
+	.hero-interior__cuerpo .rotulo {
+		animation: subir 1s var(--ease) 0.85s both;
+	}
+
+	.hero-interior h1 {
+		margin-top: 1.15rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.75rem, 12vw, 9.25rem);
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		line-height: 0.92;
+		text-wrap: balance;
+		animation: subir 1s var(--ease) 0.95s both;
+	}
+
+	.hero-interior__entrada {
+		max-width: 42ch;
+		margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+		color: var(--hueso-medio);
+		font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+		line-height: 1.7;
+		animation: subir 1s var(--ease) 1.15s both;
+	}
+
+	.hero-interior__credito {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		margin: clamp(2rem, 5vw, 3.25rem) 0 0;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.18em;
+		color: var(--hueso-tenue);
+		animation: subir 1s var(--ease) 1.3s both;
+	}
+
+	/* ---------- Oficios ---------- */
+
+	.oficios {
+		position: relative;
+		overflow: hidden;
+		background:
+			radial-gradient(ellipse 55% 75% at 0% 50%, rgba(131, 0, 24, 0.38), transparent 72%),
+			linear-gradient(115deg, var(--tinto), var(--morado) 55%, var(--negro));
+	}
+
+	.oficios__telon {
+		position: absolute;
+		inset: 0;
+		opacity: 0.3;
+		background-image: repeating-linear-gradient(
+			90deg,
+			transparent 0 4rem,
+			rgba(243, 237, 228, 0.05) 4rem 4.05rem,
+			transparent 4.05rem 8rem,
+			rgba(0, 0, 0, 0.35) 8rem 9rem
+		);
+		mask-image: linear-gradient(to bottom, #000, transparent);
+		pointer-events: none;
+	}
+
+	.oficios__interior {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+		gap: clamp(3rem, 8vw, 8rem);
+		align-items: start;
+	}
+
+	.oficios__titulo {
+		min-width: 0;
+		container-type: inline-size;
+	}
+
+	.oficios h2 {
+		margin-top: 1.2rem;
+		font-family: var(--fuente-rotulo);
+		/* Cabe PROFESIONALIZAR. entero en la columna, sin partir la última letra */
+		font-size: clamp(1.5rem, 7.6cqi, 3.4rem);
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		line-height: 0.94;
+	}
+
+	.oficios h2 span {
+		display: block;
+		color: var(--rojo-luz);
+		white-space: nowrap;
+	}
+
+	.oficios__lista {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		border-top: 1px solid var(--linea);
+	}
+
+	.oficio {
+		display: grid;
+		grid-template-columns: 3rem 1fr;
+		gap: clamp(1rem, 2vw, 2rem);
+		padding-block: clamp(1.5rem, 3vw, 2.35rem);
+		border-bottom: 1px solid var(--linea);
+	}
+
+	.oficio__numero {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.75rem;
+		letter-spacing: 0.16em;
+		color: var(--rojo-luz);
+	}
+
+	.oficio__titulo {
+		margin: 0 0 0.55rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+		font-weight: 400;
+		letter-spacing: 0.08em;
+		line-height: 1.15;
+	}
+
+	.oficio p {
+		margin: 0;
+		color: var(--hueso-medio);
+		font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+		line-height: 1.7;
+	}
+
+	/* ---------- Pastorela: cartel de temporada ---------- */
+
+	.pastorela {
+		background:
+			radial-gradient(
+				ellipse 50% 60% at 85% 20%,
+				color-mix(in srgb, var(--morado) 28%, transparent),
+				transparent 70%
+			),
+			var(--negro);
+	}
+
+	.pastorela__cartel {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(3rem, 8vw, 8rem);
+		align-items: end;
+	}
+
+	.pastorela__encabezado {
+		min-width: 0;
+		container-type: inline-size;
+		padding-block: clamp(0.5rem, 2vw, 1rem);
+		border-top: 1px solid var(--linea);
+		border-bottom: 1px solid var(--linea);
+	}
+
+	.pastorela h2 {
+		margin-top: 1.2rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.6rem, 9cqi, 4.25rem);
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		line-height: 0.92;
+	}
+
+	.pastorela h2 span {
+		display: block;
+		color: var(--rojo-luz);
+		white-space: nowrap;
+	}
+
+	.pastorela__entrada {
+		margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+		font-family: var(--fuente-titular);
+		font-size: clamp(1.45rem, 2.2vw, 2rem);
+		font-style: italic;
+		line-height: 1.3;
+		color: var(--hueso);
+	}
+
+	.pastorela__relato {
+		display: grid;
+		gap: 1.35rem;
+		justify-items: start;
+		color: var(--hueso-medio);
+		font-size: clamp(1.08rem, 1.4vw, 1.3rem);
+		line-height: 1.8;
+	}
+
+	.pastorela__relato p {
+		margin: 0;
+	}
+
+	.pastorela__relato .boton {
+		margin-top: 0.75rem;
+	}
+
+	/* ---------- Cierre ---------- */
+
+	.llamada {
+		position: relative;
+		overflow: hidden;
+		padding-block: clamp(4.5rem, 10vw, 8rem);
+		background:
+			radial-gradient(
+				ellipse 70% 90% at 20% 50%,
+				color-mix(in srgb, var(--tinto) 85%, transparent),
+				transparent 68%
+			),
+			radial-gradient(
+				ellipse 60% 80% at 85% 35%,
+				color-mix(in srgb, var(--morado) 65%, transparent),
+				transparent 66%
+			),
+			var(--negro);
+	}
+
+	.llamada__telon {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image: repeating-linear-gradient(
+			90deg,
+			transparent 0 3.4rem,
+			rgba(243, 237, 228, 0.032) 3.4rem 3.46rem,
+			transparent 3.46rem 6.8rem,
+			rgba(0, 0, 0, 0.3) 6.8rem 7.5rem
+		);
+		mask-image: linear-gradient(to bottom, #000, transparent 88%);
+	}
+
+	.llamada__cuerpo {
+		position: relative;
+		display: grid;
+		justify-items: center;
+		gap: clamp(1.5rem, 3vw, 2.25rem);
+		text-align: center;
+	}
+
+	.llamada__texto {
+		display: grid;
+		gap: 1rem;
+		max-width: 42rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(1.1rem, 1.6vw + 0.45rem, 1.85rem);
+		letter-spacing: 0.05em;
+		line-height: 1.45;
+	}
+
+	.llamada__texto p {
+		margin: 0;
+	}
+
+	.llamada__acento {
+		color: var(--rojo-luz);
+	}
+
+	.llamada__acciones {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.9rem;
+		margin-top: 0.75rem;
+	}
+
+	.boton {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.85rem;
+		letter-spacing: 0.2em;
+		text-indent: 0.2em;
+		text-decoration: none;
+		padding: 1.05rem 2.1rem;
+		border: 1px solid transparent;
+		transition:
+			background 0.35s var(--ease),
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.boton--lleno {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	.boton--lleno:hover {
+		background: var(--rojo-luz);
+	}
+
+	.boton--linea {
+		border-color: var(--linea);
+		color: var(--hueso-medio);
+		letter-spacing: 0.1em;
+		font-family: var(--fuente-cuerpo);
+		text-indent: 0;
+		font-size: 0.95rem;
+	}
+
+	.boton--linea:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+	}
+
+	@keyframes subir {
+		from {
+			opacity: 0;
+			transform: translateY(1.5rem);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@keyframes acercar {
+		from {
+			transform: scale(1.12);
+		}
+		to {
+			transform: scale(1);
+		}
+	}
+
+	@keyframes abrir-izquierda {
+		to {
+			transform: translateX(-101%);
+		}
+	}
+
+	@keyframes abrir-derecha {
+		to {
+			transform: translateX(101%);
+		}
+	}
+
+	@media (max-width: 70rem) {
+		.hero-interior {
+			min-height: min(40rem, 82svh);
+		}
+
+		.escena__velo {
+			background:
+				linear-gradient(to top, var(--negro) 12%, rgba(5, 5, 5, 0.4) 60%, rgba(5, 5, 5, 0.72)),
+				linear-gradient(to right, rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.3) 80%);
+		}
+
+		.oficios__interior,
+		.pastorela__cartel {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 45rem) {
+		.hero-interior h1 {
+			font-size: clamp(2.6rem, 16vw, 4.75rem);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.escena__foto {
+			animation: none;
+		}
+
+		.apertura {
+			display: none;
+		}
+	}
+</style>

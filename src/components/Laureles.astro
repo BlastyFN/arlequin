@@ -1,0 +1,74 @@
+---
+/* Corona de laurel dibujada por cálculo: una rama sobre un arco y su espejo.
+   Solo decorativa, siempre acompañada de la lista que rotula. */
+
+interface Props {
+	tamano?: number;
+}
+
+const { tamano = 30 } = Astro.props;
+
+const CX = 32;
+const CY = 34;
+const RADIO = 21;
+
+/* La rama sube por el costado derecho y deja la corona abierta arriba */
+const hojas = Array.from({ length: 8 }, (_, i) => {
+	const grados = 162 - i * 18;
+	const radianes = (grados * Math.PI) / 180;
+
+	return {
+		x: +(CX + RADIO * Math.sin(radianes)).toFixed(2),
+		y: +(CY - RADIO * Math.cos(radianes)).toFixed(2),
+		grados,
+	};
+});
+
+const tallo = hojas.map(({ x, y }) => `${x},${y}`).join(' ');
+---
+
+<svg
+	class="laurel"
+	width={tamano}
+	height={tamano}
+	viewBox="0 0 64 64"
+	fill="none"
+	aria-hidden="true"
+	focusable="false"
+>
+	<g class="laurel__rama">
+		<polyline points={tallo} />
+		{
+			hojas.map(({ x, y, grados }) => (
+				<ellipse cx={x} cy={y} rx="6.2" ry="2.5" transform={`rotate(${grados - 16} ${x} ${y})`} />
+			))
+		}
+	</g>
+
+	<g class="laurel__rama" transform="translate(64 0) scale(-1 1)">
+		<polyline points={tallo} />
+		{
+			hojas.map(({ x, y, grados }) => (
+				<ellipse cx={x} cy={y} rx="6.2" ry="2.5" transform={`rotate(${grados - 16} ${x} ${y})`} />
+			))
+		}
+	</g>
+</svg>
+
+<style>
+	.laurel {
+		display: block;
+		flex: none;
+	}
+
+	.laurel__rama polyline {
+		fill: none;
+		stroke: var(--dorado-tenue);
+		stroke-width: 1.4;
+		stroke-linecap: round;
+	}
+
+	.laurel__rama ellipse {
+		fill: var(--dorado);
+	}
+</style>
