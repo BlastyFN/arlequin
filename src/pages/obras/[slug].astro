@@ -1,0 +1,864 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Laureles from '../../components/Laureles.astro';
+import { paginaObras, obras, fichaMuestra, type Obra } from '../../data/obras';
+import { Users, Sparkles, Clock, Drama, Download, ArrowLeft, Play, X } from '@lucide/astro';
+
+export function getStaticPaths() {
+	return obras.map((obra) => ({
+		params: { slug: obra.slug },
+		props: { obra },
+	}));
+}
+
+interface Props {
+	obra: Obra;
+}
+
+const { obra } = Astro.props;
+const { listado } = paginaObras;
+const muestra = fichaMuestra;
+
+const iconos = {
+	publico: Users,
+	tematica: Sparkles,
+	duracion: Clock,
+	genero: Drama,
+} as const;
+
+const giros = [-4, 3, -2.5, 5];
+---
+
+<Layout
+	title={`${obra.tituloCompleto} — Producciones Arlequín`}
+	description={obra.sinopsis[0]}
+>
+	<Header />
+
+	<main id="contenido">
+		<section class="cartel">
+			<div class="cartel__escena">
+				<img
+					class="cartel__foto"
+					src={obra.cartel.src}
+					alt={`Cartel de ${obra.tituloCompleto}`}
+					width={obra.cartel.ancho}
+					height={obra.cartel.alto}
+					loading="eager"
+					fetchpriority="high"
+				/>
+				<span class="cartel__velo" aria-hidden="true"></span>
+			</div>
+
+			<span class="candilejas" aria-hidden="true"></span>
+
+			<div class="contenedor cartel__cuerpo">
+				<a class="volver" href="/obras">
+					<ArrowLeft size={16} stroke-width={1.75} />
+					{muestra.volver}
+				</a>
+
+				<h1 class="cartel__titular">{obra.titulo}</h1>
+				{obra.subtitulo && <p class="cartel__subtitulo">{obra.subtitulo}</p>}
+
+				<a
+					class="boton boton--lleno dossier"
+					href={muestra.dossier.href}
+					download={muestra.dossier.archivo}
+				>
+					<Download size={18} stroke-width={1.75} />
+					{muestra.dossier.etiqueta}
+				</a>
+			</div>
+		</section>
+
+		<section class="ficha" data-ficha aria-label="Ficha técnica">
+			<span class="ficha__seguidor" aria-hidden="true"></span>
+			<ul class="ficha__lista">
+				{
+					muestra.simbolos.map(({ clave, rotulo, valor }, i) => {
+						const Icono = iconos[clave];
+						return (
+							<li class="dato" style={`--i: ${i}`}>
+								<span class="dato__foco">
+									<Icono size={28} stroke-width={1.5} />
+								</span>
+								<p class="dato__rotulo">{rotulo}</p>
+								<p class="dato__valor">{valor}</p>
+							</li>
+						);
+					})
+				}
+			</ul>
+		</section>
+
+		<section class="cuerpo seccion">
+			<div class="contenedor cuerpo__rejilla">
+				<div class="relato revelar">
+					{
+						obra.sinopsis.map((parrafo) => (
+							<p>{parrafo}</p>
+						))
+					}
+
+					{
+						obra.festivales.length > 0 && (
+							<div class="palmares">
+								<Laureles tamano={28} />
+								<p class="palmares__rotulo">{listado.palmares}</p>
+								<ul class="palmares__lista">
+									{obra.festivales.map((festival) => (
+										<li>{festival}</li>
+									))}
+								</ul>
+							</div>
+						)
+					}
+				</div>
+
+				<figure class="video revelar" data-video>
+					<div class="video__boca">
+						<img
+							class="video__poster"
+							src={muestra.video.poster.src}
+							alt={muestra.video.poster.alt}
+							width={muestra.video.poster.ancho}
+							height={muestra.video.poster.alto}
+							loading="lazy"
+						/>
+						{muestra.video.src ? (
+							<video
+								class="video__archivo"
+								src={muestra.video.src}
+								poster={muestra.video.poster.src}
+								controls
+								playsinline
+								preload="none"
+							>
+								<track kind="captions" />
+							</video>
+						) : (
+							<button class="video__play" type="button" data-play>
+								<span class="video__disco">
+									<Play size={28} stroke-width={1.6} />
+								</span>
+								<span class="video__leyenda">{muestra.video.rotulo}</span>
+							</button>
+						)}
+						<span class="video__luz" aria-hidden="true"></span>
+					</div>
+					<figcaption class="video__pie">{muestra.video.titulo}</figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<section class="galeria seccion" aria-labelledby="titulo-galeria">
+			<div class="contenedor galeria__cabecera revelar">
+				<p class="rotulo rotulo--rojo">{muestra.galeriaRotulo}</p>
+				<h2 id="titulo-galeria">FOTOS</h2>
+			</div>
+
+			<div class="contenedor galeria__rejilla">
+				{
+					muestra.fotos.map(({ src, alt, ancho, alto }, i) => (
+						<button
+							class="polaroid revelar"
+							type="button"
+							style={`--giro: ${giros[i]}deg; --i: ${i}`}
+							data-foto={src}
+							data-alt={alt}
+							aria-label={`Ampliar fotografía ${i + 1} de ${muestra.fotos.length}`}
+						>
+							<span class="polaroid__foto">
+								<img src={src} alt={alt} width={ancho} height={alto} loading="lazy" />
+							</span>
+						</button>
+					))
+				}
+			</div>
+		</section>
+	</main>
+
+	<dialog class="visor" data-visor aria-label="Fotografía ampliada">
+		<button class="visor__cerrar" type="button" data-cerrar aria-label="Cerrar">
+			<X size={22} stroke-width={1.75} />
+		</button>
+		<img class="visor__foto" data-visor-foto alt="" />
+	</dialog>
+
+	<Footer />
+</Layout>
+
+<style>
+	/* ---------- Banner compacto ---------- */
+
+	.cartel {
+		position: relative;
+		min-height: min(24rem, 52svh);
+		display: grid;
+		align-items: end;
+		padding-top: var(--altura-barra);
+		overflow: hidden;
+		isolation: isolate;
+		background: var(--negro);
+	}
+
+	.cartel__escena {
+		position: absolute;
+		inset: 0;
+		z-index: -2;
+	}
+
+	.cartel__foto {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 30%;
+		filter: saturate(0.8) contrast(1.05) brightness(0.78);
+	}
+
+	.cartel__velo {
+		--tapa: linear-gradient(
+			to bottom,
+			var(--negro) 0,
+			var(--negro) var(--altura-barra),
+			rgba(5, 5, 5, 0.55) calc(var(--altura-barra) + 2.5rem),
+			transparent calc(var(--altura-barra) + 7rem)
+		);
+
+		position: absolute;
+		inset: 0;
+		background:
+			var(--tapa),
+			linear-gradient(to top, var(--negro) 4%, rgba(5, 5, 5, 0.15) 48%),
+			linear-gradient(to right, rgba(5, 5, 5, 0.72), rgba(5, 5, 5, 0.12) 55%);
+	}
+
+	.candilejas {
+		position: absolute;
+		inset: auto 0 0;
+		z-index: 1;
+		height: 38%;
+		pointer-events: none;
+		background:
+			radial-gradient(
+				ellipse 55% 100% at 50% 100%,
+				color-mix(in srgb, var(--hueso) 12%, transparent),
+				transparent 72%
+			),
+			linear-gradient(to top, color-mix(in srgb, var(--rojo) 22%, transparent), transparent 34%);
+	}
+
+	.cartel__cuerpo {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		justify-items: start;
+		padding-inline: calc(var(--margen) + clamp(0.5rem, 2vw, 2rem));
+		padding-block: clamp(2rem, 6vh, 3.5rem);
+		animation: subir 0.9s var(--ease) 0.15s both;
+	}
+
+	.volver {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.2em;
+		color: var(--hueso-medio);
+		text-decoration: none;
+		transition: color 0.3s var(--ease);
+	}
+
+	.volver:hover {
+		color: var(--hueso);
+	}
+
+	.cartel__titular {
+		max-width: 16ch;
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.1rem, 6.5vw, 5.25rem);
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		line-height: 1.02;
+		text-shadow: 0 0.15rem 2.5rem rgba(5, 5, 5, 0.9);
+	}
+
+	.cartel__subtitulo {
+		margin: 0.7rem 0 0;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(0.72rem, 1vw, 0.85rem);
+		letter-spacing: 0.2em;
+		color: var(--hueso-medio);
+	}
+
+	.dossier {
+		gap: 0.7rem;
+		margin-top: clamp(1.35rem, 3vw, 2rem);
+		text-indent: 0;
+	}
+
+	/* ---------- Ficha: el seguidor recorre los cuatro símbolos ---------- */
+
+	.ficha {
+		position: relative;
+		overflow: hidden;
+		padding-block: clamp(2rem, 5vw, 3.25rem);
+		border-block: 1px solid var(--linea);
+		background:
+			radial-gradient(
+				ellipse 80% 120% at 50% 120%,
+				color-mix(in srgb, var(--tinto) 55%, transparent),
+				transparent 70%
+			),
+			var(--negro);
+	}
+
+	.ficha__seguidor {
+		position: absolute;
+		top: -30%;
+		left: 0;
+		z-index: 0;
+		width: 25%;
+		height: 160%;
+		background: radial-gradient(
+			ellipse 55% 50% at 50% 50%,
+			color-mix(in srgb, var(--rojo-luz) 38%, transparent),
+			transparent 72%
+		);
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.con-js .ficha[data-activo='true'] .ficha__seguidor {
+		animation: recorrer 3.4s var(--ease) 0.15s both;
+	}
+
+	.ficha__lista {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: clamp(1rem, 3vw, 2rem);
+		list-style: none;
+		margin: 0;
+		padding-inline: var(--margen);
+	}
+
+	.dato {
+		display: grid;
+		justify-items: center;
+		gap: 0.7rem;
+		text-align: center;
+	}
+
+	.con-js .ficha .dato {
+		opacity: 0.28;
+		filter: grayscale(0.8);
+	}
+
+	.con-js .ficha[data-activo='true'] .dato {
+		animation: encender-dato 0.55s var(--ease) forwards;
+		animation-delay: calc(0.55s + var(--i) * 0.7s);
+	}
+
+	.dato__foco {
+		display: grid;
+		place-items: center;
+		width: 3.6rem;
+		height: 3.6rem;
+		border: 1px solid var(--linea);
+		border-radius: 50%;
+		color: var(--hueso);
+		background: color-mix(in srgb, var(--hueso) 4%, transparent);
+		box-shadow: 0 0 0 0 transparent;
+	}
+
+	.con-js .ficha[data-activo='true'] .dato .dato__foco {
+		animation: prender-foco 0.55s var(--ease) forwards;
+		animation-delay: calc(0.55s + var(--i) * 0.7s);
+	}
+
+	.dato__rotulo {
+		margin: 0;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.22em;
+		color: var(--rojo-luz);
+	}
+
+	.dato__valor {
+		margin: 0;
+		max-width: 16ch;
+		color: var(--hueso-medio);
+		font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+		line-height: 1.4;
+	}
+
+	/* ---------- Relato + video ---------- */
+
+	.cuerpo {
+		padding-block: clamp(3.5rem, 8vw, 6rem);
+		background:
+			radial-gradient(ellipse 40% 50% at 90% 0%, rgba(63, 3, 50, 0.28), transparent 70%),
+			var(--negro);
+	}
+
+	.cuerpo__rejilla {
+		display: grid;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		gap: clamp(2.5rem, 6vw, 5rem);
+		align-items: start;
+	}
+
+	.relato {
+		display: grid;
+		gap: 1.25rem;
+		color: var(--hueso-medio);
+		font-size: clamp(1.02rem, 1.25vw, 1.12rem);
+		line-height: 1.75;
+	}
+
+	.relato p {
+		margin: 0;
+	}
+
+	.palmares {
+		display: grid;
+		justify-items: start;
+		gap: 0.4rem;
+		margin-top: 0.75rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--linea-suave);
+	}
+
+	.palmares__rotulo {
+		margin: 0.1rem 0 0;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.62rem;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: var(--dorado);
+	}
+
+	.palmares__lista {
+		list-style: none;
+		display: grid;
+		gap: 0.25rem;
+		margin: 0;
+		padding: 0;
+		font-size: 0.85rem;
+		line-height: 1.55;
+		color: var(--hueso-tenue);
+	}
+
+	/* La boca del escenario: el video vive dentro de un marco de proscenio */
+	.video {
+		margin: 0;
+	}
+
+	.video__boca {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 16 / 9;
+		background: var(--negro-carta);
+		border: 1px solid var(--linea);
+		border-radius: 50% 50% 0 0 / 8% 8% 0 0;
+		box-shadow: 0 1.4rem 2.8rem rgba(0, 0, 0, 0.5);
+	}
+
+	.video__poster,
+	.video__archivo {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.video__archivo {
+		position: absolute;
+		inset: 0;
+	}
+
+	.video__luz {
+		position: absolute;
+		inset: auto 0 0;
+		height: 42%;
+		pointer-events: none;
+		background: linear-gradient(
+			to top,
+			color-mix(in srgb, var(--rojo) 28%, transparent),
+			transparent
+		);
+		opacity: 0.55;
+		transition: opacity 0.45s var(--ease);
+	}
+
+	.video.is-encendida .video__luz {
+		opacity: 1;
+	}
+
+	.video__play {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-content: center;
+		justify-items: center;
+		gap: 0.85rem;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: rgba(5, 5, 5, 0.28);
+		color: var(--hueso);
+		cursor: pointer;
+	}
+
+	.video__disco {
+		display: grid;
+		place-items: center;
+		width: 4.25rem;
+		height: 4.25rem;
+		border: 1px solid color-mix(in srgb, var(--hueso) 45%, transparent);
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--rojo) 82%, transparent);
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--rojo-luz) 0%, transparent);
+		transition:
+			transform 0.35s var(--ease),
+			box-shadow 0.35s var(--ease);
+	}
+
+	.video__play:hover .video__disco,
+	.video__play:focus-visible .video__disco {
+		transform: scale(1.06);
+		box-shadow: 0 0 2.2rem color-mix(in srgb, var(--rojo-luz) 55%, transparent);
+	}
+
+	.video__leyenda {
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.22em;
+	}
+
+	.video__pie {
+		margin-top: 0.85rem;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.18em;
+		color: var(--hueso-tenue);
+	}
+
+	/* ---------- Galería ---------- */
+
+	.galeria {
+		overflow: hidden;
+		padding-top: 0;
+		background:
+			radial-gradient(
+				ellipse 50% 40% at 20% 0%,
+				color-mix(in srgb, var(--morado) 18%, transparent),
+				transparent 70%
+			),
+			var(--negro);
+	}
+
+	.galeria__cabecera {
+		margin-bottom: clamp(2.25rem, 5vw, 3.5rem);
+	}
+
+	.galeria h2 {
+		margin-top: 0.85rem;
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+		font-weight: 400;
+		letter-spacing: 0.025em;
+		line-height: 0.94;
+	}
+
+	.galeria__rejilla {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: clamp(1.25rem, 3vw, 2.25rem);
+		align-items: start;
+	}
+
+	.polaroid {
+		margin: 0;
+		padding: 0.55rem 0.55rem 0.85rem;
+		border: 0;
+		background: #efe6d8;
+		color: #1a1412;
+		box-shadow:
+			0 1.2rem 2.4rem rgba(0, 0, 0, 0.45),
+			0 0.2rem 0.5rem rgba(0, 0, 0, 0.2);
+		transform: rotate(var(--giro, 0deg));
+		cursor: pointer;
+		transition: transform 0.45s var(--ease);
+	}
+
+	.polaroid:nth-child(even) {
+		margin-top: 1.25rem;
+	}
+
+	.polaroid:hover,
+	.polaroid:focus-visible {
+		transform: rotate(0deg) scale(1.04);
+		z-index: 1;
+	}
+
+	.polaroid__foto {
+		display: block;
+		overflow: hidden;
+		aspect-ratio: 4 / 5;
+		background: #c9b9a6;
+	}
+
+	.polaroid__foto img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: saturate(0.85) contrast(1.05);
+		transition:
+			transform 0.7s var(--ease),
+			filter 0.7s var(--ease);
+	}
+
+	.polaroid:hover .polaroid__foto img,
+	.polaroid:focus-visible .polaroid__foto img {
+		transform: scale(1.05);
+		filter: saturate(1) contrast(1.02);
+	}
+
+	/* ---------- Visor ---------- */
+
+	.visor {
+		width: min(92vw, 64rem);
+		max-height: 90svh;
+		padding: 0;
+		border: 1px solid var(--linea);
+		background: var(--negro);
+	}
+
+	.visor::backdrop {
+		background: rgba(5, 5, 5, 0.84);
+	}
+
+	.visor__foto {
+		width: 100%;
+		height: auto;
+		max-height: 90svh;
+		object-fit: contain;
+	}
+
+	.visor__cerrar {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		display: grid;
+		place-items: center;
+		width: 2.6rem;
+		height: 2.6rem;
+		padding: 0;
+		border: 1px solid var(--linea);
+		background: color-mix(in srgb, var(--negro) 70%, transparent);
+		color: var(--hueso);
+		cursor: pointer;
+	}
+
+	.visor__cerrar:hover {
+		border-color: var(--hueso);
+	}
+
+	.boton {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.85rem;
+		letter-spacing: 0.2em;
+		text-decoration: none;
+		padding: 1.05rem 2.1rem;
+		border: 1px solid transparent;
+		transition:
+			background 0.35s var(--ease),
+			border-color 0.35s var(--ease),
+			color 0.35s var(--ease);
+	}
+
+	.boton--lleno {
+		background: var(--rojo);
+		color: var(--hueso);
+	}
+
+	.boton--lleno:hover {
+		background: var(--rojo-luz);
+	}
+
+	@keyframes subir {
+		from {
+			opacity: 0;
+			transform: translateY(1.25rem);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@keyframes recorrer {
+		0% {
+			opacity: 0;
+			translate: -10% 0;
+		}
+		8% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0.35;
+			translate: 310% 0;
+		}
+	}
+
+	@keyframes encender-dato {
+		to {
+			opacity: 1;
+			filter: grayscale(0);
+		}
+	}
+
+	@keyframes prender-foco {
+		to {
+			border-color: color-mix(in srgb, var(--rojo-luz) 70%, var(--linea));
+			color: var(--hueso);
+			background: color-mix(in srgb, var(--rojo) 22%, transparent);
+			box-shadow: 0 0 1.8rem color-mix(in srgb, var(--rojo-luz) 45%, transparent);
+		}
+	}
+
+	@media (max-width: 62rem) {
+		.cartel {
+			min-height: min(22rem, 48svh);
+		}
+
+		.cartel__velo {
+			background:
+				var(--tapa),
+				linear-gradient(to top, var(--negro) 10%, rgba(5, 5, 5, 0.4) 55%, rgba(5, 5, 5, 0.65));
+		}
+
+		.cuerpo__rejilla,
+		.ficha__lista,
+		.galeria__rejilla {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.ficha__lista {
+			gap: 1.5rem 1rem;
+		}
+
+		.ficha__seguidor {
+			width: 50%;
+		}
+
+		.con-js .ficha[data-activo='true'] .ficha__seguidor {
+			animation-name: recorrer-par;
+		}
+	}
+
+	@media (max-width: 45rem) {
+		.ficha__lista,
+		.galeria__rejilla {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.cuerpo__rejilla {
+			grid-template-columns: 1fr;
+		}
+
+		.polaroid:nth-child(even) {
+			margin-top: 0;
+		}
+	}
+
+	@keyframes recorrer-par {
+		0% {
+			opacity: 0;
+			translate: -10% 0;
+		}
+		12% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0.3;
+			translate: 110% 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.con-js .ficha .dato,
+		.con-js .ficha[data-activo='true'] .dato {
+			opacity: 1;
+			filter: none;
+			animation: none;
+		}
+
+		.con-js .ficha .dato__foco,
+		.con-js .ficha[data-activo='true'] .dato .dato__foco {
+			animation: none;
+			border-color: color-mix(in srgb, var(--rojo-luz) 70%, var(--linea));
+			box-shadow: 0 0 1.8rem color-mix(in srgb, var(--rojo-luz) 45%, transparent);
+		}
+
+		.ficha__seguidor {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	const ficha = document.querySelector<HTMLElement>('[data-ficha]');
+	const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (ficha) {
+		if (sinMovimiento || !('IntersectionObserver' in window)) {
+			ficha.dataset.activo = 'true';
+		} else {
+			const observador = new IntersectionObserver(
+				(entradas) => {
+					entradas.forEach((entrada) => {
+						if (!entrada.isIntersecting) return;
+						ficha.dataset.activo = 'true';
+						observador.unobserve(ficha);
+					});
+				},
+				{ threshold: 0.35 },
+			);
+			observador.observe(ficha);
+		}
+	}
+
+	const escenario = document.querySelector<HTMLElement>('[data-video]');
+	escenario?.querySelector('[data-play]')?.addEventListener('click', () => {
+		escenario.classList.add('is-encendida');
+	});
+
+	const visor = document.querySelector<HTMLDialogElement>('[data-visor]');
+	const visorFoto = document.querySelector<HTMLImageElement>('[data-visor-foto]');
+
+	document.querySelectorAll<HTMLButtonElement>('[data-foto]').forEach((boton) => {
+		boton.addEventListener('click', () => {
+			if (!visor || !visorFoto) return;
+			visorFoto.src = boton.dataset.foto ?? '';
+			visorFoto.alt = boton.dataset.alt ?? '';
+			visor.showModal();
+		});
+	});
+
+	visor?.querySelector('[data-cerrar]')?.addEventListener('click', () => visor.close());
+	visor?.addEventListener('click', (evento) => {
+		if (evento.target === visor) visor.close();
+	});
+</script>

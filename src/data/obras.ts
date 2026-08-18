@@ -196,3 +196,80 @@ export const paginaObras = {
 		},
 	},
 };
+
+/**
+ * Maqueta compartida de la ficha. Todas las rutas /obras/[slug] la usan
+ * hasta que cada montaje tenga su propio material. El título y la sinopsis
+ * sí salen de la obra clicada, para no romper la navegación.
+ *
+ * Rótulos en Headline News: sin diacríticos.
+ */
+export const fichaMuestra = {
+	volver: 'TODAS LAS OBRAS',
+	dossier: {
+		etiqueta: 'DESCARGAR DOSSIER',
+		href: '/dossiers/muestra.pdf',
+		archivo: 'dossier-muestra.pdf',
+	},
+	simbolos: [
+		{
+			clave: 'publico' as const,
+			rotulo: 'PUBLICO',
+			valor: 'Familiar · 8 años',
+		},
+		{
+			clave: 'tematica' as const,
+			rotulo: 'TEMATICA',
+			valor: 'Cultura de paz',
+		},
+		{
+			clave: 'duracion' as const,
+			rotulo: 'DURACION',
+			valor: '60 minutos',
+		},
+		{
+			clave: 'genero' as const,
+			rotulo: 'GENERO',
+			valor: 'Unipersonal',
+		},
+	],
+	video: {
+		rotulo: 'EN ESCENA',
+		titulo: 'Trailer de muestra',
+		poster: {
+			src: `${CARTELES}/2025/09/Foto-10-1536x1026.jpg`,
+			alt: 'Fotograma de muestra: intérprete bajo el seguidor',
+			ancho: 1536,
+			alto: 1026,
+		},
+		/* Sin archivo todavía: el escenario queda listo para el embed */
+		src: null as string | null,
+	},
+	fotos: [
+		{
+			src: `${CARTELES}/2026/07/IMGL8600-1024x683.jpg`,
+			alt: 'Fotografía de escena, muestra 1',
+			ancho: 1024,
+			alto: 683,
+		},
+		{
+			src: `${CARTELES}/2026/07/IMGL8590-1024x683.jpg`,
+			alt: 'Fotografía de escena, muestra 2',
+			ancho: 1024,
+			alto: 683,
+		},
+		{
+			src: `${CARTELES}/2026/03/Fotografia-2-%E2%80%93El-Planeta-Bumara-%E2%80%93-Alexis-Hernandez-1024x683.jpg`,
+			alt: 'Fotografía de escena, muestra 3',
+			ancho: 1024,
+			alto: 683,
+		},
+		{
+			src: `${CARTELES}/2025/07/IMG_6376-1024x683.jpeg`,
+			alt: 'Fotografía de escena, muestra 4',
+			ancho: 1024,
+			alto: 683,
+		},
+	],
+	galeriaRotulo: 'MEMORIA DE ESCENA',
+};

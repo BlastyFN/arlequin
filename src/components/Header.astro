@@ -13,6 +13,7 @@ const enlaces = [
 ];
 
 const rutaActual = Astro.url.pathname.replace(/\/$/, '') || '/';
+const enObras = rutaActual === '/obras' || rutaActual.startsWith('/obras/');
 ---
 
 <header class="barra" data-barra>
@@ -38,7 +39,15 @@ const rutaActual = Astro.url.pathname.replace(/\/$/, '') || '/';
 								class="menu__enlace"
 								href={href}
 								data-enlace={href}
-								aria-current={rutaActual === href ? 'page' : undefined}
+								aria-current={
+									href === '/obras'
+										? enObras
+											? 'page'
+											: undefined
+										: rutaActual === href
+											? 'page'
+											: undefined
+								}
 							>
 								<span class="menu__punto" aria-hidden="true" />
 								{etiqueta}

@@ -79,18 +79,49 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		</section>
 
 		<section class="pastorela seccion" aria-labelledby="titulo-pastorela">
-			<div class="contenedor pastorela__cartel revelar">
-				<div class="pastorela__encabezado">
-					<p class="rotulo rotulo--rojo">{pastorela.rotulo}</p>
+			<div class="pastorela__cielo" aria-hidden="true"></div>
+			<span class="pastorela__candilejas" aria-hidden="true"></span>
+
+			<div class="contenedor pastorela__escena">
+				<figure class="pastorela__vitrina revelar">
+					<span class="pastorela__riel" aria-hidden="true"></span>
+					<span class="pastorela__gancho pastorela__gancho--izq" aria-hidden="true"></span>
+					<span class="pastorela__gancho pastorela__gancho--der" aria-hidden="true"></span>
+
+					<div class="pastorela__marco">
+						<div class="pastorela__reserva" aria-hidden="true">
+							<span class="pastorela__estrella"></span>
+							<p>{pastorela.foto.pie}</p>
+						</div>
+						<img
+							src={pastorela.foto.src}
+							alt={pastorela.foto.alt}
+							width={pastorela.foto.ancho}
+							height={pastorela.foto.alto}
+							loading="lazy"
+							decoding="async"
+							onerror="this.hidden = true"
+						/>
+						<span class="pastorela__vidrio" aria-hidden="true"></span>
+						<span class="pastorela__haz" aria-hidden="true"></span>
+					</div>
+
+					<figcaption class="pastorela__pie">
+						<span class="rombo" aria-hidden="true"></span>
+						{pastorela.rotulo}
+					</figcaption>
+				</figure>
+
+				<div class="pastorela__texto revelar">
+					<p class="rotulo pastorela__rotulo">{pastorela.rotulo}</p>
 					<h2 id="titulo-pastorela">
 						{pastorela.titulo}
 						<span>{pastorela.subtitulo}</span>
 					</h2>
 					<p class="pastorela__entrada">{pastorela.entrada}</p>
-				</div>
-
-				<div class="pastorela__relato">
-					{pastorela.parrafos.map((parrafo) => <p>{parrafo}</p>)}
+					<div class="pastorela__relato">
+						{pastorela.parrafos.map((parrafo) => <p>{parrafo}</p>)}
+					</div>
 					<a class="boton boton--lleno" href={pastorela.cta.href}>
 						{pastorela.cta.etiqueta}
 					</a>
@@ -328,35 +359,234 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		line-height: 1.7;
 	}
 
-	/* ---------- Pastorela: cartel de temporada ---------- */
+	/* ---------- Pastorela: temporada navideña ---------- */
 
 	.pastorela {
+		position: relative;
+		overflow: hidden;
+		isolation: isolate;
 		background:
 			radial-gradient(
-				ellipse 50% 60% at 85% 20%,
-				color-mix(in srgb, var(--morado) 28%, transparent),
-				transparent 70%
+				ellipse 55% 70% at 18% 8%,
+				color-mix(in srgb, var(--dorado) 22%, transparent),
+				transparent 58%
 			),
-			var(--negro);
+			radial-gradient(
+				ellipse 50% 55% at 92% 88%,
+				color-mix(in srgb, var(--rojo) 38%, transparent),
+				transparent 62%
+			),
+			linear-gradient(165deg, #1c070c 0%, var(--tinto) 42%, var(--negro) 100%);
 	}
 
-	.pastorela__cartel {
+	.pastorela__cielo {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background-image:
+			radial-gradient(1.5px 1.5px at 12% 18%, color-mix(in srgb, var(--hueso) 55%, transparent), transparent),
+			radial-gradient(1.5px 1.5px at 28% 8%, color-mix(in srgb, var(--dorado) 70%, transparent), transparent),
+			radial-gradient(1px 1px at 47% 22%, color-mix(in srgb, var(--hueso) 40%, transparent), transparent),
+			radial-gradient(1.5px 1.5px at 63% 12%, color-mix(in srgb, var(--hueso) 50%, transparent), transparent),
+			radial-gradient(1px 1px at 81% 20%, color-mix(in srgb, var(--dorado) 55%, transparent), transparent),
+			radial-gradient(1.5px 1.5px at 91% 7%, color-mix(in srgb, var(--hueso) 45%, transparent), transparent);
+		mask-image: linear-gradient(to bottom, #000 0%, transparent 55%);
+		opacity: 0.7;
+	}
+
+	.pastorela__candilejas {
+		position: absolute;
+		inset: auto 0 0;
+		z-index: 0;
+		height: 32%;
+		pointer-events: none;
+		background:
+			radial-gradient(
+				ellipse 70% 100% at 50% 100%,
+				color-mix(in srgb, var(--dorado) 20%, transparent),
+				transparent 72%
+			),
+			linear-gradient(
+				to top,
+				color-mix(in srgb, var(--rojo) 28%, transparent),
+				transparent 42%
+			);
+	}
+
+	.pastorela__escena {
+		position: relative;
+		z-index: 1;
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: clamp(3rem, 8vw, 8rem);
-		align-items: end;
+		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+		gap: clamp(2.5rem, 6vw, 6.5rem);
+		align-items: center;
 	}
 
-	.pastorela__encabezado {
+	.pastorela__vitrina {
+		position: relative;
+		margin: 0;
+		justify-self: center;
+		width: min(100%, 26rem);
+		padding-top: 1.35rem;
+	}
+
+	.pastorela__riel {
+		position: absolute;
+		top: 0.35rem;
+		right: 8%;
+		left: 8%;
+		height: 1px;
+		background: color-mix(in srgb, var(--dorado) 55%, transparent);
+	}
+
+	.pastorela__gancho {
+		position: absolute;
+		top: 0.12rem;
+		width: 0.55rem;
+		height: 0.9rem;
+		border: 1px solid color-mix(in srgb, var(--dorado) 55%, transparent);
+		border-bottom: 0;
+		border-radius: 0.35rem 0.35rem 0 0;
+	}
+
+	.pastorela__gancho--izq {
+		left: 18%;
+	}
+
+	.pastorela__gancho--der {
+		right: 18%;
+	}
+
+	.pastorela__marco {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 4 / 5;
+		margin-top: 0.15rem;
+		background: #14080b;
+		border: 1px solid color-mix(in srgb, var(--dorado) 45%, transparent);
+		box-shadow:
+			0 0 0 0.45rem color-mix(in srgb, var(--tinto) 80%, #000),
+			0 1.6rem 3rem rgba(0, 0, 0, 0.55),
+			0 0 2.5rem color-mix(in srgb, var(--dorado) 18%, transparent);
+		transform: rotate(-1.2deg);
+		transform-origin: top center;
+	}
+
+	.pastorela__reserva {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-content: center;
+		justify-items: center;
+		gap: 1.25rem;
+		background:
+			radial-gradient(
+				ellipse 55% 40% at 50% 18%,
+				color-mix(in srgb, var(--dorado) 28%, transparent),
+				transparent 62%
+			),
+			radial-gradient(ellipse 80% 50% at 50% 100%, color-mix(in srgb, var(--rojo) 22%, transparent), transparent),
+			#14080b;
+		color: var(--dorado);
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.22em;
+	}
+
+	.pastorela__reserva p {
+		margin: 0;
+	}
+
+	.pastorela__estrella {
+		width: 1.15rem;
+		height: 1.15rem;
+		background: var(--dorado);
+		clip-path: polygon(
+			50% 0%,
+			61% 35%,
+			100% 50%,
+			61% 65%,
+			50% 100%,
+			39% 65%,
+			0% 50%,
+			39% 35%
+		);
+		filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--dorado) 70%, transparent));
+	}
+
+	.pastorela__marco img {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: saturate(0.88) contrast(1.04) brightness(0.92);
+	}
+
+	.pastorela__marco img[hidden] {
+		display: none;
+	}
+
+	.pastorela__vidrio {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		pointer-events: none;
+		background: linear-gradient(
+			115deg,
+			color-mix(in srgb, var(--hueso) 18%, transparent) 0%,
+			transparent 26%,
+			transparent 64%,
+			color-mix(in srgb, var(--dorado) 8%, transparent) 100%
+		);
+	}
+
+	.pastorela__haz {
+		position: absolute;
+		inset: 0 8% auto;
+		z-index: 2;
+		height: 42%;
+		pointer-events: none;
+		background: linear-gradient(
+			to bottom,
+			color-mix(in srgb, var(--dorado) 22%, transparent),
+			transparent
+		);
+		mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+	}
+
+	.pastorela__pie {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.65rem;
+		margin-top: 1.15rem;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.68rem;
+		letter-spacing: 0.2em;
+		color: var(--dorado);
+	}
+
+	.pastorela__pie .rombo {
+		background: var(--dorado);
+	}
+
+	.pastorela__texto {
 		min-width: 0;
 		container-type: inline-size;
-		padding-block: clamp(0.5rem, 2vw, 1rem);
-		border-top: 1px solid var(--linea);
-		border-bottom: 1px solid var(--linea);
+		display: grid;
+		justify-items: start;
+		gap: 0;
+	}
+
+	.pastorela__rotulo {
+		color: var(--dorado);
 	}
 
 	.pastorela h2 {
-		margin-top: 1.2rem;
+		margin-top: 1.1rem;
 		font-family: var(--fuente-rotulo);
 		font-size: clamp(1.6rem, 9cqi, 4.25rem);
 		font-weight: 400;
@@ -371,7 +601,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 	}
 
 	.pastorela__entrada {
-		margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+		margin: clamp(1.1rem, 2.2vw, 1.6rem) 0 0;
 		font-family: var(--fuente-titular);
 		font-size: clamp(1.45rem, 2.2vw, 2rem);
 		font-style: italic;
@@ -381,8 +611,8 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 
 	.pastorela__relato {
 		display: grid;
-		gap: 1.35rem;
-		justify-items: start;
+		gap: 1.2rem;
+		margin-top: clamp(1.35rem, 2.5vw, 1.85rem);
 		color: var(--hueso-medio);
 		font-size: clamp(1.08rem, 1.4vw, 1.3rem);
 		line-height: 1.8;
@@ -392,8 +622,8 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		margin: 0;
 	}
 
-	.pastorela__relato .boton {
-		margin-top: 0.75rem;
+	.pastorela__texto .boton {
+		margin-top: clamp(1.5rem, 3vw, 2.1rem);
 	}
 
 	/* ---------- Cierre ---------- */
@@ -548,8 +778,16 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		}
 
 		.oficios__interior,
-		.pastorela__cartel {
+		.pastorela__escena {
 			grid-template-columns: 1fr;
+		}
+
+		.pastorela__vitrina {
+			width: min(100%, 22rem);
+		}
+
+		.pastorela__marco {
+			transform: none;
 		}
 	}
 

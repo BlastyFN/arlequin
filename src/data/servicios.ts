@@ -56,6 +56,14 @@ export const paginaServicios = {
 			'Cada diciembre montamos pastorelas de repertorio. Para empresas hacemos otra cosa: un espectáculo navideño escrito a la medida.',
 			'Humor, nombres y dinámica interna de la organización, para la posada, el cierre de año o el evento de fin de temporada. Un montaje con el sello de la casa, pensado para su gente.',
 		],
+		/* Colocar la fotografía en public/fotos/servicios/pastorela.jpg */
+		foto: {
+			src: '/fotos/servicios/pastorela.jpg',
+			alt: 'Pastorela corporativa de Producciones Arlequín, temporada navideña',
+			ancho: 1200,
+			alto: 1500,
+			pie: 'FOTO DE TEMPORADA',
+		},
 		cta: {
 			etiqueta: 'SOLICITAR PROPUESTA',
 			href: '/#contacto',
