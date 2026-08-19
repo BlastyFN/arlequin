@@ -28,7 +28,28 @@ const iconos = {
 	genero: Drama,
 } as const;
 
-const giros = [-4, 3, -2.5, 5];
+const trailer = muestra.video;
+const fotos = muestra.fotos;
+
+function idDeYoutube(url: string | null): string | null {
+	if (!url) return null;
+
+	try {
+		const destino = new URL(url);
+		if (destino.hostname === 'youtu.be') {
+			return destino.pathname.replace('/', '').slice(0, 11) || null;
+		}
+		if (destino.hostname.includes('youtube.com')) {
+			return destino.searchParams.get('v') ?? destino.pathname.split('/embed/')[1]?.slice(0, 11) ?? null;
+		}
+	} catch {
+		return /^[\w-]{11}$/.test(url) ? url : null;
+	}
+
+	return null;
+}
+
+const youtubeId = idDeYoutube(trailer?.src ?? null);
 ---
 
 <Layout
@@ -118,67 +139,118 @@ const giros = [-4, 3, -2.5, 5];
 					}
 				</div>
 
-				<figure class="video revelar" data-video>
-					<div class="video__boca">
-						<img
-							class="video__poster"
-							src={muestra.video.poster.src}
-							alt={muestra.video.poster.alt}
-							width={muestra.video.poster.ancho}
-							height={muestra.video.poster.alto}
-							loading="lazy"
-						/>
-						{muestra.video.src ? (
-							<video
-								class="video__archivo"
-								src={muestra.video.src}
-								poster={muestra.video.poster.src}
-								controls
-								playsinline
-								preload="none"
-							>
-								<track kind="captions" />
-							</video>
-						) : (
-							<button class="video__play" type="button" data-play>
-								<span class="video__disco">
-									<Play size={28} stroke-width={1.6} />
-								</span>
-								<span class="video__leyenda">{muestra.video.rotulo}</span>
-							</button>
-						)}
-						<span class="video__luz" aria-hidden="true"></span>
+				<div
+					class="proyector revelar"
+					data-proyector
+					style={`--n: ${fotos.length}`}
+					aria-roledescription="carrusel"
+					aria-label={`Fotografías de ${obra.tituloCompleto}`}
+				>
+					<div class="proyector__escenario">
+						<span class="proyector__lampara" aria-hidden="true">
+							<span class="proyector__pantalla"></span>
+							<span class="proyector__brazo"></span>
+						</span>
+
+						<div class="proyector__vidrio" data-luz="encendida">
+							{
+								fotos.map(({ src, alt, ancho, alto }, i) => (
+									<figure
+										class="diapositiva"
+										data-diapositiva
+										data-i={i}
+										style={`--i: ${i}`}
+										aria-hidden={i === 0 ? 'false' : 'true'}
+									>
+										<button
+											class="diapositiva__boton"
+											type="button"
+											data-foto={src}
+											data-alt={alt}
+											tabindex={i === 0 ? 0 : -1}
+											aria-label={`Ampliar fotografía ${i + 1} de ${fotos.length}`}
+										>
+											<img
+												src={src}
+												alt={alt}
+												width={ancho}
+												height={alto}
+												loading={i === 0 ? 'eager' : 'lazy'}
+											/>
+										</button>
+									</figure>
+								))
+							}
+							<span class="proyector__apagon" aria-hidden="true"></span>
+							<span class="proyector__cristal" aria-hidden="true"></span>
+						</div>
 					</div>
-					<figcaption class="video__pie">{muestra.video.titulo}</figcaption>
-				</figure>
-			</div>
-		</section>
 
-		<section class="galeria seccion" aria-labelledby="titulo-galeria">
-			<div class="contenedor galeria__cabecera revelar">
-				<p class="rotulo rotulo--rojo">{muestra.galeriaRotulo}</p>
-				<h2 id="titulo-galeria">FOTOS</h2>
-			</div>
-
-			<div class="contenedor galeria__rejilla">
-				{
-					muestra.fotos.map(({ src, alt, ancho, alto }, i) => (
-						<button
-							class="polaroid revelar"
-							type="button"
-							style={`--giro: ${giros[i]}deg; --i: ${i}`}
-							data-foto={src}
-							data-alt={alt}
-							aria-label={`Ampliar fotografía ${i + 1} de ${muestra.fotos.length}`}
-						>
-							<span class="polaroid__foto">
-								<img src={src} alt={alt} width={ancho} height={alto} loading="lazy" />
-							</span>
+					<div class="proyector__controles">
+						<button class="proyector__flecha" type="button" data-prev aria-label="Foto anterior">
+							<span aria-hidden="true">&larr;</span>
 						</button>
-					))
-				}
+						<p class="proyector__indice" data-indice aria-live="polite">
+							<span data-actual>1</span>
+							<span aria-hidden="true"> / </span>
+							<span>{fotos.length}</span>
+						</p>
+						<button class="proyector__flecha" type="button" data-next aria-label="Foto siguiente">
+							<span aria-hidden="true">&rarr;</span>
+						</button>
+					</div>
+				</div>
 			</div>
 		</section>
+
+		{
+			trailer && (
+				<section class="trailer seccion" aria-labelledby="titulo-trailer">
+					<div class="contenedor trailer__interior">
+						<p class="rotulo rotulo--rojo">{trailer.rotulo}</p>
+						<h2 id="titulo-trailer">TRAILER</h2>
+
+						<figure class="video revelar" data-video>
+							<div class="video__boca">
+								<img
+									class="video__poster"
+									src={trailer.poster.src}
+									alt={trailer.poster.alt}
+									width={trailer.poster.ancho}
+									height={trailer.poster.alto}
+									loading="lazy"
+								/>
+								{
+									youtubeId && (
+										<iframe
+											class="video__embed"
+											data-embed
+											title={trailer.titulo}
+											allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+											allowfullscreen
+											hidden
+										/>
+									)
+								}
+								<button
+									class="video__play"
+									type="button"
+									data-play
+									data-youtube={youtubeId ?? undefined}
+								>
+									<span class="video__disco">
+										<Play size={28} stroke-width={1.6} />
+									</span>
+									<span class="video__leyenda">{trailer.rotulo}</span>
+								</button>
+								<span class="video__luz" aria-hidden="true"></span>
+							</div>
+							<figcaption class="video__pie">{trailer.titulo}</figcaption>
+						</figure>
+					</div>
+				</section>
+			)
+		}
 	</main>
 
 	<dialog class="visor" data-visor aria-label="Fotografía ampliada">
@@ -400,7 +472,7 @@ const giros = [-4, 3, -2.5, 5];
 		line-height: 1.4;
 	}
 
-	/* ---------- Relato + video ---------- */
+	/* ---------- Relato + proyector ---------- */
 
 	.cuerpo {
 		padding-block: clamp(3.5rem, 8vw, 6rem);
@@ -411,9 +483,9 @@ const giros = [-4, 3, -2.5, 5];
 
 	.cuerpo__rejilla {
 		display: grid;
-		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
 		gap: clamp(2.5rem, 6vw, 5rem);
-		align-items: start;
+		align-items: center;
 	}
 
 	.relato {
@@ -457,6 +529,220 @@ const giros = [-4, 3, -2.5, 5];
 		color: var(--hueso-tenue);
 	}
 
+	/* Proyector de diapositivas: vitrina del vestíbulo, no polaroid */
+	.proyector {
+		display: grid;
+		justify-items: center;
+		gap: 1.35rem;
+		width: 100%;
+	}
+
+	.proyector__escenario {
+		position: relative;
+		width: min(100%, 28rem);
+		padding-top: 2.6rem;
+		padding-inline: clamp(1.5rem, 4vw, 2.5rem);
+	}
+
+	.proyector__lampara {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		z-index: 4;
+		display: grid;
+		justify-items: center;
+		translate: -50% 0;
+		pointer-events: none;
+	}
+
+	.proyector__pantalla {
+		width: 2.4rem;
+		height: 0.7rem;
+		background: #1c1410;
+		border-radius: 0.15rem 0.15rem 0 0;
+		box-shadow: 0 0.15rem 0.4rem rgba(0, 0, 0, 0.45);
+	}
+
+	.proyector__brazo {
+		width: 2px;
+		height: 1.35rem;
+		background: color-mix(in srgb, var(--hueso) 28%, transparent);
+	}
+
+	.proyector__vidrio {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		isolation: isolate;
+	}
+
+	.diapositiva {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		background: var(--negro-carta);
+		border: 1px solid var(--linea);
+		box-shadow: 0 1.4rem 2.8rem rgba(0, 0, 0, 0.5);
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(0.5rem) scale(0.9);
+		transition:
+			transform 0.55s var(--ease),
+			opacity 0.45s var(--ease);
+		z-index: 0;
+	}
+
+	.diapositiva[data-activo='true'] {
+		opacity: 1;
+		pointer-events: auto;
+		transform: none;
+		z-index: 3;
+	}
+
+	.diapositiva[data-vecino='prev'],
+	.diapositiva[data-vecino='next'] {
+		opacity: 0.45;
+		z-index: 2;
+		pointer-events: auto;
+	}
+
+	.diapositiva[data-vecino='prev'] {
+		transform: translate(-16%, 6%) rotate(-7deg) scale(0.86);
+	}
+
+	.diapositiva[data-vecino='next'] {
+		transform: translate(16%, 6%) rotate(7deg) scale(0.86);
+	}
+
+	.diapositiva__boton {
+		display: block;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: 0;
+		background: #1a1412;
+		cursor: pointer;
+	}
+
+	.diapositiva img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: saturate(0.78) contrast(1.05);
+		transition: filter 0.5s var(--ease);
+	}
+
+	.diapositiva[data-activo='true'] img {
+		filter: saturate(0.95) contrast(1.04);
+	}
+
+	.proyector__cristal {
+		position: absolute;
+		inset: 0;
+		z-index: 4;
+		pointer-events: none;
+		background: linear-gradient(
+			115deg,
+			color-mix(in srgb, var(--hueso) 18%, transparent) 0%,
+			transparent 26%,
+			transparent 68%,
+			color-mix(in srgb, var(--hueso) 7%, transparent) 100%
+		);
+		opacity: 0.55;
+		mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent);
+	}
+
+	.proyector__apagon {
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		background: var(--negro);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.28s ease;
+	}
+
+	.proyector__vidrio[data-luz='apagada'] .proyector__apagon {
+		opacity: 0.88;
+	}
+
+	.proyector__escenario:has(.proyector__vidrio[data-luz='apagada']) .proyector__pantalla {
+		filter: brightness(0.35);
+	}
+
+	.proyector__controles {
+		display: flex;
+		align-items: center;
+		gap: 1.1rem;
+	}
+
+	.proyector__flecha {
+		display: grid;
+		place-items: center;
+		width: 2.6rem;
+		height: 2.6rem;
+		padding: 0;
+		border: 1px solid var(--linea);
+		background: transparent;
+		color: var(--hueso-medio);
+		cursor: pointer;
+		font-size: 1rem;
+		transition:
+			border-color 0.3s var(--ease),
+			color 0.3s var(--ease),
+			background 0.3s var(--ease);
+	}
+
+	.proyector__flecha:hover {
+		border-color: var(--hueso);
+		color: var(--hueso);
+		background: color-mix(in srgb, var(--hueso) 6%, transparent);
+	}
+
+	.proyector__indice {
+		margin: 0;
+		min-width: 4.5rem;
+		text-align: center;
+		font-family: var(--fuente-rotulo);
+		font-size: 0.72rem;
+		letter-spacing: 0.18em;
+		color: var(--hueso-tenue);
+	}
+
+	/* ---------- Trailer: sección propia, opcional ---------- */
+
+	.trailer {
+		overflow: hidden;
+		padding-top: clamp(3.25rem, 7vw, 5.5rem);
+		background:
+			radial-gradient(
+				ellipse 60% 50% at 50% 0%,
+				color-mix(in srgb, var(--tinto) 40%, transparent),
+				transparent 70%
+			),
+			var(--negro);
+	}
+
+	.trailer__interior {
+		display: grid;
+		justify-items: center;
+		text-align: center;
+	}
+
+	.trailer h2 {
+		margin: 0.85rem 0 clamp(2rem, 5vw, 3rem);
+		font-family: var(--fuente-rotulo);
+		font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+		font-weight: 400;
+		letter-spacing: 0.025em;
+		line-height: 0.94;
+	}
+
+	.trailer .video {
+		width: min(100%, 56rem);
+		text-align: left;
+	}
+
 	/* La boca del escenario: el video vive dentro de un marco de proscenio */
 	.video {
 		margin: 0;
@@ -473,21 +759,30 @@ const giros = [-4, 3, -2.5, 5];
 	}
 
 	.video__poster,
-	.video__archivo {
+	.video__archivo,
+	.video__embed,
+	.video__play,
+	.video__luz {
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	.video__poster,
+	.video__archivo {
 		object-fit: cover;
 	}
 
-	.video__archivo {
-		position: absolute;
-		inset: 0;
+	.video__embed {
+		z-index: 3;
+		border: 0;
 	}
 
 	.video__luz {
-		position: absolute;
 		inset: auto 0 0;
 		height: 42%;
+		z-index: 1;
 		pointer-events: none;
 		background: linear-gradient(
 			to top,
@@ -498,13 +793,15 @@ const giros = [-4, 3, -2.5, 5];
 		transition: opacity 0.45s var(--ease);
 	}
 
-	.video.is-encendida .video__luz {
-		opacity: 1;
+	.video.is-encendida .video__luz,
+	.video.is-encendida .video__poster,
+	.video.is-encendida .video__play {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	.video__play {
-		position: absolute;
-		inset: 0;
+		z-index: 2;
 		display: grid;
 		place-content: center;
 		justify-items: center;
@@ -549,87 +846,7 @@ const giros = [-4, 3, -2.5, 5];
 		font-size: 0.68rem;
 		letter-spacing: 0.18em;
 		color: var(--hueso-tenue);
-	}
-
-	/* ---------- Galería ---------- */
-
-	.galeria {
-		overflow: hidden;
-		padding-top: 0;
-		background:
-			radial-gradient(
-				ellipse 50% 40% at 20% 0%,
-				color-mix(in srgb, var(--morado) 18%, transparent),
-				transparent 70%
-			),
-			var(--negro);
-	}
-
-	.galeria__cabecera {
-		margin-bottom: clamp(2.25rem, 5vw, 3.5rem);
-	}
-
-	.galeria h2 {
-		margin-top: 0.85rem;
-		font-family: var(--fuente-rotulo);
-		font-size: clamp(2.2rem, 4.5vw, 4.5rem);
-		font-weight: 400;
-		letter-spacing: 0.025em;
-		line-height: 0.94;
-	}
-
-	.galeria__rejilla {
-		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: clamp(1.25rem, 3vw, 2.25rem);
-		align-items: start;
-	}
-
-	.polaroid {
-		margin: 0;
-		padding: 0.55rem 0.55rem 0.85rem;
-		border: 0;
-		background: #efe6d8;
-		color: #1a1412;
-		box-shadow:
-			0 1.2rem 2.4rem rgba(0, 0, 0, 0.45),
-			0 0.2rem 0.5rem rgba(0, 0, 0, 0.2);
-		transform: rotate(var(--giro, 0deg));
-		cursor: pointer;
-		transition: transform 0.45s var(--ease);
-	}
-
-	.polaroid:nth-child(even) {
-		margin-top: 1.25rem;
-	}
-
-	.polaroid:hover,
-	.polaroid:focus-visible {
-		transform: rotate(0deg) scale(1.04);
-		z-index: 1;
-	}
-
-	.polaroid__foto {
-		display: block;
-		overflow: hidden;
-		aspect-ratio: 4 / 5;
-		background: #c9b9a6;
-	}
-
-	.polaroid__foto img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		filter: saturate(0.85) contrast(1.05);
-		transition:
-			transform 0.7s var(--ease),
-			filter 0.7s var(--ease);
-	}
-
-	.polaroid:hover .polaroid__foto img,
-	.polaroid:focus-visible .polaroid__foto img {
-		transform: scale(1.05);
-		filter: saturate(1) contrast(1.02);
+		text-align: center;
 	}
 
 	/* ---------- Visor ---------- */
@@ -749,13 +966,12 @@ const giros = [-4, 3, -2.5, 5];
 				linear-gradient(to top, var(--negro) 10%, rgba(5, 5, 5, 0.4) 55%, rgba(5, 5, 5, 0.65));
 		}
 
-		.cuerpo__rejilla,
-		.ficha__lista,
-		.galeria__rejilla {
-			grid-template-columns: 1fr 1fr;
+		.cuerpo__rejilla {
+			grid-template-columns: 1fr;
 		}
 
 		.ficha__lista {
+			grid-template-columns: 1fr 1fr;
 			gap: 1.5rem 1rem;
 		}
 
@@ -769,17 +985,20 @@ const giros = [-4, 3, -2.5, 5];
 	}
 
 	@media (max-width: 45rem) {
-		.ficha__lista,
-		.galeria__rejilla {
+		.ficha__lista {
 			grid-template-columns: 1fr 1fr;
 		}
 
-		.cuerpo__rejilla {
-			grid-template-columns: 1fr;
+		.proyector__escenario {
+			width: min(100%, 22rem);
 		}
 
-		.polaroid:nth-child(even) {
-			margin-top: 0;
+		.diapositiva[data-vecino='prev'] {
+			transform: translate(-12%, 8%) rotate(-6deg) scale(0.84);
+		}
+
+		.diapositiva[data-vecino='next'] {
+			transform: translate(12%, 8%) rotate(6deg) scale(0.84);
 		}
 	}
 
@@ -815,6 +1034,10 @@ const giros = [-4, 3, -2.5, 5];
 		.ficha__seguidor {
 			display: none;
 		}
+
+		.proyector__apagon {
+			display: none;
+		}
 	}
 </style>
 
@@ -841,24 +1064,100 @@ const giros = [-4, 3, -2.5, 5];
 	}
 
 	const escenario = document.querySelector<HTMLElement>('[data-video]');
-	escenario?.querySelector('[data-play]')?.addEventListener('click', () => {
+	const play = escenario?.querySelector<HTMLButtonElement>('[data-play]');
+	play?.addEventListener('click', () => {
+		if (!escenario) return;
+
+		const id = play.dataset.youtube;
+		const embed = escenario.querySelector<HTMLIFrameElement>('[data-embed]');
+		if (id && embed) {
+			embed.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+			embed.hidden = false;
+		}
+
 		escenario.classList.add('is-encendida');
 	});
 
 	const visor = document.querySelector<HTMLDialogElement>('[data-visor]');
 	const visorFoto = document.querySelector<HTMLImageElement>('[data-visor-foto]');
-
-	document.querySelectorAll<HTMLButtonElement>('[data-foto]').forEach((boton) => {
-		boton.addEventListener('click', () => {
-			if (!visor || !visorFoto) return;
-			visorFoto.src = boton.dataset.foto ?? '';
-			visorFoto.alt = boton.dataset.alt ?? '';
-			visor.showModal();
-		});
-	});
+	const abrirVisor = (src: string, alt: string) => {
+		if (!visor || !visorFoto) return;
+		visorFoto.src = src;
+		visorFoto.alt = alt;
+		visor.showModal();
+	};
 
 	visor?.querySelector('[data-cerrar]')?.addEventListener('click', () => visor.close());
 	visor?.addEventListener('click', (evento) => {
 		if (evento.target === visor) visor.close();
 	});
+
+	const proyector = document.querySelector<HTMLElement>('[data-proyector]');
+	if (proyector) {
+		const tarjetas = [...proyector.querySelectorAll<HTMLElement>('[data-diapositiva]')];
+		const vidrio = proyector.querySelector<HTMLElement>('[data-luz]');
+		const actual = proyector.querySelector<HTMLElement>('[data-actual]');
+		const total = tarjetas.length;
+		let indice = 0;
+		let ocupado = false;
+
+		const pintar = () => {
+			tarjetas.forEach((tarjeta, i) => {
+				const esActiva = i === indice;
+				const esPrev = i === (indice - 1 + total) % total;
+				const esNext = i === (indice + 1) % total;
+				const boton = tarjeta.querySelector<HTMLButtonElement>('[data-foto]');
+
+				tarjeta.dataset.activo = String(esActiva);
+				tarjeta.setAttribute('aria-hidden', String(!esActiva));
+				delete tarjeta.dataset.vecino;
+				if (!esActiva && esPrev) tarjeta.dataset.vecino = 'prev';
+				if (!esActiva && esNext) tarjeta.dataset.vecino = 'next';
+				if (boton) boton.tabIndex = esActiva || esPrev || esNext ? 0 : -1;
+			});
+
+			if (actual) actual.textContent = String(indice + 1);
+		};
+
+		const irA = (destino: number) => {
+			if (ocupado || total < 2 || destino === indice) return;
+
+			if (sinMovimiento || !vidrio) {
+				indice = destino;
+				pintar();
+				return;
+			}
+
+			ocupado = true;
+			vidrio.dataset.luz = 'apagada';
+			window.setTimeout(() => {
+				indice = destino;
+				pintar();
+				vidrio.dataset.luz = 'encendida';
+				ocupado = false;
+			}, 280);
+		};
+
+		const ir = (delta: number) => irA((indice + delta + total) % total);
+
+		proyector.querySelector('[data-prev]')?.addEventListener('click', () => ir(-1));
+		proyector.querySelector('[data-next]')?.addEventListener('click', () => ir(1));
+		proyector.addEventListener('keydown', (evento) => {
+			if (evento.key === 'ArrowLeft') ir(-1);
+			if (evento.key === 'ArrowRight') ir(1);
+		});
+
+		tarjetas.forEach((tarjeta, i) => {
+			tarjeta.querySelector('[data-foto]')?.addEventListener('click', () => {
+				if (tarjeta.dataset.activo !== 'true') {
+					irA(i);
+					return;
+				}
+				const boton = tarjeta.querySelector<HTMLButtonElement>('[data-foto]');
+				abrirVisor(boton?.dataset.foto ?? '', boton?.dataset.alt ?? '');
+			});
+		});
+
+		pintar();
+	}
 </script>

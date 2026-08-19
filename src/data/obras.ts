@@ -242,8 +242,9 @@ export const fichaMuestra = {
 			ancho: 1536,
 			alto: 1026,
 		},
-		/* Sin archivo todavía: el escenario queda listo para el embed */
-		src: null as string | null,
+		/* Prueba: trailer teatral público. En Sanity será la URL de YouTube
+		   o Vimeo de cada obra; si va null, la sección no se pinta. */
+		src: 'https://www.youtube.com/watch?v=ES6NGp8t1F4',
 	},
 	fotos: [
 		{
@@ -270,6 +271,17 @@ export const fichaMuestra = {
 			ancho: 1024,
 			alto: 683,
 		},
+		{
+			src: `${CARTELES}/2025/07/IMG_6093-1024x683.jpeg`,
+			alt: 'Fotografía de escena, muestra 5',
+			ancho: 1024,
+			alto: 683,
+		},
+		{
+			src: `${CARTELES}/2026/07/Firefly-1-1024x1024.jpg`,
+			alt: 'Fotografía de escena, muestra 6',
+			ancho: 1024,
+			alto: 1024,
+		},
 	],
-	galeriaRotulo: 'MEMORIA DE ESCENA',
 };

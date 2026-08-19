@@ -84,6 +84,11 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 
 			<div class="contenedor pastorela__escena">
 				<figure class="pastorela__vitrina revelar">
+					<span class="pastorela__belen" aria-hidden="true">
+						<span class="pastorela__belen-halo"></span>
+						<span class="pastorela__belen-rayos"></span>
+						<span class="pastorela__belen-cuerpo"></span>
+					</span>
 					<span class="pastorela__riel" aria-hidden="true"></span>
 					<span class="pastorela__gancho pastorela__gancho--izq" aria-hidden="true"></span>
 					<span class="pastorela__gancho pastorela__gancho--der" aria-hidden="true"></span>
@@ -373,10 +378,15 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 			),
 			radial-gradient(
 				ellipse 50% 55% at 92% 88%,
-				color-mix(in srgb, var(--rojo) 38%, transparent),
+				color-mix(in srgb, var(--rojo) 26%, transparent),
 				transparent 62%
 			),
-			linear-gradient(165deg, #1c070c 0%, var(--tinto) 42%, var(--negro) 100%);
+			radial-gradient(
+				ellipse 70% 80% at 50% 50%,
+				#1a3d2a,
+				transparent 72%
+			),
+			linear-gradient(165deg, #163326 0%, #0e2218 48%, #07110c 100%);
 	}
 
 	.pastorela__cielo {
@@ -409,7 +419,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 			),
 			linear-gradient(
 				to top,
-				color-mix(in srgb, var(--rojo) 28%, transparent),
+				color-mix(in srgb, #1a3d2a 55%, transparent),
 				transparent 42%
 			);
 	}
@@ -428,12 +438,76 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		margin: 0;
 		justify-self: center;
 		width: min(100%, 26rem);
-		padding-top: 1.35rem;
+		padding-top: 2.15rem;
+	}
+
+	.pastorela__belen {
+		position: absolute;
+		top: 0.05rem;
+		left: 50%;
+		z-index: 4;
+		display: grid;
+		place-items: center;
+		width: 2.35rem;
+		height: 2.35rem;
+		translate: -50% 0;
+		pointer-events: none;
+	}
+
+	.pastorela__belen-halo {
+		position: absolute;
+		inset: -0.85rem;
+		border-radius: 50%;
+		background: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--dorado) 55%, transparent),
+			transparent 68%
+		);
+		animation: titilar 3.4s ease-in-out infinite;
+	}
+
+	.pastorela__belen-rayos,
+	.pastorela__belen-cuerpo {
+		grid-area: 1 / 1;
+		background: var(--dorado);
+		filter: drop-shadow(0 0 0.55rem color-mix(in srgb, var(--dorado) 75%, transparent));
+	}
+
+	.pastorela__belen-rayos {
+		width: 2.15rem;
+		height: 2.15rem;
+		clip-path: polygon(
+			50% 0%,
+			54% 46%,
+			100% 50%,
+			54% 54%,
+			50% 100%,
+			46% 54%,
+			0% 50%,
+			46% 46%
+		);
+	}
+
+	.pastorela__belen-cuerpo {
+		width: 1.05rem;
+		height: 1.05rem;
+		background: color-mix(in srgb, var(--dorado) 70%, var(--hueso));
+		clip-path: polygon(
+			50% 0%,
+			61% 35%,
+			100% 50%,
+			61% 65%,
+			50% 100%,
+			39% 65%,
+			0% 50%,
+			39% 35%
+		);
+		animation: titilar 3.4s ease-in-out 0.4s infinite;
 	}
 
 	.pastorela__riel {
 		position: absolute;
-		top: 0.35rem;
+		top: 1.15rem;
 		right: 8%;
 		left: 8%;
 		height: 1px;
@@ -442,7 +516,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 
 	.pastorela__gancho {
 		position: absolute;
-		top: 0.12rem;
+		top: 0.92rem;
 		width: 0.55rem;
 		height: 0.9rem;
 		border: 1px solid color-mix(in srgb, var(--dorado) 55%, transparent);
@@ -766,6 +840,22 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		}
 	}
 
+	@keyframes titilar {
+		0%,
+		100% {
+			opacity: 0.72;
+			transform: scale(1);
+		}
+		45% {
+			opacity: 1;
+			transform: scale(1.07);
+		}
+		70% {
+			opacity: 0.82;
+			transform: scale(1.02);
+		}
+	}
+
 	@media (max-width: 70rem) {
 		.hero-interior {
 			min-height: min(40rem, 82svh);
@@ -804,6 +894,13 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 
 		.apertura {
 			display: none;
+		}
+
+		.pastorela__belen-halo,
+		.pastorela__belen-cuerpo {
+			animation: none;
+			opacity: 1;
+			transform: none;
 		}
 	}
 </style>
