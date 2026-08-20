@@ -59,41 +59,43 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 	<Header />
 
 	<main id="contenido">
-		<section class="cartel">
-			<div class="cartel__escena">
+		<article class="obra">
+			<div class="obra__ambiente" aria-hidden="true">
 				<img
-					class="cartel__foto"
-					src={obra.cartel.src}
-					alt={`Cartel de ${obra.tituloCompleto}`}
-					width={obra.cartel.ancho}
-					height={obra.cartel.alto}
+					class="obra__fondo"
+					src={obra.fondo.src}
+					alt=""
+					width={obra.fondo.ancho}
+					height={obra.fondo.alto}
+					style={obra.fondo.foco ? `object-position: ${obra.fondo.foco}` : undefined}
 					loading="eager"
 					fetchpriority="high"
 				/>
-				<span class="cartel__velo" aria-hidden="true"></span>
+				<span class="obra__velo"></span>
 			</div>
 
-			<span class="candilejas" aria-hidden="true"></span>
+			<section class="cartel">
+				<span class="candilejas" aria-hidden="true"></span>
 
-			<div class="contenedor cartel__cuerpo">
-				<a class="volver" href="/obras">
-					<ArrowLeft size={16} stroke-width={1.75} />
-					{muestra.volver}
-				</a>
+				<div class="contenedor cartel__cuerpo">
+					<a class="volver" href="/obras">
+						<ArrowLeft size={16} stroke-width={1.75} />
+						{muestra.volver}
+					</a>
 
-				<h1 class="cartel__titular">{obra.titulo}</h1>
-				{obra.subtitulo && <p class="cartel__subtitulo">{obra.subtitulo}</p>}
+					<h1 class="cartel__titular">{obra.titulo}</h1>
+					{obra.subtitulo && <p class="cartel__subtitulo">{obra.subtitulo}</p>}
 
-				<a
-					class="boton boton--lleno dossier"
-					href={muestra.dossier.href}
-					download={muestra.dossier.archivo}
-				>
-					<Download size={18} stroke-width={1.75} />
-					{muestra.dossier.etiqueta}
-				</a>
-			</div>
-		</section>
+					<a
+						class="boton boton--lleno dossier"
+						href={muestra.dossier.href}
+						download={muestra.dossier.archivo}
+					>
+						<Download size={18} stroke-width={1.75} />
+						{muestra.dossier.etiqueta}
+					</a>
+				</div>
+			</section>
 
 		<section class="ficha" data-ficha aria-label="Ficha técnica">
 			<span class="ficha__seguidor" aria-hidden="true"></span>
@@ -251,6 +253,7 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 				</section>
 			)
 		}
+		</article>
 	</main>
 
 	<dialog class="visor" data-visor aria-label="Fotografía ampliada">
@@ -264,63 +267,91 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 </Layout>
 
 <style>
-	/* ---------- Banner compacto ---------- */
+	/* ---------- Telón fotográfico: la escena se queda en el escenario ---------- */
 
-	.cartel {
+	.obra {
 		position: relative;
-		min-height: min(24rem, 52svh);
-		display: grid;
-		align-items: end;
-		padding-top: var(--altura-barra);
-		overflow: hidden;
-		isolation: isolate;
 		background: var(--negro);
 	}
 
-	.cartel__escena {
-		position: absolute;
-		inset: 0;
-		z-index: -2;
+	.obra__ambiente {
+		position: sticky;
+		top: 0;
+		z-index: 0;
+		height: 100svh;
+		margin-bottom: -100svh;
+		overflow: hidden;
+		pointer-events: none;
 	}
 
-	.cartel__foto {
+	.obra__fondo {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		object-position: center 30%;
-		filter: saturate(0.8) contrast(1.05) brightness(0.78);
+		object-position: center;
+		transform: scale(1.08);
+		filter: saturate(0.9) contrast(1.12) brightness(0.82);
+		animation: respirar 32s ease-in-out alternate infinite;
 	}
 
-	.cartel__velo {
-		--tapa: linear-gradient(
-			to bottom,
-			var(--negro) 0,
-			var(--negro) var(--altura-barra),
-			rgba(5, 5, 5, 0.55) calc(var(--altura-barra) + 2.5rem),
-			transparent calc(var(--altura-barra) + 7rem)
-		);
-
+	.obra__velo {
 		position: absolute;
 		inset: 0;
 		background:
-			var(--tapa),
-			linear-gradient(to top, var(--negro) 4%, rgba(5, 5, 5, 0.15) 48%),
-			linear-gradient(to right, rgba(5, 5, 5, 0.72), rgba(5, 5, 5, 0.12) 55%);
+			linear-gradient(
+				to bottom,
+				var(--negro) 0,
+				var(--negro) var(--altura-barra),
+				rgba(5, 5, 5, 0.28) calc(var(--altura-barra) + 6rem),
+				transparent 38%
+			),
+			linear-gradient(
+				to top,
+				rgba(5, 5, 5, 0.88) 0%,
+				rgba(5, 5, 5, 0.42) 26%,
+				transparent 58%
+			),
+			linear-gradient(
+				to right,
+				rgba(5, 5, 5, 0.62) 0%,
+				rgba(5, 5, 5, 0.12) 28%,
+				transparent 50%,
+				rgba(5, 5, 5, 0.18) 78%,
+				rgba(5, 5, 5, 0.55) 100%
+			),
+			radial-gradient(ellipse 72% 68% at 50% 40%, transparent 35%, rgba(5, 5, 5, 0.5) 100%);
+	}
+
+	.cartel,
+	.ficha,
+	.cuerpo,
+	.trailer {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* ---------- Apertura: el titular sobre la escena ---------- */
+
+	.cartel {
+		display: grid;
+		align-items: end;
+		min-height: 100svh;
+		padding-top: var(--altura-barra);
 	}
 
 	.candilejas {
 		position: absolute;
 		inset: auto 0 0;
 		z-index: 1;
-		height: 38%;
+		height: 42%;
 		pointer-events: none;
 		background:
 			radial-gradient(
 				ellipse 55% 100% at 50% 100%,
-				color-mix(in srgb, var(--hueso) 12%, transparent),
+				color-mix(in srgb, var(--hueso) 10%, transparent),
 				transparent 72%
 			),
-			linear-gradient(to top, color-mix(in srgb, var(--rojo) 22%, transparent), transparent 34%);
+			linear-gradient(to top, color-mix(in srgb, var(--rojo) 22%, transparent), transparent 38%);
 	}
 
 	.cartel__cuerpo {
@@ -329,7 +360,7 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 		display: grid;
 		justify-items: start;
 		padding-inline: calc(var(--margen) + clamp(0.5rem, 2vw, 2rem));
-		padding-block: clamp(2rem, 6vh, 3.5rem);
+		padding-block: clamp(2.4rem, 7vh, 4.5rem);
 		animation: subir 0.9s var(--ease) 0.15s both;
 	}
 
@@ -343,6 +374,7 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 		letter-spacing: 0.2em;
 		color: var(--hueso-medio);
 		text-decoration: none;
+		text-shadow: 0 0.1rem 1.2rem rgba(5, 5, 5, 0.85);
 		transition: color 0.3s var(--ease);
 	}
 
@@ -351,14 +383,14 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 	}
 
 	.cartel__titular {
-		max-width: 16ch;
+		max-width: 14ch;
 		margin: 0;
 		font-family: var(--fuente-rotulo);
-		font-size: clamp(2.1rem, 6.5vw, 5.25rem);
+		font-size: clamp(2.4rem, 8vw, 6.75rem);
 		font-weight: 400;
 		letter-spacing: 0.02em;
 		line-height: 1.02;
-		text-shadow: 0 0.15rem 2.5rem rgba(5, 5, 5, 0.9);
+		text-shadow: 0 0.2rem 2.8rem rgba(5, 5, 5, 0.92);
 	}
 
 	.cartel__subtitulo {
@@ -367,6 +399,7 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 		font-size: clamp(0.72rem, 1vw, 0.85rem);
 		letter-spacing: 0.2em;
 		color: var(--hueso-medio);
+		text-shadow: 0 0.1rem 1.2rem rgba(5, 5, 5, 0.85);
 	}
 
 	.dossier {
@@ -380,15 +413,15 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 	.ficha {
 		position: relative;
 		overflow: hidden;
-		padding-block: clamp(2rem, 5vw, 3.25rem);
+		padding-block: clamp(2.25rem, 5vw, 3.5rem);
 		border-block: 1px solid var(--linea);
-		background:
-			radial-gradient(
-				ellipse 80% 120% at 50% 120%,
-				color-mix(in srgb, var(--tinto) 55%, transparent),
-				transparent 70%
-			),
-			var(--negro);
+		background: linear-gradient(
+			to bottom,
+			rgba(5, 5, 5, 0.15),
+			rgba(5, 5, 5, 0.58) 18%,
+			rgba(5, 5, 5, 0.62) 82%,
+			rgba(5, 5, 5, 0.2)
+		);
 	}
 
 	.ficha__seguidor {
@@ -476,9 +509,13 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 
 	.cuerpo {
 		padding-block: clamp(3.5rem, 8vw, 6rem);
-		background:
-			radial-gradient(ellipse 40% 50% at 90% 0%, rgba(63, 3, 50, 0.28), transparent 70%),
-			var(--negro);
+		background: linear-gradient(
+			105deg,
+			rgba(5, 5, 5, 0.82) 0%,
+			rgba(5, 5, 5, 0.58) 38%,
+			rgba(5, 5, 5, 0.36) 72%,
+			rgba(5, 5, 5, 0.28) 100%
+		);
 	}
 
 	.cuerpo__rejilla {
@@ -491,9 +528,10 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 	.relato {
 		display: grid;
 		gap: 1.25rem;
-		color: var(--hueso-medio);
+		color: color-mix(in srgb, var(--hueso) 86%, var(--hueso-medio));
 		font-size: clamp(1.02rem, 1.25vw, 1.12rem);
 		line-height: 1.75;
+		text-shadow: 0 0.12rem 1.6rem rgba(5, 5, 5, 0.9);
 	}
 
 	.relato p {
@@ -714,13 +752,13 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 	.trailer {
 		overflow: hidden;
 		padding-top: clamp(3.25rem, 7vw, 5.5rem);
-		background:
-			radial-gradient(
-				ellipse 60% 50% at 50% 0%,
-				color-mix(in srgb, var(--tinto) 40%, transparent),
-				transparent 70%
-			),
-			var(--negro);
+		background: linear-gradient(
+			to bottom,
+			rgba(5, 5, 5, 0.4) 0%,
+			rgba(5, 5, 5, 0.78) 32%,
+			rgba(5, 5, 5, 0.94) 68%,
+			var(--negro) 100%
+		);
 	}
 
 	.trailer__interior {
@@ -925,6 +963,15 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 		}
 	}
 
+	@keyframes respirar {
+		from {
+			transform: scale(1.08);
+		}
+		to {
+			transform: scale(1.16);
+		}
+	}
+
 	@keyframes recorrer {
 		0% {
 			opacity: 0;
@@ -957,13 +1004,16 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 
 	@media (max-width: 62rem) {
 		.cartel {
-			min-height: min(22rem, 48svh);
+			min-height: 92svh;
 		}
 
-		.cartel__velo {
-			background:
-				var(--tapa),
-				linear-gradient(to top, var(--negro) 10%, rgba(5, 5, 5, 0.4) 55%, rgba(5, 5, 5, 0.65));
+		.cuerpo {
+			background: linear-gradient(
+				to bottom,
+				rgba(5, 5, 5, 0.72),
+				rgba(5, 5, 5, 0.55) 50%,
+				rgba(5, 5, 5, 0.42)
+			);
 		}
 
 		.cuerpo__rejilla {
@@ -1037,6 +1087,11 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 
 		.proyector__apagon {
 			display: none;
+		}
+
+		.obra__fondo {
+			animation: none;
+			transform: scale(1.06);
 		}
 	}
 </style>

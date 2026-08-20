@@ -7,6 +7,15 @@
  * `tituloCompleto` es la versión acentuada para textos alternativos y metadatos.
  */
 
+export interface ImagenObra {
+	src: string;
+	alt: string;
+	ancho: number;
+	alto: number;
+	/** Punto focal para `object-position`, p. ej. `center 30%`. */
+	foco?: string;
+}
+
 export interface Obra {
 	slug: string;
 	titulo: string;
@@ -28,6 +37,8 @@ export interface Obra {
 		ancho: number;
 		alto: number;
 	};
+	/** Fotografía de escena a pantalla completa en la ficha. En Sanity: imagen de fondo. */
+	fondo: ImagenObra;
 }
 
 const CARTELES = 'https://produccionesarlequin.com/wp-content/uploads';
@@ -49,6 +60,13 @@ export const obras: Obra[] = [
 			src: `${CARTELES}/2026/07/Documento-1024x576.png`,
 			ancho: 1024,
 			alto: 576,
+		},
+		fondo: {
+			src: `${CARTELES}/2026/07/IMGL8600-1024x683.jpg`,
+			alt: 'Escena en escenario oscuro, muestra',
+			ancho: 1024,
+			alto: 683,
+			foco: 'center 35%',
 		},
 	},
 	{
@@ -72,6 +90,13 @@ export const obras: Obra[] = [
 			ancho: 1024,
 			alto: 597,
 		},
+		fondo: {
+			src: `${CARTELES}/2026/03/Fotografia-2-%E2%80%93El-Planeta-Bumara-%E2%80%93-Alexis-Hernandez-1024x683.jpg`,
+			alt: 'Escena de El planeta Bumara bajo luz escénica',
+			ancho: 1024,
+			alto: 683,
+			foco: 'center 40%',
+		},
 	},
 	{
 		slug: 'absolucion-final',
@@ -92,6 +117,13 @@ export const obras: Obra[] = [
 			ancho: 1024,
 			alto: 576,
 		},
+		fondo: {
+			src: `${CARTELES}/2025/09/Foto-10-1536x1026.jpg`,
+			alt: 'Intérprete de Absolución final alza un estandarte bajo el seguidor',
+			ancho: 1536,
+			alto: 1026,
+			foco: 'center 30%',
+		},
 	},
 	{
 		slug: 'el-abrazo-de-mi-luna',
@@ -110,6 +142,13 @@ export const obras: Obra[] = [
 			ancho: 960,
 			alto: 560,
 		},
+		fondo: {
+			src: `${CARTELES}/2025/07/IMG_6376-1024x683.jpeg`,
+			alt: 'Escena de El abrazo de mi luna en escenario',
+			ancho: 1024,
+			alto: 683,
+			foco: 'center 45%',
+		},
 	},
 	{
 		slug: 'cuando-bajan-las-estrellas',
@@ -126,6 +165,13 @@ export const obras: Obra[] = [
 			ancho: 960,
 			alto: 560,
 		},
+		fondo: {
+			src: `${CARTELES}/2025/07/Producciones-Arlequin-37-de-24-1024x753.jpg`,
+			alt: 'Escena cómica en escenario, muestra',
+			ancho: 1024,
+			alto: 753,
+			foco: 'center 35%',
+		},
 	},
 	{
 		slug: 'arlequines-revoltosos',
@@ -141,6 +187,13 @@ export const obras: Obra[] = [
 			ancho: 960,
 			alto: 560,
 		},
+		fondo: {
+			src: `${CARTELES}/2026/07/IMGL8590-1024x683.jpg`,
+			alt: 'Arlequines en escena bajo luz cálida',
+			ancho: 1024,
+			alto: 683,
+			foco: 'center 40%',
+		},
 	},
 	{
 		slug: 'otro-dia-con-mas-calma',
@@ -155,6 +208,13 @@ export const obras: Obra[] = [
 			src: `${CARTELES}/2024/06/WhatsApp-Image-2024-06-04-at-5.11.56-PM-1024x597.jpeg`,
 			ancho: 1024,
 			alto: 597,
+		},
+		fondo: {
+			src: `${CARTELES}/2025/07/IMG_6085-1024x683.jpeg`,
+			alt: 'Escena de comedia en escenario, muestra',
+			ancho: 1024,
+			alto: 683,
+			foco: 'center 38%',
 		},
 	},
 ];

@@ -12,6 +12,10 @@ export const marca = {
 	correo: 'arlequinerias@gmail.com',
 	telefono: '+52 55 1234 5678',
 	fundacion: 2020,
+	redes: {
+		facebook: null as string | null,
+		instagram: null as string | null,
+	},
 };
 
 export const heroe = {

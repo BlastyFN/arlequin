@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
+import { siFacebook, siInstagram } from 'simple-icons';
 import logoBlanco from '../assets/logo con nombre en blanco.png';
+import IconoRedSocial from './IconoRedSocial.astro';
 import { marca } from '../data/home';
 
 const enlaces = [
@@ -14,6 +16,11 @@ const enlaces = [
 
 const rutaActual = Astro.url.pathname.replace(/\/$/, '') || '/';
 const enObras = rutaActual === '/obras' || rutaActual.startsWith('/obras/');
+
+const redes = [
+	{ id: 'facebook', href: marca.redes.facebook, icon: siFacebook, etiqueta: 'Facebook' },
+	{ id: 'instagram', href: marca.redes.instagram, icon: siInstagram, etiqueta: 'Instagram' },
+] as const;
 ---
 
 <header class="barra" data-barra>
@@ -56,6 +63,32 @@ const enObras = rutaActual === '/obras' || rutaActual.startsWith('/obras/');
 					))
 				}
 			</ul>
+
+			<ul class="menu__redes" aria-label="Redes sociales">
+				{
+					redes.map(({ href, icon, etiqueta }) => (
+						<li>
+							{href ? (
+								<a
+									class="menu__red"
+									href={href}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label={etiqueta}
+								>
+									<span class="menu__punto" aria-hidden="true" />
+									<IconoRedSocial icon={icon} />
+								</a>
+							) : (
+								<span class="menu__red menu__red--inactivo" aria-label={etiqueta}>
+									<span class="menu__punto" aria-hidden="true" />
+									<IconoRedSocial icon={icon} />
+								</span>
+							)}
+						</li>
+					))
+				}
+			</ul>
 		</nav>
 
 		<button
@@ -88,6 +121,32 @@ const enObras = rutaActual === '/obras' || rutaActual.startsWith('/obras/');
 				}
 			</ul>
 		</nav>
+		<ul class="panel__redes" aria-label="Redes sociales">
+			{
+				redes.map(({ href, icon, etiqueta }) => (
+					<li>
+						{href ? (
+							<a
+								class="panel__red"
+								href={href}
+								target="_blank"
+								rel="noopener noreferrer"
+								aria-label={etiqueta}
+								data-cerrar
+							>
+								<span class="menu__punto" aria-hidden="true" />
+								<IconoRedSocial icon={icon} />
+							</a>
+						) : (
+							<span class="panel__red panel__red--inactivo" aria-label={etiqueta}>
+								<span class="menu__punto" aria-hidden="true" />
+								<IconoRedSocial icon={icon} />
+							</span>
+						)}
+					</li>
+				))
+			}
+		</ul>
 		<p class="panel__pie">
 			{marca.ciudad} · <a href={`mailto:${marca.correo}`}>
 				{marca.correo}</a
@@ -161,6 +220,12 @@ const enObras = rutaActual === '/obras' || rutaActual.startsWith('/obras/');
 
 	/* ---------- Menú de escritorio ---------- */
 
+	.menu {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.25rem, 2.5vw, 2rem);
+	}
+
 	.menu__lista {
 		display: flex;
 		align-items: center;
@@ -186,21 +251,55 @@ const enObras = rutaActual === '/obras' || rutaActual.startsWith('/obras/');
 	}
 
 	.menu__enlace:hover,
-	.menu__enlace[aria-current] {
+	.menu__enlace[aria-current],
+	.menu__red:hover {
 		color: var(--hueso);
 	}
 
 	.menu__punto {
 		width: 0.32rem;
 		height: 0.32rem;
+		flex: none;
 		background: var(--rojo-luz);
 		transform: rotate(45deg) scale(0);
 		transition: transform 0.35s var(--ease);
 	}
 
 	.menu__enlace:hover .menu__punto,
-	.menu__enlace[aria-current] .menu__punto {
+	.menu__enlace[aria-current] .menu__punto,
+	.menu__red:hover .menu__punto,
+	.panel__red:hover .menu__punto {
 		transform: rotate(45deg) scale(1);
+	}
+
+	.menu__redes {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-left: 1px solid var(--linea-suave);
+		padding-left: clamp(1rem, 2vw, 1.5rem);
+	}
+
+	.menu__red {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding-block: 0.4rem;
+		color: var(--hueso-medio);
+		text-decoration: none;
+		transition: color 0.3s var(--ease);
+	}
+
+	.menu__red :global(svg) {
+		width: 1.45rem;
+		height: 1.45rem;
+	}
+
+	.menu__red--inactivo {
+		cursor: default;
 	}
 
 	/* ---------- Botón hamburguesa ---------- */
@@ -293,6 +392,37 @@ const enObras = rutaActual === '/obras' || rutaActual.startsWith('/obras/');
 		font-size: 0.75rem;
 		letter-spacing: 0.18em;
 		color: var(--rojo-luz);
+	}
+
+	.panel__redes {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.panel__red {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.65rem;
+		color: var(--hueso-medio);
+		text-decoration: none;
+		transition: color 0.3s var(--ease);
+	}
+
+	.panel__red :global(svg) {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
+	.panel__red:hover {
+		color: var(--hueso);
+	}
+
+	.panel__red--inactivo {
+		cursor: default;
 	}
 
 	.panel__pie {
