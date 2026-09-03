@@ -4,9 +4,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FondoEscena from '../components/FondoEscena.astro';
 import ArcoProscenio from '../components/ArcoProscenio.astro';
-import { marca } from '../data/home';
-import { paginaServicios } from '../data/servicios';
+import { getMarca, getPaginaServicios } from '../lib/content';
 
+const marca = await getMarca();
+const paginaServicios = await getPaginaServicios();
 const { portada, oficios, pastorela, cierre } = paginaServicios;
 ---
 
@@ -14,7 +15,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 	title="Servicios — Producciones Arlequín"
 	description="Capacitaciones, formaciones, profesionalización artística y pastorelas corporativas personalizadas. El oficio de la escena, a la medida de equipos, artistas y empresas."
 >
-	<Header />
+	<Header marca={marca} />
 
 	<main id="contenido">
 		<section class="hero-interior">
@@ -164,7 +165,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		</section>
 	</main>
 
-	<Footer />
+	<Footer marca={marca} />
 </Layout>
 
 <style>

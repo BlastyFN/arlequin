@@ -2,9 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { marca } from '../data/home';
-import { notas, paginaPrensa } from '../data/prensa';
+import { getMarca, getNotas, getPaginaPrensa } from '../lib/content';
 
+const marca = await getMarca();
+const notas = await getNotas();
+const paginaPrensa = await getPaginaPrensa();
 const { cabecera, listado, medios, cierre } = paginaPrensa;
 
 /* La primera nota abre la plana; el resto va a la rejilla de columnas. */
@@ -15,7 +17,7 @@ const [apertura, ...resto] = notas;
 	title="Prensa — Producciones Arlequín"
 	description="Notas, reseñas y boletines publicados sobre Producciones Arlequín en medios de Guanajuato y del país."
 >
-	<Header />
+	<Header marca={marca} />
 
 	<main id="contenido">
 		<section class="cabeza">
@@ -178,7 +180,7 @@ const [apertura, ...resto] = notas;
 		</section>
 	</main>
 
-	<Footer />
+	<Footer marca={marca} />
 </Layout>
 
 <style>

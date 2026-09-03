@@ -3,7 +3,13 @@ import { Image } from 'astro:assets';
 import { siFacebook, siInstagram } from 'simple-icons';
 import logoBlanco from '../assets/logo con nombre en blanco.png';
 import IconoRedSocial from './IconoRedSocial.astro';
-import { marca } from '../data/home';
+import { marca as marcaLocal } from '../data/home';
+
+interface Props {
+	marca?: typeof marcaLocal;
+}
+
+const { marca = marcaLocal } = Astro.props;
 
 const enlaces = [
 	{ etiqueta: 'INICIO', href: '/#inicio' },

@@ -1,6 +1,14 @@
 ---
-import { respaldos } from '../data/home';
+import { respaldos as respaldosLocal } from '../data/home';
 
+interface Props {
+	respaldos?: {
+		titular: string;
+		logos: { marca: string; nombre: string; src?: string }[];
+	};
+}
+
+const { respaldos = respaldosLocal } = Astro.props;
 const { titular, logos } = respaldos;
 ---
 
@@ -13,9 +21,13 @@ const { titular, logos } = respaldos;
 		<div class="carrusel__pista">
 			<ul class="carrusel__grupo">
 				{
-					logos.map(({ marca, nombre }) => (
+					logos.map(({ marca, nombre, src }) => (
 						<li class="logo">
-							<span class="logo__marca" aria-hidden="true">{marca}</span>
+							{src ? (
+								<img class="logo__img" src={src} alt={nombre} width="160" height="80" loading="lazy" />
+							) : (
+								<span class="logo__marca" aria-hidden="true">{marca}</span>
+							)}
 							<span class="sr-only">{nombre}</span>
 						</li>
 					))
@@ -23,9 +35,13 @@ const { titular, logos } = respaldos;
 			</ul>
 			<ul class="carrusel__grupo" aria-hidden="true">
 				{
-					logos.map(({ marca }) => (
+					logos.map(({ marca, src, nombre }) => (
 						<li class="logo">
-							<span class="logo__marca">{marca}</span>
+							{src ? (
+								<img class="logo__img" src={src} alt="" width="160" height="80" loading="lazy" />
+							) : (
+								<span class="logo__marca">{marca}</span>
+							)}
 						</li>
 					))
 				}
@@ -105,6 +121,14 @@ const { titular, logos } = respaldos;
 		font-weight: 800;
 		letter-spacing: 0.08em;
 		white-space: nowrap;
+	}
+
+	.logo__img {
+		display: block;
+		max-height: 2.5rem;
+		width: auto;
+		object-fit: contain;
+		filter: grayscale(1) brightness(1.4);
 	}
 
 	.sr-only {

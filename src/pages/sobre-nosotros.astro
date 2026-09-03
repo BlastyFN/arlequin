@@ -4,105 +4,29 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FondoEscena from '../components/FondoEscena.astro';
 import ArcoProscenio from '../components/ArcoProscenio.astro';
+import { getMarca, getPaginaSobre } from '../lib/content';
 
-const galeria = [
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2026/07/IMGL8600-1024x683.jpg',
-		titulo: 'No Todas las Ballenas Quieren Volver',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2026/07/IMGL8590-1024x683.jpg',
-		titulo: 'No Todas las Ballenas Quieren Volver',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2026/07/Firefly-1-1024x1024.jpg',
-		titulo: 'No Todas las Ballenas Quieren Volver',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2026/03/Fotografia-2-%E2%80%93El-Planeta-Bumara-%E2%80%93-Alexis-Hernandez-1024x683.jpg',
-		titulo: 'El Planeta Bumara',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2026/03/IMG_4171-1-1024x648.jpg',
-		titulo: 'El Planeta Bumara',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2026/03/Fotografia-5-%E2%80%93El-Planeta-Bumara-%E2%80%93-Alexis-Hernandez-1024x683.jpg',
-		titulo: 'El Planeta Bumara',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2026/03/Firefly-20250911001832-1024x570.png',
-		titulo: 'Absolución Final',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2024/06/244762314_195600952713235_2506839290923249544_n-edited-1024x576.jpg',
-		titulo: 'Absolución Final',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2025/09/Foto-10-1024x684.jpg',
-		titulo: 'Absolución Final',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2025/07/Producciones-Arlequin-37-de-24-1024x753.jpg',
-		titulo: 'Sabrá Dios a dónde vamos',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2025/07/Producciones-Arlequin-15-de-19-1024x731.jpg',
-		titulo: 'Sabrá Dios a dónde vamos',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2025/07/Producciones-Arlequin-29-de-24-1024x731.jpg',
-		titulo: 'Sabrá Dios a dónde vamos',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2025/07/IMG_6376-1024x683.jpeg',
-		titulo: 'El Abrazo de mi Luna',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2025/07/IMG_6093-1024x683.jpeg',
-		titulo: 'El Abrazo de mi Luna',
-	},
-	{
-		src: 'https://produccionesarlequin.com/wp-content/uploads/2025/07/IMG_6085-1024x683.jpeg',
-		titulo: 'El Abrazo de mi Luna',
-	},
-];
-
-const objetivos = [
-	{
-		inicio: 'Generar ',
-		destacado: 'trabajo digno, profesional y remunerado para los talentos locales',
-		final: ' en formación y primeras etapas de su desarrollo profesional.',
-	},
-	{
-		inicio: 'Ser actores de cambio social por y para la comunidad por ',
-		destacado: 'medio de la creación, extensión y vinculación cultural.',
-		final: '',
-	},
-	{
-		inicio:
-			'Convertirnos en un medio de capacitación para profesionales y no profesionales de las artes escénicas con el fin de estimular ',
-		destacado: 'la creación y colaboración entre talentos.',
-		final: '',
-	},
-];
+const marca = await getMarca();
+const pagina = await getPaginaSobre();
+const { portada, origen, objetivos, galeria } = pagina;
+const giros = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3, -4, 2, -3, 5, -2];
 ---
 
 <Layout
 	title="Sobre nosotros — Producciones Arlequín"
 	description="Conoce el origen, los objetivos y la trayectoria de Producciones Arlequín, compañía escénica de Celaya."
 >
-	<Header />
+	<Header marca={marca} />
 
 	<main id="contenido">
 		<section class="hero-interior">
 			<div class="escena">
 				<img
 					class="escena__foto"
-					src="https://produccionesarlequin.com/wp-content/uploads/2026/07/IMGL8595-1280x853.jpg"
-					alt="Integrantes de Producciones Arlequín durante una puesta en escena"
-					width="1280"
-					height="853"
+					src={portada.foto.src}
+					alt={portada.foto.alt}
+					width={portada.foto.ancho}
+					height={portada.foto.alto}
 					loading="eager"
 					fetchpriority="high"
 				/>
@@ -118,15 +42,14 @@ const objetivos = [
 			</div>
 
 			<div class="contenedor hero-interior__cuerpo">
-				<p class="rotulo rotulo--rojo">NUESTRA HISTORIA · DESDE 2020</p>
-				<h1>SOBRE <span>NOSOTROS</span></h1>
+				<p class="rotulo rotulo--rojo">{portada.rotulo}</p>
+				<h1>{portada.titular} <span>{portada.titularAcento}</span></h1>
 				<p class="hero-interior__entrada">
-					Nacimos para preservar la creación, la emoción y la esperanza. Somos generaciones
-					distintas unidas por una misma pasión: hacer teatro.
+					{portada.entrada}
 				</p>
 				<p class="hero-interior__credito">
 					<span class="rombo" aria-hidden="true"></span>
-					PRODUCCIONES ARLEQUIN · CELAYA, GTO.
+					{portada.credito}
 				</p>
 			</div>
 		</section>
@@ -134,39 +57,23 @@ const objetivos = [
 		<section class="origen seccion" aria-labelledby="titulo-origen">
 			<div class="contenedor origen__rejilla">
 				<div class="origen__encabezado revelar">
-					<p class="rotulo rotulo--rojo">EL PUNTO DE PARTIDA</p>
-					<h2 id="titulo-origen">CUANDO EL TELON PARECIA CERRARSE.</h2>
+					<p class="rotulo rotulo--rojo">{origen.rotulo}</p>
+					<h2 id="titulo-origen">{origen.titular}</h2>
 				</div>
 
 				<div class="origen__relato revelar">
-					<p>
-						<strong>Producciones Arlequín</strong> nace en el 2020, en medio del confinamiento
-						por la pandemia, como una respuesta urgente a la necesidad de preservar la creación,
-						la emoción y la esperanza. Nace del amor y compromiso de un grupo de artistas
-						celayenses, cuyos integrantes tienen en común el paso por más de 20 años de distintas
-						generaciones del mismo grupo de teatro de preparatoria “Teatro Estudio Arlequín”.
-					</p>
-					<p>
-						Se resisten a dejar de lado los aprendizajes, las amistades y la pasión por la
-						producción e interpretación escénica, independientemente del camino que cada uno de
-						los miembros eligió como proyecto de vida.
-					</p>
-					<p>
-						La compañía ha logrado posicionarse tras éxitos como <strong>“Absolución Final”</strong>
-						y <strong>“El Planeta Bumara: Una Aventura Interespacial”</strong>, entre otras
-						producciones.
-					</p>
+					{
+						origen.parrafos.map((parrafo) => (
+							<p>{parrafo}</p>
+						))
+					}
 				</div>
 			</div>
 
 			<div class="contenedor trayectoria revelar">
-				<p class="trayectoria__rotulo">HEMOS PARTICIPADO EN</p>
+				<p class="trayectoria__rotulo">{origen.trayectoriaRotulo}</p>
 				<ul class="trayectoria__lista">
-					<li>Festival Cultural de Fundación de Celaya · 451 Aniversario</li>
-					<li>Festival de Fiestas Patrias de Celaya · 2022</li>
-					<li>Festival ENTEATRARTE · 2022</li>
-					<li>Rutas Escénicas Estatales de Guanajuato · 2024</li>
-					<li>Encuentro Estatal de Teatro de Guanajuato · 2025</li>
+					{origen.trayectoria.map((item) => <li>{item}</li>)}
 				</ul>
 			</div>
 		</section>
@@ -175,13 +82,22 @@ const objetivos = [
 			<div class="objetivos__telon" aria-hidden="true"></div>
 			<div class="contenedor objetivos__interior">
 				<div class="objetivos__titulo revelar">
-					<p class="rotulo">NUESTRO COMPROMISO</p>
-					<h2 id="titulo-objetivos">TRABAJAMOS<br />BAJO TRES<br /><span>OBJETIVOS.</span></h2>
+					<p class="rotulo">{objetivos.rotulo}</p>
+					<h2 id="titulo-objetivos">
+						{objetivos.titular.map((linea, i) => (
+							<>
+								{linea}
+								{i < objetivos.titular.length - 1 && <br />}
+							</>
+						))}
+						<br />
+						<span>{objetivos.titularAcento}</span>
+					</h2>
 				</div>
 
 				<ol class="objetivos__lista">
 					{
-						objetivos.map(({ inicio, destacado, final }, i) => (
+						objetivos.lista.map(({ inicio, destacado, final }, i) => (
 							<li class="objetivo revelar">
 								<span class="objetivo__numero">{String(i + 1).padStart(2, '0')}</span>
 								<p>
@@ -194,42 +110,55 @@ const objetivos = [
 			</div>
 
 			<p class="contenedor objetivos__cierre revelar">
-				Nuestros ejes de trabajo son la <strong>Cultura de paz</strong>, la <strong
-					>profesionalización</strong
-				> de la comunidad artística y cultural, y <strong>el desarrollo del talento local.</strong>
+				{objetivos.cierre}
 			</p>
 		</section>
 
 		<section class="galeria seccion" aria-labelledby="titulo-galeria">
 			<div class="contenedor galeria__cabecera revelar">
 				<div>
-					<p class="rotulo rotulo--rojo">MEMORIA DE ESCENA</p>
-					<h2 id="titulo-galeria">GALERIA</h2>
+					<p class="rotulo rotulo--rojo">{galeria.rotulo}</p>
+					<h2 id="titulo-galeria">{galeria.titular}</h2>
 				</div>
 			</div>
 
-			<div class="contenedor galeria__rejilla">
-				{
-					galeria.map(({ src, titulo }, i) => (
-						<figure class="polaroid revelar" style={`--giro: ${[-4, 3, -2, 5, -3, 2, -5, 4, -1, 3, -4, 2, -3, 5, -2][i]}deg`}>
-							<div class="polaroid__foto">
-								<img
-									src={src}
-									alt={`${titulo}, fotografía de la puesta en escena`}
-									width="1024"
-									height="683"
-									loading="lazy"
-								/>
-							</div>
-							<figcaption class="polaroid__pie">{titulo}</figcaption>
-						</figure>
-					))
-				}
+			<div class="galeria__carrusel" style={`--n: ${galeria.fotos.length}`}>
+				<div class="galeria__pista">
+					{
+						[galeria.fotos, galeria.fotos].map((fotos, copia) => (
+							<ul class="galeria__grupo" aria-hidden={copia === 1 ? 'true' : undefined}>
+								{fotos.map(({ src, titulo, ancho, alto }, i) => (
+									<li>
+										<figure
+											class="polaroid"
+											style={`--giro: ${giros[i % giros.length]}deg; --rw: ${ancho}; --rh: ${alto}`}
+										>
+											<div class="polaroid__foto">
+												<img
+													src={src}
+													alt={
+														copia === 1
+															? ''
+															: `${titulo}, fotografía de la puesta en escena`
+													}
+													width={ancho}
+													height={alto}
+													loading="lazy"
+												/>
+											</div>
+											<figcaption class="polaroid__pie">{titulo}</figcaption>
+										</figure>
+									</li>
+								))}
+							</ul>
+						))
+					}
+				</div>
 			</div>
 		</section>
 	</main>
 
-	<Footer />
+	<Footer marca={marca} />
 </Layout>
 
 <style>
@@ -505,6 +434,7 @@ const objetivos = [
 	}
 
 	.galeria {
+		--alto-foto: clamp(10.25rem, 22vw, 15.75rem);
 		overflow: hidden;
 		background:
 			radial-gradient(
@@ -516,22 +446,43 @@ const objetivos = [
 	}
 
 	.galeria__cabecera {
-		margin-bottom: clamp(3rem, 7vw, 5rem);
+		margin-bottom: clamp(2.25rem, 5vw, 3.5rem);
 	}
 
-	.galeria__rejilla {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 3vw, 2.75rem);
-		align-items: start;
+	.galeria__carrusel {
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+	}
+
+	.galeria__pista {
+		display: flex;
+		width: max-content;
+		animation: desfilar-galeria calc(var(--n, 12) * 5.2s) linear infinite;
+	}
+
+	.galeria__carrusel:hover .galeria__pista {
+		animation-play-state: paused;
+	}
+
+	.galeria__grupo {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.1rem, 2.2vw, 2rem);
+		margin: 0;
+		padding: 2.4rem clamp(1.1rem, 2.2vw, 2rem) 2.8rem 0;
+		list-style: none;
+	}
+
+	.galeria__grupo > li {
+		flex: none;
 	}
 
 	.polaroid {
+		flex: none;
 		margin: 0;
 		display: grid;
-		grid-template-rows: 1fr auto;
-		gap: 0.7rem;
-		padding: 0.7rem 0.7rem 1.1rem;
+		gap: 0.65rem;
+		padding: 0.65rem 0.65rem 1rem;
 		background: #efe6d8;
 		color: #1a1412;
 		box-shadow:
@@ -541,19 +492,16 @@ const objetivos = [
 		transition: transform 0.45s var(--ease);
 	}
 
-	.polaroid:nth-child(3n + 2) {
-		margin-top: clamp(1.25rem, 3vw, 3rem);
-	}
-
 	.polaroid:hover {
-		transform: rotate(0deg) scale(1.03);
+		transform: rotate(0deg) scale(1.04);
 		z-index: 1;
 	}
 
 	.polaroid__foto {
 		overflow: hidden;
 		background: #c9b9a6;
-		aspect-ratio: 4 / 5;
+		height: var(--alto-foto);
+		width: calc(var(--alto-foto) * var(--rw, 3) / var(--rh, 2));
 	}
 
 	.polaroid__foto img {
@@ -572,6 +520,7 @@ const objetivos = [
 	}
 
 	.polaroid__pie {
+		max-width: calc(var(--alto-foto) * var(--rw, 3) / var(--rh, 2));
 		font-family: var(--fuente-rotulo);
 		font-size: clamp(0.62rem, 0.9vw, 0.72rem);
 		letter-spacing: 0.12em;
@@ -612,6 +561,12 @@ const objetivos = [
 		}
 	}
 
+	@keyframes desfilar-galeria {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
 	@media (max-width: 62rem) {
 		.hero-interior {
 			min-height: min(40rem, 82svh);
@@ -635,10 +590,6 @@ const objetivos = [
 		.trayectoria {
 			grid-template-columns: 1fr;
 		}
-
-		.galeria__rejilla {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
 	}
 
 	@media (max-width: 45rem) {
@@ -646,18 +597,23 @@ const objetivos = [
 			font-size: clamp(2.6rem, 13vw, 4.75rem);
 		}
 
-		.trayectoria__lista,
-		.galeria__rejilla {
+		.trayectoria__lista {
 			grid-template-columns: 1fr;
 		}
+	}
 
-		.polaroid:nth-child(3n + 2) {
-			margin-top: 0;
+	@media (prefers-reduced-motion: reduce) {
+		.galeria__carrusel {
+			overflow-x: auto;
+			mask-image: none;
 		}
 
-		.polaroid {
-			max-width: 22rem;
-			justify-self: center;
+		.galeria__pista {
+			animation: none;
+		}
+
+		.galeria__grupo[aria-hidden='true'] {
+			display: none;
 		}
 	}
 </style>

@@ -3,9 +3,11 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Laureles from '../../components/Laureles.astro';
-import { marca } from '../../data/home';
-import { obras, paginaObras } from '../../data/obras';
+import { getMarca, getObras, getPaginaObras } from '../../lib/content';
 
+const marca = await getMarca();
+const obras = await getObras();
+const paginaObras = await getPaginaObras();
 const { portada, listado, cierre } = paginaObras;
 ---
 
@@ -13,7 +15,7 @@ const { portada, listado, cierre } = paginaObras;
 	title="Obras — Producciones Arlequín"
 	description="Repertorio de Producciones Arlequín: teatro familiar, comedia y memoria histórica, disponible para giras, festivales y funciones a la medida."
 >
-	<Header />
+	<Header marca={marca} />
 
 	<main id="contenido">
 		<section class="cartel">
@@ -143,7 +145,7 @@ const { portada, listado, cierre } = paginaObras;
 		</section>
 	</main>
 
-	<Footer />
+	<Footer marca={marca} />
 </Layout>
 
 <style>

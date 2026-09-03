@@ -1,5 +1,11 @@
 ---
-import { contacto } from '../data/home';
+import { contacto as contactoLocal } from '../data/home';
+
+interface Props {
+	contacto?: typeof contactoLocal;
+}
+
+const { contacto = contactoLocal } = Astro.props;
 
 const correo =
 	contacto.vias.find((via) => via.href?.startsWith('mailto:'))?.valor ??
@@ -60,6 +66,16 @@ const correo =
 			</label>
 
 			<label class="campo">
+				<span class="campo__rotulo">EMPRESA / INSTITUCION</span>
+				<input
+					class="campo__control"
+					type="text"
+					name="empresa"
+					autocomplete="organization"
+				/>
+			</label>
+
+			<label class="campo">
 				<span class="campo__rotulo">CORREO</span>
 				<input
 					class="campo__control"
@@ -79,6 +95,38 @@ const correo =
 					autocomplete="tel"
 				/>
 			</label>
+
+			<fieldset class="campo campo--opciones">
+				<legend class="campo__pregunta">
+					¿En qué experiencia cultural estás interesado/a?
+				</legend>
+				<div class="opciones">
+					{
+						[
+							'Función de Teatro',
+							'Pastorelas Corporativas / Personalizadas',
+							'Talleres de Formación Artística',
+							'Capacitación / Team building empresarial',
+							'Conferencias o Talleres de Profesionalización',
+							'Otro...',
+						].map((opcion) => (
+							<label class="opcion">
+								<input
+									type="radio"
+									name="experiencia"
+									value={opcion}
+									required
+								/>
+								<span>{opcion}</span>
+							</label>
+						))
+					}
+				</div>
+				<label class="campo campo--otro" hidden>
+					<span class="campo__rotulo">ESPECIFICA</span>
+					<input class="campo__control" type="text" name="experiencia_otro" />
+				</label>
+			</fieldset>
 
 			<label class="campo">
 				<span class="campo__rotulo">MENSAJE</span>
@@ -213,6 +261,10 @@ const correo =
 	.campo {
 		display: grid;
 		gap: 0.55rem;
+		border: 0;
+		margin: 0;
+		padding: 0;
+		min-width: 0;
 	}
 
 	.campo__rotulo {
@@ -220,6 +272,65 @@ const correo =
 		font-size: 0.68rem;
 		letter-spacing: 0.22em;
 		color: var(--rojo-luz);
+	}
+
+	.campo__pregunta {
+		padding: 0;
+		font-family: var(--fuente-titular);
+		font-size: 0.82rem;
+		letter-spacing: 0.04em;
+		line-height: 1.4;
+		color: var(--rojo-luz);
+	}
+
+	.opciones {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.opcion {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.7rem;
+		padding: 0.45rem 0.15rem;
+		cursor: pointer;
+		color: var(--hueso);
+		font-family: var(--fuente-cuerpo);
+		font-size: 0.95rem;
+		line-height: 1.4;
+	}
+
+	.opcion input {
+		appearance: none;
+		width: 1rem;
+		height: 1rem;
+		margin: 0.18rem 0 0;
+		flex-shrink: 0;
+		border: 1px solid var(--linea);
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--hueso) 4%, transparent);
+		cursor: pointer;
+		transition:
+			border-color 0.3s var(--ease),
+			background 0.3s var(--ease);
+	}
+
+	.opcion:hover input {
+		border-color: var(--hueso-medio);
+	}
+
+	.opcion input:checked {
+		border-color: var(--rojo-luz);
+		background: radial-gradient(circle, var(--rojo-luz) 38%, transparent 42%);
+	}
+
+	.opcion input:focus-visible {
+		outline: 1px solid var(--rojo-luz);
+		outline-offset: 3px;
+	}
+
+	.campo--otro {
+		margin-top: 0.35rem;
 	}
 
 	.campo__control {
@@ -328,3 +439,46 @@ const correo =
 		}
 	}
 </style>
+
+<script>
+	const formulario = document.querySelector('.formulario');
+	if (formulario) {
+		const radios = formulario.querySelectorAll<HTMLInputElement>('input[name="experiencia"]');
+		const otroCampo = formulario.querySelector<HTMLElement>('.campo--otro');
+		const otroInput = otroCampo?.querySelector<HTMLInputElement>('input');
+
+		const sincronizarOtro = () => {
+			const elegido = formulario.querySelector<HTMLInputElement>(
+				'input[name="experiencia"]:checked',
+			);
+			const esOtro = elegido?.value.startsWith('Otro') ?? false;
+			if (otroCampo) otroCampo.hidden = !esOtro;
+			if (otroInput) {
+				otroInput.required = esOtro;
+				if (!esOtro) otroInput.value = '';
+			}
+		};
+
+		const obra = new URLSearchParams(window.location.search).get('obra')?.trim();
+		if (obra) {
+			const teatro = formulario.querySelector<HTMLInputElement>(
+				'input[name="experiencia"][value="Función de Teatro"]',
+			);
+			if (teatro) teatro.checked = true;
+
+			const mensaje = formulario.querySelector<HTMLTextAreaElement>('textarea[name="mensaje"]');
+			if (mensaje && !mensaje.value) {
+				mensaje.value = `Quiero cotizar la obra «${obra}».`;
+			}
+
+			const oculto = document.createElement('input');
+			oculto.type = 'hidden';
+			oculto.name = 'obra';
+			oculto.value = obra;
+			formulario.appendChild(oculto);
+		}
+
+		radios.forEach((radio) => radio.addEventListener('change', sincronizarOtro));
+		sincronizarOtro();
+	}
+</script>

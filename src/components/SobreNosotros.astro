@@ -1,5 +1,11 @@
 ---
-import { sobreNosotros } from '../data/home';
+import { sobreNosotros as sobreLocal } from '../data/home';
+
+interface Props {
+	sobreNosotros?: typeof sobreLocal;
+}
+
+const { sobreNosotros = sobreLocal } = Astro.props;
 
 const { titular, parrafo, cta, fotos } = sobreNosotros;
 ---

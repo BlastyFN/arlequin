@@ -1,5 +1,11 @@
 ---
-import { obrasInicio } from '../data/home';
+import { obrasInicio as obrasLocal } from '../data/home';
+
+interface Props {
+	obrasInicio?: typeof obrasLocal;
+}
+
+const { obrasInicio = obrasLocal } = Astro.props;
 
 const { titular, parrafo, cta, fotos } = obrasInicio;
 ---

@@ -1,5 +1,11 @@
 ---
-import { prensa } from '../data/home';
+import { prensa as prensaLocal } from '../data/home';
+
+interface Props {
+	prensa?: typeof prensaLocal;
+}
+
+const { prensa = prensaLocal } = Astro.props;
 ---
 
 <section class="prensa seccion" id="prensa">

@@ -1,5 +1,11 @@
 ---
-import { cintillo } from '../data/home';
+import { cintillo as cintilloLocal } from '../data/home';
+
+interface Props {
+	cintillo?: typeof cintilloLocal;
+}
+
+const { cintillo = cintilloLocal } = Astro.props;
 
 /* Se duplica la tira para que el bucle no muestre corte */
 const tira = [...cintillo, ...cintillo];

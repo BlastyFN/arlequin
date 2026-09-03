@@ -39,6 +39,26 @@ export interface Obra {
 	};
 	/** Fotografía de escena a pantalla completa en la ficha. En Sanity: imagen de fondo. */
 	fondo: ImagenObra;
+	ficha?: {
+		volver: string;
+		dossier: {
+			etiqueta: string;
+			href: string;
+			archivo: string;
+		} | null;
+		simbolos: {
+			clave: 'publico' | 'tematica' | 'duracion' | 'genero';
+			rotulo: string;
+			valor: string;
+		}[];
+		video: {
+			rotulo: string;
+			titulo: string;
+			poster: ImagenObra;
+			src: string | null;
+		} | null;
+		fotos: ImagenObra[];
+	};
 }
 
 const CARTELES = 'https://produccionesarlequin.com/wp-content/uploads';

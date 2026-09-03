@@ -3,10 +3,12 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Laureles from '../../components/Laureles.astro';
-import { paginaObras, obras, fichaMuestra, type Obra } from '../../data/obras';
+import { fichaMuestra, type Obra } from '../../data/obras';
+import { getMarca, getObras, getPaginaObras } from '../../lib/content';
 import { Users, Sparkles, Clock, Drama, Download, ArrowLeft, Play, X } from '@lucide/astro';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+	const obras = await getObras();
 	return obras.map((obra) => ({
 		params: { slug: obra.slug },
 		props: { obra },
@@ -18,8 +20,16 @@ interface Props {
 }
 
 const { obra } = Astro.props;
+const marca = await getMarca();
+const paginaObras = await getPaginaObras();
 const { listado } = paginaObras;
-const muestra = fichaMuestra;
+const muestra = obra.ficha ?? {
+	volver: fichaMuestra.volver,
+	dossier: fichaMuestra.dossier,
+	simbolos: fichaMuestra.simbolos,
+	video: fichaMuestra.video,
+	fotos: fichaMuestra.fotos,
+};
 
 const iconos = {
 	publico: Users,
@@ -50,13 +60,14 @@ function idDeYoutube(url: string | null): string | null {
 }
 
 const youtubeId = idDeYoutube(trailer?.src ?? null);
+const cotizarHref = `/?obra=${encodeURIComponent(obra.tituloCompleto)}#contacto`;
 ---
 
 <Layout
 	title={`${obra.tituloCompleto} — Producciones Arlequín`}
 	description={obra.sinopsis[0]}
 >
-	<Header />
+	<Header marca={marca} />
 
 	<main id="contenido">
 		<article class="obra">
@@ -86,14 +97,23 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 					<h1 class="cartel__titular">{obra.titulo}</h1>
 					{obra.subtitulo && <p class="cartel__subtitulo">{obra.subtitulo}</p>}
 
-					<a
-						class="boton boton--lleno dossier"
-						href={muestra.dossier.href}
-						download={muestra.dossier.archivo}
-					>
-						<Download size={18} stroke-width={1.75} />
-						{muestra.dossier.etiqueta}
-					</a>
+					<div class="cartel__acciones">
+						<a class="boton boton--lleno" href={cotizarHref}>
+							QUIERO COTIZAR ESTA OBRA
+						</a>
+						{
+							muestra.dossier && (
+								<a
+									class="boton boton--linea dossier"
+									href={muestra.dossier.href}
+									download={muestra.dossier.archivo}
+								>
+									<Download size={18} stroke-width={1.75} />
+									{muestra.dossier.etiqueta}
+								</a>
+							)
+						}
+					</div>
 				</div>
 			</section>
 
@@ -141,13 +161,15 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 					}
 				</div>
 
-				<div
-					class="proyector revelar"
-					data-proyector
-					style={`--n: ${fotos.length}`}
-					aria-roledescription="carrusel"
-					aria-label={`Fotografías de ${obra.tituloCompleto}`}
-				>
+				{
+					fotos.length > 0 && (
+						<div
+							class="proyector revelar"
+							data-proyector
+							style={`--n: ${fotos.length}`}
+							aria-roledescription="carrusel"
+							aria-label={`Fotografías de ${obra.tituloCompleto}`}
+						>
 					<div class="proyector__escenario">
 						<span class="proyector__lampara" aria-hidden="true">
 							<span class="proyector__pantalla"></span>
@@ -202,6 +224,8 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 						</button>
 					</div>
 				</div>
+					)
+				}
 			</div>
 		</section>
 
@@ -263,7 +287,7 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 		<img class="visor__foto" data-visor-foto alt="" />
 	</dialog>
 
-	<Footer />
+	<Footer marca={marca} />
 </Layout>
 
 <style>
@@ -402,10 +426,30 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 		text-shadow: 0 0.1rem 1.2rem rgba(5, 5, 5, 0.85);
 	}
 
-	.dossier {
-		gap: 0.7rem;
+	.cartel__acciones {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.85rem;
 		margin-top: clamp(1.35rem, 3vw, 2rem);
+	}
+
+	.cartel__acciones .boton {
+		gap: 0.7rem;
 		text-indent: 0;
+		text-align: center;
+	}
+
+	.boton--linea {
+		border-color: var(--linea);
+		color: var(--hueso);
+		background: color-mix(in srgb, var(--negro) 35%, transparent);
+		backdrop-filter: blur(6px);
+	}
+
+	.boton--linea:hover {
+		border-color: var(--hueso);
+		background: color-mix(in srgb, var(--hueso) 8%, transparent);
 	}
 
 	/* ---------- Ficha: el seguidor recorre los cuatro símbolos ---------- */
@@ -1035,6 +1079,12 @@ const youtubeId = idDeYoutube(trailer?.src ?? null);
 	}
 
 	@media (max-width: 45rem) {
+		.cartel__acciones {
+			flex-direction: column;
+			align-items: stretch;
+			width: min(100%, 22rem);
+		}
+
 		.ficha__lista {
 			grid-template-columns: 1fr 1fr;
 		}

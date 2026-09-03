@@ -2,7 +2,13 @@
 import FondoEscena from './FondoEscena.astro';
 import ArcoProscenio from './ArcoProscenio.astro';
 import Cartelera from './Cartelera.astro';
-import { heroe } from '../data/home';
+import { heroe as heroeLocal } from '../data/home';
+
+interface Props {
+	heroe?: typeof heroeLocal;
+}
+
+const { heroe = heroeLocal } = Astro.props;
 ---
 
 <section class="heroe" id="inicio">
@@ -31,7 +37,7 @@ import { heroe } from '../data/home';
 			</div>
 		</div>
 
-		<Cartelera />
+		<Cartelera heroe={heroe} />
 	</div>
 </section>
 

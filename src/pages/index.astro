@@ -9,22 +9,26 @@ import Prensa from '../components/Prensa.astro';
 import Respaldos from '../components/Respaldos.astro';
 import Contacto from '../components/Contacto.astro';
 import Footer from '../components/Footer.astro';
-import { heroe, marca } from '../data/home';
+import { getContacto, getHome, getMarca } from '../lib/content';
+
+const marca = await getMarca();
+const home = await getHome();
+const contacto = await getContacto();
 ---
 
 <Layout
 	title={`${marca.nombre} — Compañía y productora de teatro`}
-	description={heroe.entrada}
+	description={home.heroe.entrada}
 >
-	<Header />
+	<Header marca={marca} />
 	<main id="contenido">
-		<Hero />
-		<Cintillo />
-		<SobreNosotros />
-		<Respaldos />
-		<Obras />
-		<Prensa />
-		<Contacto />
+		<Hero heroe={home.heroe} />
+		<Cintillo cintillo={home.cintillo} />
+		<SobreNosotros sobreNosotros={home.sobreNosotros} />
+		<Respaldos respaldos={home.respaldos} />
+		<Obras obrasInicio={home.obrasInicio} />
+		<Prensa prensa={home.prensa} />
+		<Contacto contacto={contacto} />
 	</main>
-	<Footer />
+	<Footer marca={marca} />
 </Layout>

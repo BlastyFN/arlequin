@@ -3,7 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import BarraClasica from '../components/propuesta2/BarraClasica.astro';
 import HeroTelon from '../components/propuesta2/HeroTelon.astro';
 import { heroeClasico } from '../data/propuesta2';
-import { marca } from '../data/home';
+import { getMarca } from '../lib/content';
+
+const marca = await getMarca();
 ---
 
 <Layout

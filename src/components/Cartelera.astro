@@ -1,7 +1,13 @@
 ---
 import { Image } from 'astro:assets';
 import iconoBlanco from '../assets/icono blanco.png';
-import { heroe } from '../data/home';
+import { heroe as heroeLocal } from '../data/home';
+
+interface Props {
+	heroe?: typeof heroeLocal;
+}
+
+const { heroe = heroeLocal } = Astro.props;
 
 /* Vitrina de cartelera: el anuncio de la función tal como se exhibe en el
    vestíbulo de un teatro. Cada tanto la luz se apaga y, al volver a prender,
