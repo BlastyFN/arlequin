@@ -29,6 +29,8 @@ const obraBase = /* groq */ `
   videoUrl,
   videoTitulo,
   videoPoster { ${imagen} },
+  opinionesTitulo,
+  opiniones[]{ _key, texto, autor, estrellas },
   dossier { asset->{ url, originalFilename } }
 `
 
@@ -36,15 +38,14 @@ export const settingsQuery = /* groq */ `*[_id == "settings"][0]{
   nombre,
   ciudad,
   correo,
-  telefono,
   fundacion,
   facebook,
   instagram,
   contactoTitular,
   contactoParrafos[]{ partes[]{ texto, acento } },
   viaCorreoRotulo,
-  viaTelefonoRotulo,
-  viaUbicacionRotulo
+  viaUbicacionRotulo,
+  viaRedesRotulo
 }`
 
 export const homePageQuery = /* groq */ `*[_id == "homePage"][0]{
@@ -57,7 +58,9 @@ export const homePageQuery = /* groq */ `*[_id == "homePage"][0]{
   funcionObra->{ tituloCompleto, titulo, "slug": slug.current },
   funcionTitulo,
   funcionAutor,
+  funcionLugarRotulo,
   funcionLugar,
+  funcionHorarioRotulo,
   funcionHorario,
   funcionCta,
   sello,
@@ -69,12 +72,15 @@ export const homePageQuery = /* groq */ `*[_id == "homePage"][0]{
   obrasTitular,
   obrasParrafo,
   obrasCta,
-  obrasDestacadas[]->{
-    tituloCompleto,
-    titulo,
-    "slug": slug.current,
-    fondo { ${imagen} },
-    cartel { ${imagen} }
+  obrasDestacadas[]{
+    foto { ${imagen} },
+    obra->{
+      tituloCompleto,
+      titulo,
+      "slug": slug.current,
+      fondo { ${imagen} },
+      cartel { ${imagen} }
+    }
   },
   testimonios[]{ cita, medio, autor, fecha },
   respaldosTitular,
@@ -85,6 +91,10 @@ export const obrasQuery = /* groq */ `*[_type == "obra" && defined(slug.current)
   ${obraBase}
 }`
 
+export const obrasOrdenQuery = /* groq */ `*[_id == "obrasPage"][0]{
+  "ids": repertorio[]._ref
+}`
+
 export const obraBySlugQuery = /* groq */ `*[_type == "obra" && slug.current == $slug][0]{
   ${obraBase}
 }`
@@ -92,6 +102,7 @@ export const obraBySlugQuery = /* groq */ `*[_type == "obra" && slug.current == 
 export const obrasPageQuery = /* groq */ `*[_id == "obrasPage"][0]{
   portadaTitular,
   portadaFoto { ${imagen} },
+  palmaresRotulo,
   cierreRotulo,
   cierreLineas[]{ partes[]{ texto, acento } },
   cierreCta
@@ -130,12 +141,14 @@ export const servicesPageQuery = /* groq */ `*[_id == "servicesPage"][0]{
   oficiosTitularLineas,
   oficiosTitularRemate,
   oficios[]{ titulo, texto },
+  oficiosCta,
   pastorelaRotulo,
   pastorelaTitulo,
   pastorelaSubtitulo,
   pastorelaEntrada,
   pastorelaParrafos,
   pastorelaFoto { ${imagen} },
+  pastorelaFotoDorso { ${imagen} },
   pastorelaCta,
   cierreRotulo,
   cierreLineas[]{ partes[]{ texto, acento } },

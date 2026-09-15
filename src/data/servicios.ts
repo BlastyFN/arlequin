@@ -9,6 +9,16 @@
 
 const FOTOS = 'https://produccionesarlequin.com/wp-content/uploads';
 
+type Parte = { texto: string; acento?: boolean };
+
+type FotoPastorela = {
+	src: string;
+	alt: string;
+	ancho: number;
+	alto: number;
+	pie?: string;
+};
+
 export const paginaServicios = {
 	portada: {
 		rotulo: 'OFICIO FUERA DE ESCENA',
@@ -32,38 +42,65 @@ export const paginaServicios = {
 		lista: [
 			{
 				titulo: 'CAPACITACIONES',
-				texto:
-					'Llevamos el oficio de la escena a equipos de trabajo: dinámicas de team building, ejercicios de presencia, escucha y colaboración. El teatro como herramienta para que un grupo se reconozca y trabaje mejor junto.',
+				texto: [
+					{
+						texto:
+							'Llevamos el oficio de la escena a equipos de trabajo: dinámicas de team building, ejercicios de presencia, escucha y colaboración. El teatro como herramienta para que un grupo se reconozca y trabaje mejor junto.',
+					},
+				] satisfies Parte[],
 			},
 			{
 				titulo: 'FORMACIONES',
-				texto:
-					'Talleres de formación artística para quienes quieren acercarse a la actuación, la escena o los oficios del teatro. Espacios prácticos, a veces a la medida, para estimular la creación y la colaboración entre talentos.',
+				texto: [
+					{
+						texto:
+							'Talleres de formación artística para quienes quieren acercarse a la actuación, la escena o los oficios del teatro. Espacios prácticos, a veces a la medida, para estimular la creación y la colaboración entre talentos.',
+					},
+				] satisfies Parte[],
 			},
 			{
 				titulo: 'PROFESIONALIZACION',
-				texto:
-					'Conferencias y talleres sobre profesionalización artística: cómo sostener una carrera, producir con oficio y transitar el medio con rigor. Pensados para artistas en formación y en las primeras etapas de su desarrollo profesional.',
+				texto: [
+					{
+						texto:
+							'Conferencias y talleres sobre profesionalización artística: cómo sostener una carrera, producir con oficio y transitar el medio con rigor. Pensados para artistas en formación y en las primeras etapas de su desarrollo profesional.',
+					},
+				] satisfies Parte[],
 			},
 		],
+		cta: {
+			etiqueta: 'SOLICITAR PROPUESTA',
+			href: '/#contacto',
+		},
 	},
 	pastorela: {
 		rotulo: 'TEMPORADA NAVIDENA',
 		titulo: 'PASTORELAS',
 		subtitulo: 'CORPORATIVAS',
-		entrada: 'Personalizadas.',
+		entrada: [{ texto: 'Personalizadas.' }] satisfies Parte[],
 		parrafos: [
-			'Cada diciembre montamos pastorelas de repertorio. Para empresas hacemos otra cosa: un espectáculo navideño escrito a la medida.',
-			'Humor, nombres y dinámica interna de la organización, para la posada, el cierre de año o el evento de fin de temporada. Un montaje con el sello de la casa, pensado para su gente.',
-		],
-		/* Colocar la fotografía en public/fotos/servicios/pastorela.jpg */
+			[
+				{
+					texto:
+						'Cada diciembre montamos pastorelas de repertorio. Para empresas hacemos otra cosa: un espectáculo navideño escrito a la medida.',
+				},
+			],
+			[
+				{
+					texto:
+						'Humor, nombres y dinámica interna de la organización, para la posada, el cierre de año o el evento de fin de temporada. Un montaje con el sello de la casa, pensado para su gente.',
+				},
+			],
+		] satisfies Parte[][],
+		/* Colocar las fotografías en public/fotos/servicios/ o en Sanity. */
 		foto: {
 			src: '/fotos/servicios/pastorela.jpg',
 			alt: 'Pastorela corporativa de Producciones Arlequín, temporada navideña',
 			ancho: 1200,
 			alto: 1500,
 			pie: 'FOTO DE TEMPORADA',
-		},
+		} satisfies FotoPastorela,
+		fotoDorso: undefined as FotoPastorela | undefined,
 		cta: {
 			etiqueta: 'SOLICITAR PROPUESTA',
 			href: '/#contacto',

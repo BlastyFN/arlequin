@@ -51,11 +51,11 @@ const { funcion, sello } = heroe;
 
 				<dl class="cartelera__datos">
 					<div class="cartelera__dato">
-						<dt class="cartelera__clave">FORO</dt>
+						<dt class="cartelera__clave">{funcion.lugarRotulo}</dt>
 						<dd class="cartelera__valor">{funcion.lugar}</dd>
 					</div>
 					<div class="cartelera__dato">
-						<dt class="cartelera__clave">HORARIOS</dt>
+						<dt class="cartelera__clave">{funcion.horarioRotulo}</dt>
 						<dd class="cartelera__valor">{funcion.horario}</dd>
 					</div>
 				</dl>
@@ -105,7 +105,7 @@ const { funcion, sello } = heroe;
 
 	.lampara__pantalla {
 		position: relative;
-		width: clamp(3.25rem, 8vw, 4.5rem);
+		width: clamp(3.25rem, 3.75vw, 4.5rem);
 		height: 0.9rem;
 		border-radius: 1.2rem 1.2rem 0.1rem 0.1rem;
 		background: linear-gradient(
@@ -294,6 +294,7 @@ const { funcion, sello } = heroe;
 		margin: 0.35rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.4;
+		white-space: pre-line;
 	}
 
 	.cartelera__cta {

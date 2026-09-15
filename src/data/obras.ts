@@ -39,6 +39,15 @@ export interface Obra {
 	};
 	/** Fotografía de escena a pantalla completa en la ficha. En Sanity: imagen de fondo. */
 	fondo: ImagenObra;
+	opiniones?: {
+		titular: string;
+		items: {
+			_key: string;
+			texto: string;
+			autor?: string;
+			estrellas: number;
+		}[];
+	};
 	ficha?: {
 		volver: string;
 		dossier: {

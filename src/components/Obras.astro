@@ -116,7 +116,7 @@ const { titular, parrafo, cta, fotos } = obrasInicio;
 
 	.obras__escena {
 		position: relative;
-		min-height: clamp(34rem, 60vw, 46rem);
+		min-height: clamp(34rem, 38.3vw, 46rem);
 		display: flex;
 		align-items: center;
 	}
@@ -140,7 +140,7 @@ const { titular, parrafo, cta, fotos } = obrasInicio;
 		position: relative;
 		z-index: 3;
 		width: min(100%, 29rem);
-		padding-block: clamp(3rem, 7vw, 5rem);
+		padding-block: clamp(3rem, 4.2vw, 5rem);
 	}
 
 	.obras__titular {
@@ -211,10 +211,6 @@ const { titular, parrafo, cta, fotos } = obrasInicio;
 	.obras[data-activo='true'] .collage__pista {
 		animation-play-state: running;
 		will-change: transform;
-	}
-
-	.obras[data-activo='true'] .collage:hover .collage__pista {
-		animation-play-state: paused;
 	}
 
 	.collage__grupo {

@@ -9,6 +9,10 @@ import { getMarca, getPaginaServicios } from '../lib/content';
 const marca = await getMarca();
 const paginaServicios = await getPaginaServicios();
 const { portada, oficios, pastorela, cierre } = paginaServicios;
+const fotosPastorela = [pastorela.foto, pastorela.fotoDorso].filter(
+	(foto): foto is NonNullable<typeof pastorela.foto> => Boolean(foto?.src),
+);
+const giraPastorela = fotosPastorela.length > 1;
 ---
 
 <Layout
@@ -55,7 +59,6 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 			<div class="oficios__telon" aria-hidden="true"></div>
 			<div class="contenedor oficios__interior">
 				<div class="oficios__titulo revelar">
-					<p class="rotulo">{oficios.rotulo}</p>
 					<h2 id="titulo-oficios">
 						{oficios.titular.lineas[0]}<br />
 						{oficios.titular.lineas[1]}<br />
@@ -63,19 +66,28 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 					</h2>
 				</div>
 
-				<ol class="oficios__lista">
-					{
-						oficios.lista.map(({ titulo, texto }, i) => (
-							<li class="oficio revelar" style={`transition-delay:${i * 80}ms`}>
-								<span class="oficio__numero">{String(i + 1).padStart(2, '0')}</span>
-								<div class="oficio__cuerpo">
-									<h3 class="oficio__titulo">{titulo}</h3>
-									<p>{texto}</p>
-								</div>
-							</li>
-						))
-					}
-				</ol>
+				<div class="oficios__columna">
+					<ol class="oficios__lista">
+						{
+							oficios.lista.map(({ titulo, texto }, i) => (
+								<li class="oficio revelar" style={`transition-delay:${i * 80}ms`}>
+									<span class="oficio__numero">{String(i + 1).padStart(2, '0')}</span>
+									<div class="oficio__cuerpo">
+										<h3 class="oficio__titulo">{titulo}</h3>
+										<p>
+											{texto.map(({ texto: fragmento, acento }) =>
+												acento ? <strong>{fragmento}</strong> : fragmento,
+											)}
+										</p>
+									</div>
+								</li>
+							))
+						}
+					</ol>
+					<a class="boton boton--lleno oficios__cta revelar" href={oficios.cta.href}>
+						{oficios.cta.etiqueta}
+					</a>
+				</div>
 			</div>
 		</section>
 
@@ -94,20 +106,37 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 					<span class="pastorela__gancho pastorela__gancho--izq" aria-hidden="true"></span>
 					<span class="pastorela__gancho pastorela__gancho--der" aria-hidden="true"></span>
 
-					<div class="pastorela__marco">
+					<div
+						class="pastorela__marco"
+						data-giro={giraPastorela ? '' : undefined}
+						data-cara="frente"
+					>
 						<div class="pastorela__reserva" aria-hidden="true">
 							<span class="pastorela__estrella"></span>
 							<p>{pastorela.foto.pie}</p>
 						</div>
-						<img
-							src={pastorela.foto.src}
-							alt={pastorela.foto.alt}
-							width={pastorela.foto.ancho}
-							height={pastorela.foto.alto}
-							loading="lazy"
-							decoding="async"
-							onerror="this.hidden = true"
-						/>
+						<div class="pastorela__giro">
+							{
+								fotosPastorela.map((foto, i) => (
+									<div
+										class:list={[
+											'pastorela__cara',
+											i === 0 ? 'pastorela__cara--frente' : 'pastorela__cara--dorso',
+										]}
+									>
+										<img
+											src={foto.src}
+											alt={i === 0 ? foto.alt : ''}
+											width={foto.ancho}
+											height={foto.alto}
+											loading="lazy"
+											decoding="async"
+											onerror="this.hidden = true"
+										/>
+									</div>
+								))
+							}
+						</div>
 						<span class="pastorela__vidrio" aria-hidden="true"></span>
 						<span class="pastorela__haz" aria-hidden="true"></span>
 					</div>
@@ -119,14 +148,25 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 				</figure>
 
 				<div class="pastorela__texto revelar">
-					<p class="rotulo pastorela__rotulo">{pastorela.rotulo}</p>
 					<h2 id="titulo-pastorela">
 						{pastorela.titulo}
 						<span>{pastorela.subtitulo}</span>
 					</h2>
-					<p class="pastorela__entrada">{pastorela.entrada}</p>
+					<p class="pastorela__entrada">
+						{pastorela.entrada.map(({ texto, acento }) =>
+							acento ? <strong>{texto}</strong> : texto,
+						)}
+					</p>
 					<div class="pastorela__relato">
-						{pastorela.parrafos.map((parrafo) => <p>{parrafo}</p>)}
+						{
+							pastorela.parrafos.map((partes) => (
+								<p>
+									{partes.map(({ texto, acento }) =>
+										acento ? <strong>{texto}</strong> : texto,
+									)}
+								</p>
+							))
+						}
 					</div>
 					<a class="boton boton--lleno" href={pastorela.cta.href}>
 						{pastorela.cta.etiqueta}
@@ -244,7 +284,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 	.hero-interior h1 {
 		margin-top: 1.15rem;
 		font-family: var(--fuente-rotulo);
-		font-size: clamp(2.75rem, 12vw, 9.25rem);
+		font-size: clamp(2.75rem, 7.7vw, 9.25rem);
 		font-weight: 400;
 		letter-spacing: 0.02em;
 		line-height: 0.92;
@@ -253,7 +293,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 	}
 
 	.hero-interior__entrada {
-		max-width: 42ch;
+		max-width: min(100%, max(28rem, calc(50vw - var(--margen))));
 		margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
 		color: var(--hueso-medio);
 		font-size: clamp(1.05rem, 1.4vw, 1.25rem);
@@ -302,7 +342,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		position: relative;
 		display: grid;
 		grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-		gap: clamp(3rem, 8vw, 8rem);
+		gap: clamp(3rem, 6.7vw, 8rem);
 		align-items: start;
 	}
 
@@ -311,8 +351,12 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		container-type: inline-size;
 	}
 
+	.oficios__columna {
+		min-width: 0;
+	}
+
 	.oficios h2 {
-		margin-top: 1.2rem;
+		margin-top: 0;
 		font-family: var(--fuente-rotulo);
 		/* Cabe PROFESIONALIZAR. entero en la columna, sin partir la última letra */
 		font-size: clamp(1.5rem, 7.6cqi, 3.4rem);
@@ -332,6 +376,10 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		padding: 0;
 		list-style: none;
 		border-top: 1px solid var(--linea);
+	}
+
+	.oficios__cta {
+		margin-top: clamp(1.75rem, 3.5vw, 2.5rem);
 	}
 
 	.oficio {
@@ -363,6 +411,11 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		color: var(--hueso-medio);
 		font-size: clamp(1.05rem, 1.35vw, 1.2rem);
 		line-height: 1.7;
+	}
+
+	.oficio strong {
+		font-weight: 700;
+		color: var(--hueso);
 	}
 
 	/* ---------- Pastorela: temporada navideña ---------- */
@@ -430,7 +483,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		z-index: 1;
 		display: grid;
 		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-		gap: clamp(2.5rem, 6vw, 6.5rem);
+		gap: clamp(2.5rem, 5.4vw, 6.5rem);
 		align-items: center;
 	}
 
@@ -546,6 +599,29 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 			0 0 2.5rem color-mix(in srgb, var(--dorado) 18%, transparent);
 		transform: rotate(-1.2deg);
 		transform-origin: top center;
+		perspective: 72rem;
+	}
+
+	.pastorela__giro {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		transform-style: preserve-3d;
+		transition: transform 0.95s cubic-bezier(0.45, 0.05, 0.2, 1);
+	}
+
+	.pastorela__marco[data-cara='dorso'] .pastorela__giro {
+		transform: rotateY(180deg);
+	}
+
+	.pastorela__cara {
+		position: absolute;
+		inset: 0;
+		backface-visibility: hidden;
+	}
+
+	.pastorela__cara--dorso {
+		transform: rotateY(180deg);
 	}
 
 	.pastorela__reserva {
@@ -590,17 +666,16 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--dorado) 70%, transparent));
 	}
 
-	.pastorela__marco img {
+	.pastorela__cara img {
 		position: absolute;
 		inset: 0;
-		z-index: 1;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		filter: saturate(0.88) contrast(1.04) brightness(0.92);
 	}
 
-	.pastorela__marco img[hidden] {
+	.pastorela__cara img[hidden] {
 		display: none;
 	}
 
@@ -656,12 +731,8 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		gap: 0;
 	}
 
-	.pastorela__rotulo {
-		color: var(--dorado);
-	}
-
 	.pastorela h2 {
-		margin-top: 1.1rem;
+		margin-top: 0;
 		font-family: var(--fuente-rotulo);
 		font-size: clamp(1.6rem, 9cqi, 4.25rem);
 		font-weight: 400;
@@ -693,8 +764,10 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		line-height: 1.8;
 	}
 
-	.pastorela__relato p {
-		margin: 0;
+	.pastorela__entrada strong,
+	.pastorela__relato strong {
+		font-weight: 700;
+		color: var(--hueso);
 	}
 
 	.pastorela__texto .boton {
@@ -706,7 +779,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 	.llamada {
 		position: relative;
 		overflow: hidden;
-		padding-block: clamp(4.5rem, 10vw, 8rem);
+		padding-block: clamp(4.5rem, 6.7vw, 8rem);
 		background:
 			radial-gradient(
 				ellipse 70% 90% at 20% 50%,
@@ -751,6 +824,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 		font-size: clamp(1.1rem, 1.6vw + 0.45rem, 1.85rem);
 		letter-spacing: 0.05em;
 		line-height: 1.45;
+		color: var(--rojo-luz);
 	}
 
 	.llamada__texto p {
@@ -758,7 +832,7 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 	}
 
 	.llamada__acento {
-		color: var(--rojo-luz);
+		color: var(--hueso);
 	}
 
 	.llamada__acciones {
@@ -903,5 +977,40 @@ const { portada, oficios, pastorela, cierre } = paginaServicios;
 			opacity: 1;
 			transform: none;
 		}
+
+		.pastorela__giro {
+			transition: none;
+		}
 	}
 </style>
+
+<script>
+	const marco = document.querySelector<HTMLElement>('[data-giro]');
+	if (marco && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		const intervalo = 5500;
+		let id = 0;
+
+		const voltear = () => {
+			marco.dataset.cara = marco.dataset.cara === 'dorso' ? 'frente' : 'dorso';
+		};
+
+		const arrancar = () => {
+			if (!id) id = window.setInterval(voltear, intervalo);
+		};
+
+		const parar = () => {
+			window.clearInterval(id);
+			id = 0;
+		};
+
+		const visor = new IntersectionObserver(
+			([entrada]) => {
+				if (entrada?.isIntersecting) arrancar();
+				else parar();
+			},
+			{ threshold: 0.35 },
+		);
+
+		visor.observe(marco);
+	}
+</script>

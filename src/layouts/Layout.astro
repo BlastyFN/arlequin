@@ -75,7 +75,9 @@ const {
 		--fuente-cuerpo: 'Questa Slab', Georgia, 'Times New Roman', serif;
 
 		/* Sin tope de ancho: en pantallas grandes el layout ocupa el viewport.
-		   Solo los márgenes laterales contienen el borde. */
+		   Solo los márgenes laterales contienen el borde.
+		   Escala de diseño ~1920px: los clamp(…, Xvw, max) deben alcanzar
+		   el máximo cerca de ese ancho (X ≈ max_en_rem × 0.83), no a ~1200px. */
 		--margen: clamp(1.25rem, 4vw, 5rem);
 		--altura-barra: 5.25rem;
 		--ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -91,6 +93,13 @@ const {
 		scroll-behavior: smooth;
 		scroll-padding-top: calc(var(--altura-barra) + 1rem);
 		-webkit-text-size-adjust: 100%;
+	}
+
+	/* Laptops (no el layout de móvil): compacta el rem ~6% entre 992 y 1600px. */
+	@media (min-width: 62rem) and (max-width: 100rem) {
+		html {
+			font-size: 93.75%;
+		}
 	}
 
 	html,
@@ -167,7 +176,7 @@ const {
 
 	.seccion {
 		position: relative;
-		padding-block: clamp(5rem, 11vw, 9rem);
+		padding-block: clamp(5rem, 7.5vw, 9rem);
 	}
 
 	/* Rombo de arlequín, motivo recurrente del sistema */

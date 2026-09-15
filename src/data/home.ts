@@ -10,11 +10,10 @@ export const marca = {
 	nombre: 'Producciones Arlequín',
 	ciudad: 'Celaya, Guanajuato, México',
 	correo: 'arlequinerias@gmail.com',
-	telefono: '+52 55 1234 5678',
 	fundacion: 2020,
 	redes: {
-		facebook: null as string | null,
-		instagram: null as string | null,
+		facebook: 'https://www.facebook.com/YoSoyArlequin/' as string | null,
+		instagram: 'https://www.instagram.com/produccionesarlequin' as string | null,
 	},
 };
 
@@ -33,7 +32,9 @@ export const heroe = {
 		rotulo: 'EN CARTELERA',
 		obra: 'La casa de los espejos rotos',
 		autor: 'Dramaturgia de Elena Vargas',
+		lugarRotulo: 'FORO',
 		lugar: 'Foro Escena Viva',
+		horarioRotulo: 'HORARIOS',
 		horario: 'Jue a Dom, 20:00 h',
 		cta: 'VER FUNCIONES',
 		ctaHref: '#obras',
@@ -66,21 +67,29 @@ export const sobreNosotros = {
 			src: '/fotos/sobre/01.jpg',
 			alt: 'Escenario iluminado antes de una función',
 			pie: 'Antes de la función',
+			ancho: 800,
+			alto: 1000,
 		},
 		{
 			src: '/fotos/sobre/02.jpg',
 			alt: 'Actriz ensayando bajo el foco',
 			pie: 'Ensayo general',
+			ancho: 800,
+			alto: 1000,
 		},
 		{
 			src: '/fotos/sobre/03.jpg',
 			alt: 'Público en la platea del teatro',
 			pie: 'La platea',
+			ancho: 800,
+			alto: 1000,
 		},
 		{
 			src: '/fotos/sobre/04.jpg',
 			alt: 'Músicos en el foso durante un montaje',
 			pie: 'En el foso',
+			ancho: 800,
+			alto: 1000,
 		},
 	],
 };
@@ -271,14 +280,11 @@ export const contacto = {
 			href: 'mailto:hola@produccionesarlequin.mx',
 		},
 		{
-			rotulo: 'TELEFONO',
-			valor: '+52 55 1234 5678',
-			href: 'tel:+525512345678',
-		},
-		{
 			rotulo: 'UBICACION',
 			valor: 'Celaya, Guanajuato, México',
 			href: null,
 		},
 	],
+	redesRotulo: 'ESCRIBENOS POR REDES SOCIALES',
+	redes: marca.redes,
 };

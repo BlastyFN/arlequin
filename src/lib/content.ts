@@ -24,6 +24,7 @@ import {
 	homePageQuery,
 	notasQuery,
 	obraBySlugQuery,
+	obrasOrdenQuery,
 	obrasPageQuery,
 	obrasQuery,
 	pressPageQuery,
@@ -34,8 +35,25 @@ import {sanityFetch} from './sanity';
 
 type Linea = {texto: string; acento?: boolean}[];
 
-function tel(numero: string) {
-	return `tel:${numero.replace(/[^\d+]/g, '')}`;
+function aPartes(valor: unknown): Linea {
+	if (typeof valor === 'string' && valor.trim()) return [{texto: valor}];
+	if (!Array.isArray(valor)) return [];
+	return valor.flatMap((item) => {
+		if (typeof item === 'string' && item.trim()) return [{texto: item}];
+		if (!item || typeof item !== 'object') return [];
+		const nodo = item as {texto?: string; acento?: boolean; partes?: unknown};
+		if (Array.isArray(nodo.partes)) return aPartes(nodo.partes);
+		if (typeof nodo.texto === 'string') {
+			return [{texto: nodo.texto, acento: Boolean(nodo.acento)}];
+		}
+		return [];
+	});
+}
+
+function aParrafos(valor: unknown, reserva: Linea[]): Linea[] {
+	if (!Array.isArray(valor) || !valor.length) return reserva;
+	const parrafos = valor.map((item) => aPartes(item)).filter((linea) => linea.length);
+	return parrafos.length ? parrafos : reserva;
 }
 
 function conFichaLocal(obra: Obra): Obra {
@@ -82,11 +100,31 @@ function mapObra(doc: Record<string, unknown> | null): Obra | null {
 	};
 	const fondo = (toImagen(doc.fondo as never) ?? cartel) as ImagenObra;
 	const fotos = Array.isArray(doc.fotos)
-		? (doc.fotos as never[]).map((foto) => toImagen(foto)).filter(Boolean)
+		? (doc.fotos as never[])
+				.map((foto) => toImagen(foto, 1600, {sinRecorte: true}))
+				.filter(Boolean)
 		: [];
 	const dossier = doc.dossier as {asset?: {url?: string; originalFilename?: string}} | undefined;
 	const poster = toImagen(doc.videoPoster as never);
 	const videoUrl = typeof doc.videoUrl === 'string' ? doc.videoUrl : null;
+	const opiniones = Array.isArray(doc.opiniones)
+		? (
+				doc.opiniones as {
+					_key?: string;
+					texto?: string;
+					autor?: string;
+					estrellas?: number;
+				}[]
+			)
+				.filter((item) => item?.texto)
+				.slice(0, 3)
+				.map((item, i) => ({
+					_key: item._key || `opinion-${i}`,
+					texto: String(item.texto),
+					autor: item.autor ? String(item.autor) : undefined,
+					estrellas: Math.min(5, Math.max(1, Number(item.estrellas) || 5)),
+				}))
+		: [];
 
 	return {
 		slug: String(doc.slug),
@@ -104,6 +142,12 @@ function mapObra(doc: Record<string, unknown> | null): Obra | null {
 			alto: fondo.alto,
 			foco: fondo.foco,
 		},
+		opiniones: opiniones.length
+			? {
+					titular: String(doc.opinionesTitulo || 'OPINIONES'),
+					items: opiniones,
+				}
+			: undefined,
 		ficha: {
 			volver: fichaMuestra.volver,
 			dossier: dossier?.asset?.url
@@ -142,7 +186,6 @@ export async function getMarca() {
 		nombre: String(doc.nombre),
 		ciudad: String(doc.ciudad ?? marcaLocal.ciudad),
 		correo: String(doc.correo ?? marcaLocal.correo),
-		telefono: String(doc.telefono ?? marcaLocal.telefono),
 		fundacion: Number(doc.fundacion ?? marcaLocal.fundacion),
 		redes: {
 			facebook: (doc.facebook as string | null) ?? null,
@@ -164,16 +207,13 @@ export async function getContacto() {
 					href: `mailto:${marca.correo}`,
 				},
 				{
-					rotulo: 'TELEFONO',
-					valor: marca.telefono,
-					href: tel(marca.telefono),
-				},
-				{
 					rotulo: 'UBICACION',
 					valor: marca.ciudad,
 					href: null as string | null,
 				},
 			],
+			redesRotulo: contactoLocal.redesRotulo,
+			redes: marca.redes,
 		};
 	}
 
@@ -191,16 +231,13 @@ export async function getContacto() {
 				href: `mailto:${marca.correo}`,
 			},
 			{
-				rotulo: String(doc.viaTelefonoRotulo ?? 'TELEFONO'),
-				valor: marca.telefono,
-				href: tel(marca.telefono),
-			},
-			{
 				rotulo: String(doc.viaUbicacionRotulo ?? 'UBICACION'),
 				valor: marca.ciudad,
 				href: null as string | null,
 			},
 		],
+		redesRotulo: String(doc.viaRedesRotulo ?? contactoLocal.redesRotulo),
+		redes: marca.redes,
 	};
 }
 
@@ -229,36 +266,43 @@ export async function getHome() {
 
 	const sobreFotos = Array.isArray(doc.sobreFotos)
 		? (doc.sobreFotos as never[])
-				.map((foto) => toImagen(foto))
+				.map((foto) => toImagen(foto, 1600, {sinRecorte: true}))
 				.filter(Boolean)
 				.map((foto) => ({
 					src: foto!.src,
 					alt: foto!.alt,
 					pie: foto!.pie ?? '',
+					ancho: foto!.ancho,
+					alto: foto!.alto,
 				}))
 		: sobreLocal.fotos;
 
 	const layout = obrasInicioLocal.fotos;
 	const destacadas = Array.isArray(doc.obrasDestacadas)
 		? (doc.obrasDestacadas as {
-				tituloCompleto?: string;
-				titulo?: string;
-				slug?: string;
-				fondo?: never;
-				cartel?: never;
+				foto?: never;
+				obra?: {
+					tituloCompleto?: string;
+					titulo?: string;
+					slug?: string;
+					fondo?: never;
+					cartel?: never;
+				} | null;
 			}[])
 		: [];
 	const fotosCollage =
 		destacadas.length > 0
-			? destacadas.map((obra, i) => {
+			? destacadas.map((item, i) => {
 					const molde = layout[i % layout.length];
-					const imagen = toImagen(obra.fondo) ?? toImagen(obra.cartel);
+					const obra = item.obra;
+					const imagen =
+						toImagen(item.foto) ?? toImagen(obra?.fondo) ?? toImagen(obra?.cartel);
 					return {
 						...molde,
 						src: imagen?.src ?? molde.src,
-						alt: imagen?.alt || obra.tituloCompleto || molde.alt,
-						titulo: obra.tituloCompleto || obra.titulo || molde.titulo,
-						href: obra.slug ? `/obras/${obra.slug}` : molde.href,
+						alt: imagen?.alt || obra?.tituloCompleto || molde.alt,
+						titulo: obra?.tituloCompleto || obra?.titulo || molde.titulo,
+						href: obra?.slug ? `/obras/${obra.slug}` : molde.href,
 					};
 				})
 			: obrasInicioLocal.fotos;
@@ -271,7 +315,7 @@ export async function getHome() {
 					logo?: never;
 				}[]
 			).map((item) => {
-				const logo = toImagen(item.logo, 400);
+				const logo = toImagen(item.logo, 1000);
 				return {
 					marca: item.marca || item.nombre || '',
 					nombre: item.nombre || '',
@@ -303,8 +347,10 @@ export async function getHome() {
 				rotulo: String(doc.funcionRotulo ?? heroeLocal.funcion.rotulo),
 				obra: tituloCartel,
 				autor: String(doc.funcionAutor ?? heroeLocal.funcion.autor),
-				lugar: String(doc.funcionLugar ?? heroeLocal.funcion.lugar),
-				horario: String(doc.funcionHorario ?? heroeLocal.funcion.horario),
+				lugarRotulo: String(doc.funcionLugarRotulo || heroeLocal.funcion.lugarRotulo),
+				lugar: String(doc.funcionLugar || heroeLocal.funcion.lugar),
+				horarioRotulo: String(doc.funcionHorarioRotulo || heroeLocal.funcion.horarioRotulo),
+				horario: String(doc.funcionHorario || heroeLocal.funcion.horario),
 				cta: String(doc.funcionCta ?? heroeLocal.funcion.cta),
 				ctaHref: slugCartel ? `/obras/${slugCartel}` : heroeLocal.funcion.ctaHref,
 			},
@@ -344,10 +390,36 @@ export async function getHome() {
 	};
 }
 
+function ordenarObras(docs: Record<string, unknown>[], ids: string[]) {
+	if (!ids.length) return docs;
+
+	const porId = new Map(docs.map((doc) => [String(doc._id), doc]));
+	const vistos = new Set<string>();
+	const ordenadas: Record<string, unknown>[] = [];
+
+	for (const id of ids) {
+		const doc = porId.get(id);
+		if (!doc) continue;
+		ordenadas.push(doc);
+		vistos.add(id);
+	}
+
+	for (const doc of docs) {
+		if (!vistos.has(String(doc._id))) ordenadas.push(doc);
+	}
+
+	return ordenadas;
+}
+
 export async function getObras(): Promise<Obra[]> {
-	const docs = await sanityFetch<Record<string, unknown>[]>(obrasQuery);
+	const [docs, orden] = await Promise.all([
+		sanityFetch<Record<string, unknown>[]>(obrasQuery),
+		sanityFetch<{ids?: string[]}>(obrasOrdenQuery),
+	]);
 	if (!docs?.length) return obrasLocal.map(conFichaLocal);
-	return docs.map(mapObra).filter(Boolean) as Obra[];
+
+	const ids = Array.isArray(orden?.ids) ? orden.ids.filter(Boolean) : [];
+	return ordenarObras(docs, ids).map(mapObra).filter(Boolean) as Obra[];
 }
 
 export async function getObra(slug: string): Promise<Obra | null> {
@@ -373,6 +445,10 @@ export async function getPaginaObras() {
 			foto: foto
 				? {src: foto.src, alt: foto.alt, ancho: foto.ancho, alto: foto.alto}
 				: paginaObrasLocal.portada.foto,
+		},
+		listado: {
+			...paginaObrasLocal.listado,
+			palmares: String(doc.palmaresRotulo || paginaObrasLocal.listado.palmares),
 		},
 		cierre: {
 			...paginaObrasLocal.cierre,
@@ -452,6 +528,7 @@ export async function getPaginaServicios() {
 
 	const portadaFoto = toImagen(doc.portadaFoto as never);
 	const pastorelaFoto = toImagen(doc.pastorelaFoto as never);
+	const pastorelaFotoDorso = toImagen(doc.pastorelaFotoDorso as never);
 	const cierreLineas = Array.isArray(doc.cierreLineas)
 		? (doc.cierreLineas as {partes?: Linea}[]).map((linea) => linea.partes ?? [])
 		: serviciosLocal.cierre.lineas;
@@ -480,18 +557,30 @@ export async function getPaginaServicios() {
 				remate: String(doc.oficiosTitularRemate ?? serviciosLocal.oficios.titular.remate),
 			},
 			lista: Array.isArray(doc.oficios) && doc.oficios.length
-				? (doc.oficios as {titulo: string; texto: string}[])
+				? (doc.oficios as {titulo: string; texto?: unknown}[]).map((item, i) => {
+						const texto = aPartes(item.texto);
+						return {
+							titulo: item.titulo,
+							texto: texto.length
+								? texto
+								: serviciosLocal.oficios.lista[i]?.texto ?? [{texto: ''}],
+						};
+					})
 				: serviciosLocal.oficios.lista,
+			cta: {
+				etiqueta: String(doc.oficiosCta ?? serviciosLocal.oficios.cta.etiqueta),
+				href: serviciosLocal.oficios.cta.href,
+			},
 		},
 		pastorela: {
 			...serviciosLocal.pastorela,
 			rotulo: String(doc.pastorelaRotulo ?? serviciosLocal.pastorela.rotulo),
 			titulo: String(doc.pastorelaTitulo ?? serviciosLocal.pastorela.titulo),
 			subtitulo: String(doc.pastorelaSubtitulo ?? serviciosLocal.pastorela.subtitulo),
-			entrada: String(doc.pastorelaEntrada ?? serviciosLocal.pastorela.entrada),
-			parrafos: Array.isArray(doc.pastorelaParrafos) && doc.pastorelaParrafos.length
-				? (doc.pastorelaParrafos as string[])
-				: serviciosLocal.pastorela.parrafos,
+			entrada: aPartes(doc.pastorelaEntrada).length
+				? aPartes(doc.pastorelaEntrada)
+				: serviciosLocal.pastorela.entrada,
+			parrafos: aParrafos(doc.pastorelaParrafos, serviciosLocal.pastorela.parrafos),
 			foto: pastorelaFoto
 				? {
 						...serviciosLocal.pastorela.foto,
@@ -502,6 +591,15 @@ export async function getPaginaServicios() {
 						pie: pastorelaFoto.pie ?? serviciosLocal.pastorela.foto.pie,
 					}
 				: serviciosLocal.pastorela.foto,
+			fotoDorso: pastorelaFotoDorso
+				? {
+						src: pastorelaFotoDorso.src,
+						alt: pastorelaFotoDorso.alt || serviciosLocal.pastorela.foto.alt,
+						ancho: pastorelaFotoDorso.ancho,
+						alto: pastorelaFotoDorso.alto,
+						pie: pastorelaFotoDorso.pie ?? serviciosLocal.pastorela.foto.pie,
+					}
+				: serviciosLocal.pastorela.fotoDorso,
 			cta: {
 				...serviciosLocal.pastorela.cta,
 				etiqueta: String(doc.pastorelaCta ?? serviciosLocal.pastorela.cta.etiqueta),

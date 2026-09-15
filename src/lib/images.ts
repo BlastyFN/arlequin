@@ -23,12 +23,18 @@ export type ImagenWeb = {
 	foco?: string;
 };
 
-export function toImagen(source: SanityImage, ancho = 1600): ImagenWeb | null {
+export function toImagen(
+	source: SanityImage,
+	ancho = 1600,
+	opciones?: {sinRecorte?: boolean},
+): ImagenWeb | null {
 	if (!source?.asset) return null;
 
 	let src: string;
 	try {
-		src = urlFor(source as SanityImageSource).width(ancho).url();
+		let cadena = urlFor(source as SanityImageSource).width(ancho);
+		if (opciones?.sinRecorte) cadena = cadena.ignoreImageParams();
+		src = cadena.url();
 	} catch {
 		src = source.asset.url ?? '';
 	}

@@ -27,16 +27,16 @@ const { titular, parrafo, cta, fotos } = sobreNosotros;
 		>
 			<div class="polaroids__escenario">
 				{
-					fotos.map(({ src, alt, pie }, i) => (
+					fotos.map(({ src, alt, pie, ancho = 4, alto = 5 }, i) => (
 						<figure
 							class="polaroid"
 							data-polaroid
 							data-i={i}
-							style={`--i: ${i}`}
+							style={`--i: ${i}; --rw: ${ancho}; --rh: ${alto}`}
 							aria-hidden={i === 0 ? 'false' : 'true'}
 						>
 							<div class="polaroid__foto">
-								<img src={src} alt={alt} width="640" height="800" loading="lazy" />
+								<img src={src} alt={alt} width={ancho} height={alto} loading="lazy" />
 							</div>
 							<figcaption class="polaroid__pie">{pie}</figcaption>
 						</figure>
@@ -76,7 +76,7 @@ const { titular, parrafo, cta, fotos } = sobreNosotros;
 	.sobre__rejilla {
 		display: grid;
 		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-		gap: clamp(2.5rem, 6vw, 5rem);
+		gap: clamp(2.5rem, 4.2vw, 5rem);
 		align-items: center;
 	}
 
@@ -130,19 +130,23 @@ const { titular, parrafo, cta, fotos } = sobreNosotros;
 	}
 
 	.polaroids__escenario {
+		--caja-w: min(100%, 26rem);
 		position: relative;
-		width: min(100%, 22rem);
-		aspect-ratio: 4 / 5.1;
+		width: var(--caja-w);
+		aspect-ratio: 4 / 5.15;
 		isolation: isolate;
 	}
 
 	.polaroid {
 		--giro: calc((var(--i) - var(--activo, 0)) * 4deg);
 		position: absolute;
-		inset: 0;
+		top: 50%;
+		left: 50%;
 		margin: 0;
+		width: max-content;
+		max-width: 100%;
 		display: grid;
-		grid-template-rows: 1fr auto;
+		grid-template-rows: auto auto;
 		gap: 0.7rem;
 		padding: 0.7rem 0.7rem 1.1rem;
 		background: #efe6d8;
@@ -150,7 +154,7 @@ const { titular, parrafo, cta, fotos } = sobreNosotros;
 		box-shadow:
 			0 1.4rem 2.8rem rgba(0, 0, 0, 0.45),
 			0 0.2rem 0.5rem rgba(0, 0, 0, 0.2);
-		transform: translateY(0.4rem) rotate(var(--giro)) scale(0.92);
+		transform: translate(-50%, calc(-50% + 0.4rem)) rotate(var(--giro)) scale(0.92);
 		opacity: 0;
 		pointer-events: none;
 		transition:
@@ -163,7 +167,7 @@ const { titular, parrafo, cta, fotos } = sobreNosotros;
 	.polaroid[data-activo='true'] {
 		opacity: 1;
 		pointer-events: auto;
-		transform: translateY(0) rotate(calc(var(--giro) * 0.2)) scale(1);
+		transform: translate(-50%, -50%) rotate(calc(var(--giro) * 0.2)) scale(1);
 		z-index: 3;
 		transition:
 			transform 0.55s var(--ease),
@@ -178,23 +182,28 @@ const { titular, parrafo, cta, fotos } = sobreNosotros;
 	}
 
 	.polaroid[data-vecino='prev'] {
-		transform: translate(-18%, 4%) rotate(-9deg) scale(0.88);
+		transform: translate(calc(-50% - 18%), calc(-50% + 4%)) rotate(-9deg) scale(0.88);
 	}
 
 	.polaroid[data-vecino='next'] {
-		transform: translate(18%, 4%) rotate(9deg) scale(0.88);
+		transform: translate(calc(-50% + 18%), calc(-50% + 4%)) rotate(9deg) scale(0.88);
 	}
 
 	.polaroid__foto {
 		overflow: hidden;
 		background: #c9b9a6;
-		aspect-ratio: 4 / 5;
+		aspect-ratio: var(--rw, 4) / var(--rh, 5);
+		width: min(
+			calc(var(--caja-w) - 1.4rem),
+			calc((var(--caja-w) * 5.15 / 4 - 3.6rem) * var(--rw, 4) / var(--rh, 5))
+		);
+		height: auto;
 	}
 
 	.polaroid__foto img {
+		display: block;
 		width: 100%;
-		height: 100%;
-		object-fit: cover;
+		height: auto;
 	}
 
 	.polaroid__pie {
@@ -255,7 +264,7 @@ const { titular, parrafo, cta, fotos } = sobreNosotros;
 		}
 
 		.polaroids__escenario {
-			width: min(100%, 18.5rem);
+			--caja-w: min(100%, 22rem);
 		}
 	}
 </style>

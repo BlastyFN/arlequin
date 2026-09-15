@@ -1,5 +1,7 @@
 ---
+import { siFacebook, siInstagram } from 'simple-icons';
 import { contacto as contactoLocal } from '../data/home';
+import IconoRedSocial from './IconoRedSocial.astro';
 
 interface Props {
 	contacto?: typeof contactoLocal;
@@ -10,6 +12,11 @@ const { contacto = contactoLocal } = Astro.props;
 const correo =
 	contacto.vias.find((via) => via.href?.startsWith('mailto:'))?.valor ??
 	'hola@produccionesarlequin.mx';
+
+const redes = [
+	{ href: contacto.redes?.facebook, icon: siFacebook, etiqueta: 'Facebook' },
+	{ href: contacto.redes?.instagram, icon: siInstagram, etiqueta: 'Instagram' },
+].filter((red): red is typeof red & { href: string } => Boolean(red.href));
 ---
 
 <section class="contacto seccion" id="contacto">
@@ -48,6 +55,29 @@ const correo =
 						</li>
 					))
 				}
+
+				{
+					redes.length > 0 && (
+						<li class="via via--redes">
+							<span class="via__rotulo">{contacto.redesRotulo}</span>
+							<ul class="via__redes" aria-label={contacto.redesRotulo}>
+								{redes.map(({ href, icon, etiqueta }) => (
+									<li>
+										<a
+											class="via__red"
+											href={href}
+											target="_blank"
+											rel="noopener noreferrer"
+											aria-label={etiqueta}
+										>
+											<IconoRedSocial icon={icon} size={22} />
+										</a>
+									</li>
+								))}
+							</ul>
+						</li>
+					)
+				}
 			</ul>
 		</div>
 
@@ -83,16 +113,6 @@ const correo =
 					name="correo"
 					required
 					autocomplete="email"
-				/>
-			</label>
-
-			<label class="campo">
-				<span class="campo__rotulo">TELEFONO</span>
-				<input
-					class="campo__control"
-					type="tel"
-					name="telefono"
-					autocomplete="tel"
 				/>
 			</label>
 
@@ -181,13 +201,13 @@ const correo =
 		position: relative;
 		display: grid;
 		grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-		gap: clamp(2.75rem, 6vw, 5.5rem);
+		gap: clamp(2.75rem, 4.6vw, 5.5rem);
 		align-items: start;
 	}
 
 	.contacto__intro {
 		display: grid;
-		gap: clamp(2.5rem, 5vw, 3.75rem);
+		gap: clamp(2.5rem, 3.1vw, 3.75rem);
 	}
 
 	.contacto__bloque {
@@ -211,7 +231,7 @@ const correo =
 		width: 100%;
 		max-width: 34rem;
 		margin: 0;
-		color: var(--hueso);
+		color: var(--rojo-luz);
 		font-family: var(--fuente-rotulo);
 		font-size: clamp(0.95rem, 1.15vw + 0.35rem, 1.2rem);
 		font-weight: 400;
@@ -224,7 +244,7 @@ const correo =
 	}
 
 	.contacto__acento {
-		color: var(--rojo-luz);
+		color: var(--hueso);
 	}
 
 	.contacto__llamado {
@@ -431,6 +451,44 @@ const correo =
 
 	a.via__valor:hover {
 		color: var(--hueso);
+	}
+
+	.via--redes {
+		padding-top: 0.25rem;
+	}
+
+	.via__redes {
+		display: flex;
+		justify-content: center;
+		gap: 0.85rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.via__red {
+		display: grid;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		border: 1px solid var(--linea);
+		color: var(--hueso-medio);
+		text-decoration: none;
+		transition:
+			color 0.3s var(--ease),
+			border-color 0.3s var(--ease),
+			background 0.3s var(--ease);
+	}
+
+	.via__red:hover {
+		color: var(--hueso);
+		border-color: var(--hueso);
+		background: color-mix(in srgb, var(--hueso) 6%, transparent);
+	}
+
+	.via__red:focus-visible {
+		outline: 1px solid var(--rojo-luz);
+		outline-offset: 3px;
 	}
 
 	@media (max-width: 62rem) {
