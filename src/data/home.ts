@@ -32,10 +32,13 @@ export const heroe = {
 		rotulo: 'EN CARTELERA',
 		obra: 'La casa de los espejos rotos',
 		autor: 'Dramaturgia de Elena Vargas',
-		lugarRotulo: 'FORO',
-		lugar: 'Foro Escena Viva',
-		horarioRotulo: 'HORARIOS',
-		horario: 'Jue a Dom, 20:00 h',
+		foto: null as {
+			src: string;
+			alt: string;
+			ancho: number;
+			alto: number;
+			foco?: string;
+		} | null,
 		cta: 'VER FUNCIONES',
 		ctaHref: '#obras',
 	},

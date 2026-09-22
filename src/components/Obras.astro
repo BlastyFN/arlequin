@@ -139,7 +139,7 @@ const { titular, parrafo, cta, fotos } = obrasInicio;
 	.obras__texto {
 		position: relative;
 		z-index: 3;
-		width: min(100%, 29rem);
+		width: min(100%, max(29rem, 50vw));
 		padding-block: clamp(3rem, 4.2vw, 5rem);
 	}
 
@@ -153,7 +153,7 @@ const { titular, parrafo, cta, fotos } = obrasInicio;
 	}
 
 	.obras__parrafo {
-		max-width: 34ch;
+		max-width: min(100%, max(28rem, 50vw));
 		margin: 0 0 clamp(1.75rem, 3.5vw, 2.25rem);
 		color: var(--hueso-medio);
 		font-size: clamp(1.02rem, 1.3vw, 1.15rem);

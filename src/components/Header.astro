@@ -166,17 +166,33 @@ const redes = [
 		position: fixed;
 		inset: 0 0 auto;
 		z-index: 100;
-		transition:
-			background 0.4s var(--ease),
-			border-color 0.4s var(--ease),
-			backdrop-filter 0.4s var(--ease);
+		isolation: isolate;
+		transition: border-color 0.4s var(--ease);
 		border-bottom: 1px solid transparent;
 	}
 
+	/* El blur vive en un hijo: backdrop-filter en la propia barra la convierte
+	   en contenedor de .panel (position: fixed) y, al hacer scroll, el menú
+	   queda debajo de las secciones con transform o filter. */
+	.barra::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		transition:
+			background 0.4s var(--ease),
+			backdrop-filter 0.4s var(--ease);
+	}
+
 	.barra[data-fijo='true'] {
+		border-bottom-color: var(--linea-suave);
+	}
+
+	.barra[data-fijo='true']::before {
 		background: rgba(5, 5, 5, 0.82);
 		backdrop-filter: blur(14px) saturate(1.2);
-		border-bottom-color: var(--linea-suave);
+		-webkit-backdrop-filter: blur(14px) saturate(1.2);
 	}
 
 	.saltar {
@@ -199,6 +215,8 @@ const redes = [
 	}
 
 	.barra__interior {
+		position: relative;
+		z-index: 2;
 		width: 100%;
 		margin-inline: auto;
 		padding: clamp(0.55rem, 1.2vw, 0.85rem) var(--margen);
@@ -349,7 +367,7 @@ const redes = [
 	.panel {
 		position: fixed;
 		inset: 0;
-		z-index: -1;
+		z-index: 1;
 		display: grid;
 		align-content: center;
 		gap: 2.5rem;
@@ -455,10 +473,6 @@ const redes = [
 
 		.hamburguesa {
 			display: inline-flex;
-		}
-
-		.panel {
-			z-index: 1;
 		}
 	}
 </style>

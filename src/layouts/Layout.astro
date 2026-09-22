@@ -93,6 +93,11 @@ const {
 		scroll-behavior: smooth;
 		scroll-padding-top: calc(var(--altura-barra) + 1rem);
 		-webkit-text-size-adjust: 100%;
+		/* Recorta el desborde horizontal en el viewport, no en body.
+		   overflow-x: hidden en body lo vuelve scroll container y, en móvil,
+		   las capas con transform/filter se pintan encima del menú fijo. */
+		overflow-x: clip;
+		overflow-y: auto;
 	}
 
 	/* Laptops (no el layout de móvil): compacta el rem ~6% entre 992 y 1600px. */
@@ -115,7 +120,6 @@ const {
 		font-size: clamp(1rem, 0.96rem + 0.2vw, 1.075rem);
 		line-height: 1.65;
 		-webkit-font-smoothing: antialiased;
-		overflow-x: hidden;
 	}
 
 	img,

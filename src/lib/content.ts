@@ -255,7 +255,14 @@ export async function getHome() {
 	}
 
 	const obraCartel = doc.funcionObra as
-		| {tituloCompleto?: string; titulo?: string; slug?: string}
+		| {
+				tituloCompleto?: string;
+				titulo?: string;
+				slug?: string;
+				cartel?: never;
+				fondo?: never;
+				primeraFoto?: never;
+			}
 		| null
 		| undefined;
 	const slugCartel = obraCartel?.slug;
@@ -263,6 +270,11 @@ export async function getHome() {
 		(doc.funcionTitulo as string) ||
 		obraCartel?.tituloCompleto ||
 		heroeLocal.funcion.obra;
+	const fotoCartel =
+		toImagen(doc.funcionFoto as never, 900) ??
+		toImagen(obraCartel?.cartel, 900) ??
+		toImagen(obraCartel?.fondo, 900) ??
+		toImagen(obraCartel?.primeraFoto, 900);
 
 	const sobreFotos = Array.isArray(doc.sobreFotos)
 		? (doc.sobreFotos as never[])
@@ -347,10 +359,15 @@ export async function getHome() {
 				rotulo: String(doc.funcionRotulo ?? heroeLocal.funcion.rotulo),
 				obra: tituloCartel,
 				autor: String(doc.funcionAutor ?? heroeLocal.funcion.autor),
-				lugarRotulo: String(doc.funcionLugarRotulo || heroeLocal.funcion.lugarRotulo),
-				lugar: String(doc.funcionLugar || heroeLocal.funcion.lugar),
-				horarioRotulo: String(doc.funcionHorarioRotulo || heroeLocal.funcion.horarioRotulo),
-				horario: String(doc.funcionHorario || heroeLocal.funcion.horario),
+				foto: fotoCartel
+					? {
+							src: fotoCartel.src,
+							alt: fotoCartel.alt || tituloCartel,
+							ancho: fotoCartel.ancho,
+							alto: fotoCartel.alto,
+							foco: fotoCartel.foco,
+						}
+					: null,
 				cta: String(doc.funcionCta ?? heroeLocal.funcion.cta),
 				ctaHref: slugCartel ? `/obras/${slugCartel}` : heroeLocal.funcion.ctaHref,
 			},

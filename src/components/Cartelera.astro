@@ -1,6 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import iconoBlanco from '../assets/icono blanco.png';
+import anima from '../assets/anima.mp4';
 import { heroe as heroeLocal } from '../data/home';
 
 interface Props {
@@ -9,11 +8,11 @@ interface Props {
 
 const { heroe = heroeLocal } = Astro.props;
 
-/* Vitrina de cartelera: el anuncio de la función tal como se exhibe en el
-   vestíbulo de un teatro. Cada tanto la luz se apaga y, al volver a prender,
-   la vitrina alterna entre el programa de la función y el sello de la casa.
-   Sin JS se queda encendida en el programa. */
-const { funcion, sello } = heroe;
+/* Vitrina de cartelera: el video abre 7 segundos, luego la obra 30,
+   el último fotograma 15 y otra vez la obra 30. A partir de ahí se
+   alternan fotograma y obra. Sin JS, o con menos movimiento, se ve
+   directo el programa. */
+const { funcion } = heroe;
 ---
 
 <aside
@@ -21,7 +20,7 @@ const { funcion, sello } = heroe;
 	aria-labelledby="cartelera-obra"
 	data-cartelera
 	data-luz="encendida"
-	data-escena="programa"
+	data-escena="anima"
 >
 	<span class="lampara" aria-hidden="true">
 		<span class="lampara__pantalla">
@@ -34,6 +33,17 @@ const { funcion, sello } = heroe;
 		<div class="cartelera__luz" aria-hidden="true"></div>
 		<div class="cartelera__haz" aria-hidden="true"></div>
 		<div class="cartelera__filete" aria-hidden="true"></div>
+
+		<div class="cartelera__anima" aria-hidden="true">
+			<video
+				class="anima"
+				src={anima}
+				muted
+				playsinline
+				preload="auto"
+				tabindex="-1"
+			></video>
+		</div>
 
 		<div class="cartelera__escenas">
 			<div class="escena escena--programa">
@@ -49,36 +59,22 @@ const { funcion, sello } = heroe;
 					<span class="ornamento__linea ornamento__linea--der"></span>
 				</div>
 
-				<dl class="cartelera__datos">
-					<div class="cartelera__dato">
-						<dt class="cartelera__clave">{funcion.lugarRotulo}</dt>
-						<dd class="cartelera__valor">{funcion.lugar}</dd>
-					</div>
-					<div class="cartelera__dato">
-						<dt class="cartelera__clave">{funcion.horarioRotulo}</dt>
-						<dd class="cartelera__valor">{funcion.horario}</dd>
-					</div>
-				</dl>
+				{
+					funcion.foto && (
+						<figure class="cartelera__foto">
+							<img
+								src={funcion.foto.src}
+								alt={funcion.foto.alt}
+								width={funcion.foto.ancho}
+								height={funcion.foto.alto}
+								style={funcion.foto.foco ? `object-position: ${funcion.foto.foco}` : undefined}
+								loading="eager"
+							/>
+						</figure>
+					)
+				}
 
 				<a class="cartelera__cta" href={funcion.ctaHref}>{funcion.cta}</a>
-			</div>
-
-			<div class="escena escena--sello" aria-hidden="true">
-				<Image
-					class="sello__icono"
-					src={iconoBlanco}
-					alt=""
-					width={420}
-					loading="eager"
-				/>
-
-				<div class="ornamento" aria-hidden="true">
-					<span class="ornamento__linea ornamento__linea--izq"></span>
-					<span class="rombo"></span>
-					<span class="ornamento__linea ornamento__linea--der"></span>
-				</div>
-
-				<p class="sello__slogan">{sello.slogan}</p>
 			</div>
 		</div>
 
@@ -135,13 +131,14 @@ const { funcion, sello } = heroe;
 
 	/* Remate curvo arriba: la vitrina repite la boca del escenario */
 	.cartelera__caja {
+		--arco: 9%;
 		position: relative;
 		isolation: isolate;
 		overflow: hidden;
 		padding: clamp(1.9rem, 4vw, 2.6rem) clamp(1.6rem, 3.4vw, 2.3rem)
 			clamp(1.6rem, 3.4vw, 2.2rem);
 		border: 1px solid var(--linea);
-		border-radius: 44% 44% 0.3rem 0.3rem / 9% 9% 0 0;
+		border-radius: 44% 44% 0.3rem 0.3rem / var(--arco) var(--arco) 0 0;
 		background: linear-gradient(to bottom, var(--negro-carta), var(--negro) 85%);
 		box-shadow:
 			0 1.75rem 4rem rgba(0, 0, 0, 0.6),
@@ -184,6 +181,7 @@ const { funcion, sello } = heroe;
 
 	.cartelera__filete {
 		position: absolute;
+		z-index: 2;
 		inset: 0.55rem;
 		border: 1px solid var(--linea-suave);
 		border-radius: 44% 44% 0.2rem 0.2rem / 9% 9% 0 0;
@@ -217,6 +215,7 @@ const { funcion, sello } = heroe;
 
 	.cartelera__escenas {
 		position: relative;
+		z-index: 1;
 		display: grid;
 		min-height: clamp(21rem, 42vh, 26rem);
 		text-align: center;
@@ -236,9 +235,45 @@ const { funcion, sello } = heroe;
 	}
 
 	.cartelera[data-escena='programa'] .escena--programa,
-	.cartelera[data-escena='sello'] .escena--sello {
+	.cartelera[data-escena='anima'] .cartelera__anima {
 		opacity: 1;
 		visibility: visible;
+	}
+
+	/* El video llena toda la vitrina, arco incluido.
+	   El cuadro se recorta (no se estira) y el 10% inferior queda
+	   fuera para tapar la marca de agua. */
+	.cartelera__anima {
+		position: absolute;
+		z-index: 0;
+		inset: 0;
+		overflow: hidden;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition:
+			opacity 0.35s var(--ease),
+			visibility 0.35s var(--ease);
+	}
+
+	.anima {
+		display: block;
+		width: 100%;
+		height: calc(100% / 0.9);
+		object-fit: cover;
+		object-position: center top;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cartelera[data-escena='anima'] .cartelera__anima {
+			opacity: 0;
+			visibility: hidden;
+		}
+
+		.cartelera[data-escena='anima'] .escena--programa {
+			opacity: 1;
+			visibility: visible;
+		}
 	}
 
 	/* ---------- Cuadro: programa ---------- */
@@ -276,25 +311,18 @@ const { funcion, sello } = heroe;
 		color: var(--hueso-medio);
 	}
 
-	.cartelera__datos {
-		display: grid;
-		gap: 1rem;
+	.cartelera__foto {
+		width: 100%;
 		margin: 0;
 	}
 
-	.cartelera__clave {
-		font-family: var(--fuente-rotulo);
-		font-size: 0.65rem;
-		letter-spacing: 0.26em;
-		text-indent: 0.26em;
-		color: var(--hueso-tenue);
-	}
-
-	.cartelera__valor {
-		margin: 0.35rem 0 0;
-		font-size: 0.95rem;
-		line-height: 1.4;
-		white-space: pre-line;
+	.cartelera__foto img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 4 / 3;
+		object-fit: cover;
+		border: 1px solid var(--linea-suave);
 	}
 
 	.cartelera__cta {
@@ -312,31 +340,6 @@ const { funcion, sello } = heroe;
 
 	.cartelera__cta:hover {
 		background: var(--rojo-luz);
-	}
-
-	/* ---------- Cuadro: sello de la casa ---------- */
-
-	.sello__icono {
-		width: 44%;
-		height: auto;
-		opacity: 0.9;
-		filter: drop-shadow(0 1.1rem 2.2rem rgba(0, 0, 0, 0.75));
-	}
-
-	.escena--sello .ornamento {
-		margin-block: clamp(1.5rem, 3.5vh, 2.1rem) clamp(1.1rem, 2.5vh, 1.5rem);
-	}
-
-	.sello__slogan {
-		margin: 0;
-		max-width: 18ch;
-		font-family: var(--fuente-titular);
-		font-size: clamp(1.05rem, 2.4vw, 1.25rem);
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		line-height: 1.35;
-		color: var(--hueso);
-		text-wrap: balance;
 	}
 
 	/* ---------- Ornamento ---------- */
@@ -492,60 +495,77 @@ const { funcion, sello } = heroe;
 	}
 </style>
 
+<noscript>
+	<style>
+		.cartelera[data-escena='anima'] .cartelera__anima {
+			opacity: 0;
+			visibility: hidden;
+		}
+
+		.cartelera[data-escena='anima'] .escena--programa {
+			opacity: 1;
+			visibility: visible;
+		}
+	</style>
+</noscript>
+
 <script>
 	const cartelera = document.querySelector<HTMLElement>('[data-cartelera]');
+	const video = cartelera?.querySelector<HTMLVideoElement>('.anima');
 
-	/* Sin vitrina no hay nada que alternar */
-	if (cartelera) {
-		/* Cada cuadro se sostiene lo que pide su contenido */
-		const CUADROS = [
-			{ nombre: 'programa', espera: 6500 },
-			{ nombre: 'sello', espera: 4200 },
-		];
+	/* El video corre una sola vez. Después solo vuelve su último fotograma. */
+	if (cartelera && video) {
+		const VIDEO = 7000;
+		const OBRA = 30000;
+		const FOTOGRAMA = 15000;
 		const A_OSCURAS = 950;
 		const CAMBIO = 480;
 
 		const dormir = (ms: number) =>
 			new Promise<void>((listo) => window.setTimeout(listo, ms));
 
-		let indice = 0;
-		let pausado = false;
-
-		/* Solo se pausa con la luz encendida: un apagon siempre se completa,
-		   para no dejar la vitrina a oscuras. */
-		const esperarTurno = async () => {
-			while (pausado || document.hidden) await dormir(200);
+		const congelar = () => {
+			video.pause();
+			if (video.ended || !Number.isFinite(video.duration)) return;
+			video.currentTime = Math.max(0, video.duration - 0.05);
 		};
 
-		const alternar = async () => {
+		const cambiar = async (escena: 'anima' | 'programa') => {
+			cartelera.dataset.luz = 'apagada';
+			await dormir(CAMBIO);
+			cartelera.dataset.escena = escena;
+			await dormir(A_OSCURAS - CAMBIO);
+			cartelera.dataset.luz = 'encendida';
+		};
+
+		const ciclo = async () => {
+			const arranque = performance.now();
+			try {
+				await video.play();
+			} catch {
+				video.pause();
+				cartelera.dataset.escena = 'programa';
+				return;
+			}
+
+			await dormir(Math.max(0, VIDEO - (performance.now() - arranque)));
+			congelar();
+			await cambiar('programa');
+
 			while (true) {
-				await dormir(CUADROS[indice].espera);
-				await esperarTurno();
-
-				cartelera.dataset.luz = 'apagada';
-				await dormir(CAMBIO);
-
-				indice = (indice + 1) % CUADROS.length;
-				cartelera.dataset.escena = CUADROS[indice].nombre;
-				await dormir(A_OSCURAS - CAMBIO);
-
-				cartelera.dataset.luz = 'encendida';
+				await dormir(OBRA);
+				await cambiar('anima');
+				await dormir(FOTOGRAMA);
+				await cambiar('programa');
 			}
 		};
 
-		const pausar = () => {
-			pausado = true;
-		};
-		const reanudar = () => {
-			pausado = false;
-		};
-
-		cartelera.addEventListener('pointerenter', pausar);
-		cartelera.addEventListener('pointerleave', reanudar);
-		cartelera.addEventListener('focusin', pausar);
-		cartelera.addEventListener('focusout', reanudar);
-
 		const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
-		if (!sinMovimiento.matches) alternar();
+		if (sinMovimiento.matches) {
+			video.pause();
+			cartelera.dataset.escena = 'programa';
+		} else {
+			void ciclo();
+		}
 	}
 </script>
